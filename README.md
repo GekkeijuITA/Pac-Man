@@ -36,4 +36,4 @@
 - Wiki: [link](https://pacman.holenet.info/)
 
 ## Roadmap
-- [ ] Sistema layout mappa (mappa di default) con json tiled map direi
+- [ ] Sistema layout mappa (mappa di default) con file di testo per ora
