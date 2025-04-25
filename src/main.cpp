@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include "textures.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -29,52 +30,126 @@ void handle(const T &, State &gs)
     // eventi non gestiti
 }
 
+bool isWall(int r, int c, int map[MAP_HEIGHT][MAP_WIDTH])
+{
+    return r >= 0 && r < MAP_HEIGHT && c >= 0 && c < MAP_WIDTH && map[r][c] == 1;
+}
+
 void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
 {
     gs.window.clear();
 
     for (int r = 0; r < MAP_HEIGHT; r++)
     {
-        float y = (r + 3) * TILE_SIZE; // Lasciamo le prime due righe per il punteggio
+        float y = (r + 3) * TILE_SIZE; // Lasciamo le prime due righe per il punteggi
         for (int c = 0; c < MAP_WIDTH; c++)
         {
             float x = c * TILE_SIZE;
+            /*
+            0=pacdot;
+            1=muroorizz;
+            2=murovert;
+            3=angolo0;
+            4=angolo90;
+            5=angolo180;
+            6=angolo270;
+            7=powerpellet;
+            8=portafantasmi;
+            9=empty
+            */
             switch (map[r][c])
             {
-            // 0: pacdot, 1: muro, 2:powerpellet, 3:portecasafantasmi, 4: blocconero
             case 0:
             {
                 sf::CircleShape pacdot(TILE_SIZE / 10.f);
                 pacdot.setPosition({x + (TILE_SIZE / 2) - 4, y + (TILE_SIZE / 2) - 4});
-                pacdot.setFillColor(sf::Color(255,185,176));
+                pacdot.setFillColor(sf::Color(255, 185, 176));
                 gs.window.draw(pacdot);
                 break;
             }
             case 1:
             {
+                sf::Texture tex;
                 sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
                 wall.setPosition({x, y});
+                tex.loadFromFile(STRAIGHT_LINE_H);
+                wall.setTexture(&tex);
                 wall.setFillColor(sf::Color::Blue);
                 gs.window.draw(wall);
                 break;
             }
             case 2:
             {
-                sf::CircleShape powerpellet(TILE_SIZE / 2);
-                powerpellet.setPosition({x + (TILE_SIZE / 2) - 16, y + (TILE_SIZE / 2) - 16});
-                powerpellet.setFillColor(sf::Color(255,185,176));
-                gs.window.draw(powerpellet);
+                sf::Texture tex;
+                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                wall.setPosition({x, y});
+                tex.loadFromFile(STRAIGHT_LINE_V);
+                wall.setTexture(&tex);
+                wall.setFillColor(sf::Color::Blue);
+                gs.window.draw(wall);
                 break;
             }
             case 3:
             {
-                sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
-                ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
-                ghostDoor.setFillColor(sf::Color(255,203,255));
-                gs.window.draw(ghostDoor);
+                sf::Texture tex;
+                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                wall.setPosition({x, y});
+                tex.loadFromFile(ANGLE_0);
+                wall.setTexture(&tex);
+                wall.setFillColor(sf::Color::Blue);
+                gs.window.draw(wall);
                 break;
             }
             case 4:
+            {
+                sf::Texture tex;
+                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                wall.setPosition({x, y});
+                tex.loadFromFile(ANGLE_90);
+                wall.setTexture(&tex);
+                wall.setFillColor(sf::Color::Blue);
+                gs.window.draw(wall);
+                break;
+            }
+            case 5:
+            {
+                sf::Texture tex;
+                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                wall.setPosition({x, y});
+                tex.loadFromFile(ANGLE_180);
+                wall.setTexture(&tex);
+                wall.setFillColor(sf::Color::Blue);
+                gs.window.draw(wall);
+                break;
+            }
+            case 6:
+            {
+                sf::Texture tex;
+                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                wall.setPosition({x, y});
+                tex.loadFromFile(ANGLE_270);
+                wall.setTexture(&tex);
+                wall.setFillColor(sf::Color::Blue);
+                gs.window.draw(wall);
+                break;
+            }
+            case 7:
+            {
+                sf::CircleShape powerpellet(TILE_SIZE / 2);
+                powerpellet.setPosition({x + (TILE_SIZE / 2) - 16, y + (TILE_SIZE / 2) - 16});
+                powerpellet.setFillColor(sf::Color(255, 185, 176));
+                gs.window.draw(powerpellet);
+                break;
+            }
+            case 8:
+            {
+                sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
+                ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
+                ghostDoor.setFillColor(sf::Color(255, 203, 255));
+                gs.window.draw(ghostDoor);
+                break;
+            }
+            case 9:
             {
                 sf::RectangleShape emptyBlock({TILE_SIZE, TILE_SIZE});
                 emptyBlock.setPosition({x, y});
@@ -121,7 +196,7 @@ int main()
     State gs(MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE, "Pac-Man");
 
     int map[MAP_HEIGHT][MAP_WIDTH];
-    if (!getMap("../assets/default_map.txt", map))
+    if (!getMap("../resources/default_map.txt", map))
     {
         return 1;
     }
