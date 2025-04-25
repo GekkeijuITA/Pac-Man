@@ -4,18 +4,75 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <map>
 
 #define MAP_WIDTH 28
 #define MAP_HEIGHT 31
 #define TILE_SIZE 32
 
+struct TileData {
+    sf::Texture texture;
+    sf::Vector2f scale;
+};
+
 struct State
 {
     sf::RenderWindow window;
+    std::map<int, TileData> mapTextures;
 
     State(unsigned w, unsigned h, std::string title)
     {
         window = sf::RenderWindow(sf::VideoMode({w, h}), title);
+        sf::Texture temp;
+
+        if(!temp.loadFromFile(STRAIGHT_LINE_H))
+        {
+            std::cerr << "Errore nel caricamento della texture" << std::endl;
+            exit(1);
+        }
+        mapTextures[0].texture = temp;
+        sf::Vector2u texSize = mapTextures[0].texture.getSize();
+        mapTextures[0].scale = {(float) TILE_SIZE / texSize.x, (float) TILE_SIZE / texSize.y};
+
+        if(!temp.loadFromFile(STRAIGHT_LINE_V))
+        {
+            std::cerr << "Errore nel caricamento della texture" << std::endl;
+            exit(1);
+        }
+        mapTextures[1].texture = temp;
+        mapTextures[1].scale = {(float) TILE_SIZE / texSize.x, (float) TILE_SIZE / texSize.y};
+
+        if(!temp.loadFromFile(ANGLE_0))
+        {
+            std::cerr << "Errore nel caricamento della texture" << std::endl;
+            exit(1);
+        }
+        mapTextures[2].texture = temp;
+        mapTextures[2].scale = {(float) TILE_SIZE / texSize.x, (float) TILE_SIZE / texSize.y};
+
+        if(!temp.loadFromFile(ANGLE_90))
+        {
+            std::cerr << "Errore nel caricamento della texture" << std::endl;
+            exit(1);
+        }
+        mapTextures[3].texture = temp;
+        mapTextures[3].scale = {(float) TILE_SIZE / texSize.x, (float) TILE_SIZE / texSize.y};
+
+        if(!temp.loadFromFile(ANGLE_180))
+        {
+            std::cerr << "Errore nel caricamento della texture" << std::endl;
+            exit(1);
+        }
+        mapTextures[4].texture = temp;
+        mapTextures[4].scale = {(float) TILE_SIZE / texSize.x, (float) TILE_SIZE / texSize.y};
+
+        if(!temp.loadFromFile(ANGLE_270))
+        {
+            std::cerr << "Errore nel caricamento della texture" << std::endl;
+            exit(1);
+        }
+        mapTextures[5].texture = temp;
+        mapTextures[5].scale = {(float) TILE_SIZE / texSize.x, (float) TILE_SIZE / texSize.y};
     }
 };
 
@@ -28,11 +85,6 @@ template <typename T>
 void handle(const T &, State &gs)
 {
     // eventi non gestiti
-}
-
-bool isWall(int r, int c, int map[MAP_HEIGHT][MAP_WIDTH])
-{
-    return r >= 0 && r < MAP_HEIGHT && c >= 0 && c < MAP_WIDTH && map[r][c] == 1;
 }
 
 void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
@@ -69,67 +121,49 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
             }
             case 1:
             {
-                sf::Texture tex;
-                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                sf::Sprite wall(gs.mapTextures[0].texture);
+                wall.setScale(gs.mapTextures[0].scale);
                 wall.setPosition({x, y});
-                tex.loadFromFile(STRAIGHT_LINE_H);
-                wall.setTexture(&tex);
-                wall.setFillColor(sf::Color::Blue);
                 gs.window.draw(wall);
                 break;
             }
             case 2:
             {
-                sf::Texture tex;
-                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                sf::Sprite wall(gs.mapTextures[1].texture);
+                wall.setScale(gs.mapTextures[1].scale);
                 wall.setPosition({x, y});
-                tex.loadFromFile(STRAIGHT_LINE_V);
-                wall.setTexture(&tex);
-                wall.setFillColor(sf::Color::Blue);
                 gs.window.draw(wall);
                 break;
             }
             case 3:
             {
-                sf::Texture tex;
-                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                sf::Sprite wall(gs.mapTextures[2].texture);
+                wall.setScale(gs.mapTextures[2].scale);
                 wall.setPosition({x, y});
-                tex.loadFromFile(ANGLE_0);
-                wall.setTexture(&tex);
-                wall.setFillColor(sf::Color::Blue);
                 gs.window.draw(wall);
                 break;
             }
             case 4:
             {
-                sf::Texture tex;
-                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                sf::Sprite wall(gs.mapTextures[3].texture);
+                wall.setScale(gs.mapTextures[3].scale);
                 wall.setPosition({x, y});
-                tex.loadFromFile(ANGLE_90);
-                wall.setTexture(&tex);
-                wall.setFillColor(sf::Color::Blue);
                 gs.window.draw(wall);
                 break;
             }
             case 5:
             {
-                sf::Texture tex;
-                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                sf::Sprite wall(gs.mapTextures[4].texture);
+                wall.setScale(gs.mapTextures[4].scale);
                 wall.setPosition({x, y});
-                tex.loadFromFile(ANGLE_180);
-                wall.setTexture(&tex);
-                wall.setFillColor(sf::Color::Blue);
                 gs.window.draw(wall);
                 break;
             }
             case 6:
             {
-                sf::Texture tex;
-                sf::RectangleShape wall({TILE_SIZE, TILE_SIZE});
+                sf::Sprite wall(gs.mapTextures[5].texture);
+                wall.setScale(gs.mapTextures[5].scale);
                 wall.setPosition({x, y});
-                tex.loadFromFile(ANGLE_270);
-                wall.setTexture(&tex);
-                wall.setFillColor(sf::Color::Blue);
                 gs.window.draw(wall);
                 break;
             }
