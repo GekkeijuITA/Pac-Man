@@ -46,6 +46,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
             {
                 sf::CircleShape pacdot(TILE_SIZE / 10.f);
                 pacdot.setPosition({x + (TILE_SIZE / 2) - 4, y + (TILE_SIZE / 2) - 4});
+                pacdot.setFillColor(sf::Color(255,185,176));
                 gs.window.draw(pacdot);
                 break;
             }
@@ -61,6 +62,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
             {
                 sf::CircleShape powerpellet(TILE_SIZE / 2);
                 powerpellet.setPosition({x + (TILE_SIZE / 2) - 16, y + (TILE_SIZE / 2) - 16});
+                powerpellet.setFillColor(sf::Color(255,185,176));
                 gs.window.draw(powerpellet);
                 break;
             }
@@ -68,7 +70,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
             {
                 sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
                 ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
-                ghostDoor.setFillColor(sf::Color::Red);
+                ghostDoor.setFillColor(sf::Color(255,203,255));
                 gs.window.draw(ghostDoor);
                 break;
             }
