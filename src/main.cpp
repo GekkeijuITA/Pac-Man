@@ -1,14 +1,12 @@
 #include <SFML/Graphics.hpp>
-#include "textures.hpp"
+#include "../includes/textures.hpp"
+#include "../includes/global_values.hpp"
+#include "../includes/PacMan.hpp"
 
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <map>
-
-#define MAP_WIDTH 28
-#define MAP_HEIGHT 31
-#define TILE_SIZE 32
 
 struct TileData {
     sf::Texture texture;
@@ -19,6 +17,7 @@ struct State
 {
     sf::RenderWindow window;
     std::map<int, TileData> mapTextures;
+
 
     State(unsigned w, unsigned h, std::string title)
     {
@@ -87,10 +86,9 @@ void handle(const T &, State &gs)
     // eventi non gestiti
 }
 
-void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
+void doGraphics(State &gs, char (&map)[MAP_HEIGHT][MAP_WIDTH], PacMan &pacman)
 {
     gs.window.clear();
-
     for (int r = 0; r < MAP_HEIGHT; r++)
     {
         float y = (r + 3) * TILE_SIZE; // Lasciamo le prime due righe per il punteggi
@@ -107,11 +105,11 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
             6=angolo270;
             7=powerpellet;
             8=portafantasmi;
-            9=empty
+            9=empty;
             */
             switch (map[r][c])
             {
-            case 0:
+            case '0':
             {
                 sf::CircleShape pacdot(TILE_SIZE / 10.f);
                 pacdot.setPosition({x + (TILE_SIZE / 2) - 4, y + (TILE_SIZE / 2) - 4});
@@ -119,7 +117,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(pacdot);
                 break;
             }
-            case 1:
+            case '1':
             {
                 sf::Sprite wall(gs.mapTextures[0].texture);
                 wall.setScale(gs.mapTextures[0].scale);
@@ -127,7 +125,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(wall);
                 break;
             }
-            case 2:
+            case '2':
             {
                 sf::Sprite wall(gs.mapTextures[1].texture);
                 wall.setScale(gs.mapTextures[1].scale);
@@ -135,7 +133,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(wall);
                 break;
             }
-            case 3:
+            case '3':
             {
                 sf::Sprite wall(gs.mapTextures[2].texture);
                 wall.setScale(gs.mapTextures[2].scale);
@@ -143,7 +141,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(wall);
                 break;
             }
-            case 4:
+            case '4':
             {
                 sf::Sprite wall(gs.mapTextures[3].texture);
                 wall.setScale(gs.mapTextures[3].scale);
@@ -151,7 +149,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(wall);
                 break;
             }
-            case 5:
+            case '5':
             {
                 sf::Sprite wall(gs.mapTextures[4].texture);
                 wall.setScale(gs.mapTextures[4].scale);
@@ -159,7 +157,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(wall);
                 break;
             }
-            case 6:
+            case '6':
             {
                 sf::Sprite wall(gs.mapTextures[5].texture);
                 wall.setScale(gs.mapTextures[5].scale);
@@ -167,7 +165,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(wall);
                 break;
             }
-            case 7:
+            case '7':
             {
                 sf::CircleShape powerpellet(TILE_SIZE / 2);
                 powerpellet.setPosition({x + (TILE_SIZE / 2) - 16, y + (TILE_SIZE / 2) - 16});
@@ -175,7 +173,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(powerpellet);
                 break;
             }
-            case 8:
+            case '8':
             {
                 sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
                 ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
@@ -183,7 +181,7 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
                 gs.window.draw(ghostDoor);
                 break;
             }
-            case 9:
+            case '9':
             {
                 sf::RectangleShape emptyBlock({TILE_SIZE, TILE_SIZE});
                 emptyBlock.setPosition({x, y});
@@ -197,10 +195,11 @@ void doGraphics(State &gs, int (&map)[MAP_HEIGHT][MAP_WIDTH])
         }
     }
 
+    pacman.draw(gs.window);
     gs.window.display();
 }
 
-bool getMap(std::string mapPath, int (&map)[MAP_HEIGHT][MAP_WIDTH])
+bool getMap(std::string mapPath, char (&map)[MAP_HEIGHT][MAP_WIDTH])
 {
     std::fstream mapFile;
     mapFile.open(mapPath, std::ios::in);
@@ -217,7 +216,7 @@ bool getMap(std::string mapPath, int (&map)[MAP_HEIGHT][MAP_WIDTH])
     {
         for (int i = 0; i < mapString.size(); i++)
         {
-            map[r][i] = mapString[i] - '0';
+            map[r][i] = mapString[i];
         }
         r++;
     }
@@ -229,18 +228,20 @@ int main()
 {
     State gs(MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE, "Pac-Man");
 
-    int map[MAP_HEIGHT][MAP_WIDTH];
+    char map[MAP_HEIGHT][MAP_WIDTH];
     if (!getMap("../resources/default_map.txt", map))
     {
         return 1;
     }
+
+    PacMan pacman;
 
     while (gs.window.isOpen())
     {
         gs.window.handleEvents([&](const auto &event)
                                { handle(event, gs); });
 
-        doGraphics(gs, map);
+        doGraphics(gs, map, pacman);
     }
 
     return 0;
