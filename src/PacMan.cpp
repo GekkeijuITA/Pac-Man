@@ -45,7 +45,6 @@ void PacMan::setRotation(Direction dir)
 void PacMan::setMap(char (*newMap)[MAP_HEIGHT])
 {
     map = newMap;
-    std::cout << "Ho la mappa!" << std::endl;
 }
 
 bool PacMan::isWall(int x, int y)
@@ -78,8 +77,7 @@ void PacMan::move(float elapsed)
         break;
     }
 
-    sf::Vector2i currentPosition = position;
-    sf::Vector2i newPosition = currentPosition + static_cast<sf::Vector2i>(new_fPosition);
+    sf::Vector2i newPosition = position + static_cast<sf::Vector2i>(new_fPosition);
 
     if (!isWall(newPosition.x, newPosition.y))
     {
