@@ -28,8 +28,7 @@ struct State
     void doGraphics();
 };
 
-State::State(unsigned w, unsigned h, std::string title)
-    : pacman()
+State::State(unsigned w, unsigned h, std::string title) : pacman()
 {
     window = sf::RenderWindow(sf::VideoMode({w, h}), title);
     window.setPosition({0, 0});
@@ -144,6 +143,9 @@ bool State::getMap(std::string mapPath)
         r++;
     }
     mapFile.close();
+
+    pacman.setMap(map);
+
     return true;
 }
 

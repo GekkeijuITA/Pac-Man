@@ -1,10 +1,8 @@
 #include "../includes/PacMan.hpp"
 #include "../includes/textures.hpp"
-#include "../includes/global_values.hpp"
-
 #include <iostream>
 
-PacMan::PacMan()
+PacMan::PacMan() : map(nullptr)
 {
     speed = 5.f;
     direction = NONE;
@@ -44,24 +42,48 @@ void PacMan::setRotation(Direction dir)
     direction = dir;
 }
 
+void PacMan::setMap(char (*newMap)[MAP_HEIGHT])
+{
+    map = newMap;
+    std::cout << "Ho la mappa!" << std::endl;
+}
+
+bool PacMan::isWall(int x, int y)
+{
+    if (!map)
+        return false;
+
+    return map[x][y] == LINE_H || map[x][y] == LINE_V || map[x][y] == CORNER_0 || map[x][y] == CORNER_90 || map[x][y] == CORNER_180 || map[x][y] == CORNER_270;
+}
+
 void PacMan::move(float elapsed)
 {
+    sf::Vector2f new_fPosition = fPosition;
+
     switch (direction)
     {
     case UP:
-        fPosition.x -= speed * elapsed;
+        new_fPosition.x -= speed * elapsed;
         break;
     case DOWN:
-        fPosition.x += speed * elapsed;
+        new_fPosition.x += speed * elapsed;
         break;
     case LEFT:
-        fPosition.y -= speed * elapsed;
+        new_fPosition.y -= speed * elapsed;
         break;
     case RIGHT:
-        fPosition.y += speed * elapsed;
+        new_fPosition.y += speed * elapsed;
         break;
     default:
         break;
+    }
+
+    sf::Vector2i currentPosition = position;
+    sf::Vector2i newPosition = currentPosition + static_cast<sf::Vector2i>(new_fPosition);
+
+    if (!isWall(newPosition.x, newPosition.y))
+    {
+        fPosition = new_fPosition;
     }
 
     if (std::abs(fPosition.x) >= 1.0f)
@@ -76,5 +98,16 @@ void PacMan::move(float elapsed)
         int move_y = static_cast<int>(fPosition.y);
         position.y += move_y;
         fPosition.y -= move_y;
+    }
+
+    eat(position.x,position.y);
+}
+
+void PacMan::eat(int x, int y)
+{
+    if(map[x][y] == PACDOT) {
+        map[x][y] = EMPTY_BLOCK;
+    } else if(map[x][y] == POWERPELLET) {
+        map[x][y] = EMPTY_BLOCK;
     }
 }
