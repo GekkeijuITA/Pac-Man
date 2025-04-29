@@ -25,6 +25,7 @@ struct State
     bool getMap(std::string mapPath);
     void update(float elapsed);
     void bounds();
+    void collisions(float elapsed);
     void doGraphics();
 };
 
@@ -48,10 +49,8 @@ State::State(unsigned w, unsigned h, std::string title) : pacman()
     }
 
     window = sf::RenderWindow(sf::VideoMode({windowWidth, windowHeight}), title);
-    window.setPosition({
-        static_cast<int>((w - windowWidth) / 2), 
-        static_cast<int>((h - windowHeight) / 2)
-    });
+    window.setPosition({static_cast<int>((w - windowWidth) / 2),
+                        static_cast<int>((h - windowHeight) / 2)});
     window.setFramerateLimit(60);
 
     sf::View view;
@@ -113,8 +112,7 @@ State::State(unsigned w, unsigned h, std::string title) : pacman()
 
 void State::update(float elapsed)
 {
-    pacman.move(elapsed);
-    bounds();
+    collisions(elapsed);
 }
 
 void State::bounds()
@@ -136,6 +134,37 @@ void State::bounds()
     {
         pacman.position.y = 0;
     }
+}
+
+void State::collisions(float elapsed)
+{
+    int next_x = pacman.position.x;
+    int next_y = pacman.position.y;
+
+    switch (pacman.direction)
+    {
+    case PacMan::UP:
+        next_x--;
+        break;
+    case PacMan::DOWN:
+        next_x++;
+        break;
+    case PacMan::LEFT:
+        next_y--;
+        break;
+    case PacMan::RIGHT:
+        next_y++;
+        break;
+    default:
+        break;
+    }
+
+    if (!pacman.isWall(next_x, next_y))
+    {
+        pacman.move(elapsed);
+    }
+
+    bounds();
 }
 
 bool State::getMap(std::string mapPath)
@@ -183,6 +212,7 @@ void State::doGraphics()
         for (int c = 0; c < MAP_WIDTH; c++)
         {
             float x = c * TILE_SIZE;
+
             switch (map[r][c])
             {
             case PACDOT:
@@ -248,6 +278,7 @@ void State::doGraphics()
                 powerpellet.setPosition({static_cast<float>(x + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale))), static_cast<float>(y + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale)))});
                 powerpellet.setFillColor(sf::Color(255, 185, 176));
                 window.draw(powerpellet);
+
                 break;
             }
             case GHOST_DOOR:
@@ -293,23 +324,27 @@ void handle(const T &, State &gs)
 
 void handle(const sf::Event::KeyPressed &key, State &state)
 {
+    PacMan::Direction newDirection = state.pacman.direction;
+
     switch (key.scancode)
     {
     case sf::Keyboard::Scancode::Up:
-        state.pacman.setRotation(PacMan::UP);
+        newDirection = PacMan::UP;
         break;
     case sf::Keyboard::Scancode::Down:
-        state.pacman.setRotation(PacMan::DOWN);
+        newDirection = PacMan::DOWN;
         break;
     case sf::Keyboard::Scancode::Left:
-        state.pacman.setRotation(PacMan::LEFT);
+        newDirection = PacMan::LEFT;
         break;
     case sf::Keyboard::Scancode::Right:
-        state.pacman.setRotation(PacMan::RIGHT);
+        newDirection = PacMan::RIGHT;
         break;
     default:
         return;
     }
+
+    state.pacman.setRotation(newDirection);
 }
 
 int main()

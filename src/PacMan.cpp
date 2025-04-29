@@ -6,6 +6,7 @@ PacMan::PacMan() : map(nullptr)
 {
     speed = 5.f;
     direction = NONE;
+
     if (!tex.loadFromFile(PACMAN))
     {
         std::cerr << "Errore nel caricamento della texture di PacMan" << std::endl;
@@ -17,16 +18,16 @@ PacMan::PacMan() : map(nullptr)
 void PacMan::draw(sf::RenderWindow &window)
 {
     sf::Sprite sprite(tex);
-    sprite.setScale({(float)TILE_SIZE / tex.getSize().x,
-                     (float)TILE_SIZE / tex.getSize().y});
+    sprite.setScale({(float)TILE_SIZE / (tex.getSize().x),
+                     (float)TILE_SIZE / (tex.getSize().y)});
 
     sprite.setOrigin({tex.getSize().x / 2.f,
                       tex.getSize().y / 2.f});
 
-    float y = static_cast<float>((fPosition.x + position.x + 3) * TILE_SIZE + (TILE_SIZE / 2));
-    float x = static_cast<float>((fPosition.y + position.y) * TILE_SIZE + (TILE_SIZE / 2));
+    float y = static_cast<float>((fPosition.x + position.x + 3 + 0.5f) * TILE_SIZE);
+    float x = static_cast<float>((fPosition.y + position.y + 0.5f) * TILE_SIZE);
 
-    sprite.setPosition({x,y});
+    sprite.setPosition({x, y});
 
     sprite.setRotation(sf::degrees(90.f * direction));
     window.draw(sprite);
@@ -77,6 +78,29 @@ void PacMan::move(float elapsed)
         break;
     default:
         break;
+    }
+
+    const float centeringSpeed = 10.f;
+
+    if (direction == UP || direction == DOWN)
+    {
+        if (std::abs(new_fPosition.y) > 0.001f)
+        {
+            if (new_fPosition.y > 0)
+                new_fPosition.y = std::max(0.f, new_fPosition.y - centeringSpeed * elapsed);
+            else
+                new_fPosition.y = std::min(0.f, new_fPosition.y + centeringSpeed * elapsed);
+        }
+    }
+    else if (direction == LEFT || direction == RIGHT)
+    {
+        if (std::abs(new_fPosition.x) > 0.001f)
+        {
+            if (new_fPosition.x > 0)
+                new_fPosition.x = std::max(0.f, new_fPosition.x - centeringSpeed * elapsed);
+            else
+                new_fPosition.x = std::min(0.f, new_fPosition.x + centeringSpeed * elapsed);
+        }
     }
 
     sf::Vector2i newPosition = position + static_cast<sf::Vector2i>(new_fPosition);
