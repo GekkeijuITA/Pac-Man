@@ -6,6 +6,7 @@ PacMan::PacMan() : map(nullptr)
 {
     speed = 5.f;
     direction = NONE;
+    nextDirection = NONE;
 
     if (!tex.loadFromFile(PACMAN))
     {
@@ -42,7 +43,7 @@ void PacMan::setPosition(int x, int y)
 
 void PacMan::setRotation(Direction dir)
 {
-    direction = dir;
+    nextDirection = dir;
 }
 
 void PacMan::setMap(char (*newMap)[MAP_HEIGHT])
@@ -56,6 +57,42 @@ bool PacMan::isWall(int x, int y)
         return false;
 
     return map[x][y] == LINE_H || map[x][y] == LINE_V || map[x][y] == CORNER_0 || map[x][y] == CORNER_90 || map[x][y] == CORNER_180 || map[x][y] == CORNER_270;
+}
+
+void PacMan::updateDirection()
+{
+    if (nextDirection != NONE && nextDirection != direction)
+    {
+        sf::Vector2i dirVec(0, 0);
+        switch (nextDirection)
+        {
+        case UP:
+            dirVec.x = -1;
+            break;
+        case DOWN:
+            dirVec.x = 1;
+            break;
+        case LEFT:
+            dirVec.y = -1;
+            break;
+        case RIGHT:
+            dirVec.y = 1;
+            break;
+        default:
+            break;
+        }
+
+        float alignmentThreshold = 0.2f;
+
+        if (!isWall(position.x + dirVec.x, position.y + dirVec.y) &&
+            std::abs(fPosition.x) < alignmentThreshold &&
+            std::abs(fPosition.y) < alignmentThreshold)
+        {
+            direction = nextDirection;
+            fPosition = {0.f, 0.f};
+            nextDirection = NONE;
+        }
+    }
 }
 
 void PacMan::move(float elapsed)
@@ -78,29 +115,6 @@ void PacMan::move(float elapsed)
         break;
     default:
         break;
-    }
-
-    const float centeringSpeed = 10.f;
-
-    if (direction == UP || direction == DOWN)
-    {
-        if (std::abs(new_fPosition.y) > 0.001f)
-        {
-            if (new_fPosition.y > 0)
-                new_fPosition.y = std::max(0.f, new_fPosition.y - centeringSpeed * elapsed);
-            else
-                new_fPosition.y = std::min(0.f, new_fPosition.y + centeringSpeed * elapsed);
-        }
-    }
-    else if (direction == LEFT || direction == RIGHT)
-    {
-        if (std::abs(new_fPosition.x) > 0.001f)
-        {
-            if (new_fPosition.x > 0)
-                new_fPosition.x = std::max(0.f, new_fPosition.x - centeringSpeed * elapsed);
-            else
-                new_fPosition.x = std::min(0.f, new_fPosition.x + centeringSpeed * elapsed);
-        }
     }
 
     sf::Vector2i newPosition = position + static_cast<sf::Vector2i>(new_fPosition);

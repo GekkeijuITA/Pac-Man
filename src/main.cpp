@@ -117,22 +117,22 @@ void State::update(float elapsed)
 
 void State::bounds()
 {
-    if (pacman.position.x < 0)
+    if (pacman.position.x < -1)
     {
         pacman.position.x = MAP_HEIGHT - 1;
     }
     else if (pacman.position.x > MAP_HEIGHT - 1)
     {
-        pacman.position.x = 0;
+        pacman.position.x = -1;
     }
 
-    if (pacman.position.y < 0)
+    if (pacman.position.y < -1)
     {
         pacman.position.y = MAP_WIDTH - 1;
     }
     else if (pacman.position.y > MAP_WIDTH - 1)
     {
-        pacman.position.y = 0;
+        pacman.position.y = -1;
     }
 }
 
@@ -140,6 +140,8 @@ void State::collisions(float elapsed)
 {
     int next_x = pacman.position.x;
     int next_y = pacman.position.y;
+
+    pacman.updateDirection();
 
     switch (pacman.direction)
     {

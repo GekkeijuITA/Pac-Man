@@ -19,6 +19,7 @@ struct PacMan
     };
 
     Direction direction;
+    Direction nextDirection;
 
     PacMan();
     void draw(sf::RenderWindow &window);
@@ -28,4 +29,5 @@ struct PacMan
     void setMap(char (*newMap)[MAP_HEIGHT]);
     bool isWall(int x, int y);
     void eat(int x, int y);
+    void updateDirection();
 };
