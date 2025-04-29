@@ -34,6 +34,11 @@ State::State(unsigned w, unsigned h, std::string title) : pacman()
     window.setPosition({0, 0});
     window.setFramerateLimit(60);
 
+    sf::View view;
+    view.setSize({MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE});
+    view.setCenter({view.getSize().x / 2.f, view.getSize().y / 2.f});
+    window.setView(view);
+
     sf::Texture temp;
 
     if (!temp.loadFromFile(STRAIGHT_LINE_H))
@@ -288,7 +293,32 @@ void handle(const sf::Event::KeyPressed &key, State &state)
 
 int main()
 {
-    State gs(MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE, "Pac-Man");
+
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    unsigned int w = desktop.size.x;
+    unsigned int h = desktop.size.y;
+
+    float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
+    float screenRatio = (float)w / h;
+
+    float scaleFactor = 0.5f; // 90% dello schermo
+    unsigned int windowWidth, windowHeight;
+
+    if (mapRatio > screenRatio)
+    {
+        // La mappa è più larga in proporzione
+        windowWidth = w * scaleFactor;
+        windowHeight = windowWidth / mapRatio;
+    }
+    else
+    {
+        // La mappa è più alta in proporzione
+        windowHeight = h * scaleFactor;
+        windowWidth = windowHeight * mapRatio;
+    }
+
+    //State gs(MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE, "Pac-Man");
+    State gs(windowWidth, windowHeight,"Pac-Man");
     sf::Clock clock;
 
     if (!gs.getMap("../resources/default_map.txt"))
