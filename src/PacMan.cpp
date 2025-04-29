@@ -23,8 +23,10 @@ void PacMan::draw(sf::RenderWindow &window)
     sprite.setOrigin({tex.getSize().x / 2.f,
                       tex.getSize().y / 2.f});
 
-    sprite.setPosition({static_cast<float>((position.y + fPosition.y) * TILE_SIZE + (TILE_SIZE / 2)),
-                        static_cast<float>((position.x + fPosition.x + 3) * TILE_SIZE + (TILE_SIZE / 2))});
+    float y = static_cast<float>((fPosition.x + position.x + 3) * TILE_SIZE + (TILE_SIZE / 2));
+    float x = static_cast<float>((fPosition.y + position.y) * TILE_SIZE + (TILE_SIZE / 2));
+
+    sprite.setPosition({x,y});
 
     sprite.setRotation(sf::degrees(90.f * direction));
     window.draw(sprite);
@@ -57,7 +59,7 @@ bool PacMan::isWall(int x, int y)
 
 void PacMan::move(float elapsed)
 {
-    sf::Vector2f new_fPosition(0.f, 0.f);
+    sf::Vector2f new_fPosition = fPosition;
 
     switch (direction)
     {
@@ -77,41 +79,11 @@ void PacMan::move(float elapsed)
         break;
     }
 
-    // Calcola la nuova posizione frazionaria potenziale
-    sf::Vector2f predicted_fPosition = fPosition + new_fPosition;
+    sf::Vector2i newPosition = position + static_cast<sf::Vector2i>(new_fPosition);
 
-    // Calcola la nuova posizione intera potenziale
-    sf::Vector2i predicted_position = position;
-    if (std::abs(predicted_fPosition.x) >= 1.0f)
+    if (!isWall(newPosition.x, newPosition.y))
     {
-        predicted_position.x += static_cast<int>(predicted_fPosition.x);
-        predicted_fPosition.x -= static_cast<int>(predicted_fPosition.x);
-    }
-    if (std::abs(predicted_fPosition.y) >= 1.0f)
-    {
-        predicted_position.y += static_cast<int>(predicted_fPosition.y);
-        predicted_fPosition.y -= static_cast<int>(predicted_fPosition.y);
-    }
-
-    sf::Vector2f hitboxOffset(0.15f, 0.15f);
-    sf::Vector2f checkPoints[4];
-    checkPoints[0] = {predicted_position.y + predicted_fPosition.y + hitboxOffset.y, predicted_position.x + predicted_fPosition.x + hitboxOffset.x};               // Top-left
-    checkPoints[1] = {predicted_position.y + predicted_fPosition.y + hitboxOffset.y, predicted_position.x + predicted_fPosition.x + 1.0f - hitboxOffset.x};        // Top-right
-    checkPoints[2] = {predicted_position.y + predicted_fPosition.y + 1.0f - hitboxOffset.y, predicted_position.x + predicted_fPosition.x + hitboxOffset.x};        // Bottom-left
-    checkPoints[3] = {predicted_position.y + predicted_fPosition.y + 1.0f - hitboxOffset.y, predicted_position.x + predicted_fPosition.x + 1.0f - hitboxOffset.x}; // Bottom-right
-
-    bool collision = false;
-    for (const auto &point : checkPoints)
-    {
-        if (isWall(point.y, point.x))
-        {
-            collision = true;
-            break;
-        }
-    }
-    if (!collision)
-    {
-        fPosition += new_fPosition;
+        fPosition = new_fPosition;
     }
 
     if (std::abs(fPosition.x) >= 1.0f)
@@ -127,17 +99,8 @@ void PacMan::move(float elapsed)
         position.y += move_y;
         fPosition.y -= move_y;
     }
-    
-    sf::Vector2f currentCheckPoints[4];
-    currentCheckPoints[0] = {position.y + fPosition.y + hitboxOffset.y, position.x + fPosition.x + hitboxOffset.x};
-    currentCheckPoints[1] = {position.y + fPosition.y + hitboxOffset.y, position.x + fPosition.x + 1.0f - hitboxOffset.x};
-    currentCheckPoints[2] = {position.y + fPosition.y + 1.0f - hitboxOffset.y, position.x + fPosition.x + hitboxOffset.x};
-    currentCheckPoints[3] = {position.y + fPosition.y + 1.0f - hitboxOffset.y, position.x + fPosition.x + 1.0f - hitboxOffset.x};
 
-    for (const auto& point : currentCheckPoints)
-    {
-        eat(static_cast<int>(point.y), static_cast<int>(point.x));
-    }
+    eat(position.x, position.y);
 }
 
 void PacMan::eat(int x, int y)
