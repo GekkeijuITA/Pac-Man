@@ -30,8 +30,28 @@ struct State
 
 State::State(unsigned w, unsigned h, std::string title) : pacman()
 {
-    window = sf::RenderWindow(sf::VideoMode({w, h}), title);
-    window.setPosition({0, 0});
+    float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
+    float screenRatio = (float)w / h;
+
+    float scaleFactor = 0.7f;
+    unsigned int windowWidth, windowHeight;
+
+    if (mapRatio > screenRatio)
+    {
+        windowWidth = w * scaleFactor;
+        windowHeight = windowWidth / mapRatio;
+    }
+    else
+    {
+        windowHeight = h * scaleFactor;
+        windowWidth = windowHeight * mapRatio;
+    }
+
+    window = sf::RenderWindow(sf::VideoMode({windowWidth, windowHeight}), title);
+    window.setPosition({
+        static_cast<int>((w - windowWidth) / 2), 
+        static_cast<int>((h - windowHeight) / 2)
+    });
     window.setFramerateLimit(60);
 
     sf::View view;
@@ -223,8 +243,9 @@ void State::doGraphics()
             }
             case POWERPELLET:
             {
-                sf::CircleShape powerpellet(TILE_SIZE / 2);
-                powerpellet.setPosition({x + (TILE_SIZE / 2) - 16, y + (TILE_SIZE / 2) - 16});
+                int scale = 3;
+                sf::CircleShape powerpellet(TILE_SIZE / scale);
+                powerpellet.setPosition({static_cast<float>(x + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale))), static_cast<float>(y + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale)))});
                 powerpellet.setFillColor(sf::Color(255, 185, 176));
                 window.draw(powerpellet);
                 break;
@@ -298,27 +319,7 @@ int main()
     unsigned int w = desktop.size.x;
     unsigned int h = desktop.size.y;
 
-    float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
-    float screenRatio = (float)w / h;
-
-    float scaleFactor = 0.5f; // 90% dello schermo
-    unsigned int windowWidth, windowHeight;
-
-    if (mapRatio > screenRatio)
-    {
-        // La mappa è più larga in proporzione
-        windowWidth = w * scaleFactor;
-        windowHeight = windowWidth / mapRatio;
-    }
-    else
-    {
-        // La mappa è più alta in proporzione
-        windowHeight = h * scaleFactor;
-        windowWidth = windowHeight * mapRatio;
-    }
-
-    //State gs(MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE, "Pac-Man");
-    State gs(windowWidth, windowHeight,"Pac-Man");
+    State gs(w, h, "Pac-Man");
     sf::Clock clock;
 
     if (!gs.getMap("../resources/default_map.txt"))
