@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "../includes/textures.hpp"
 #include "../includes/global_values.hpp"
-#include "../includes/PacMan.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -18,17 +17,14 @@ struct State
 {
     sf::RenderWindow window;
     std::map<int, TileData> mapTextures;
-    PacMan pacman;
     char map[MAP_WIDTH][MAP_HEIGHT];
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
-    void update(float elapsed);
-    void bounds();
     void doGraphics();
 };
 
-State::State(unsigned w, unsigned h, std::string title) : pacman()
+State::State(unsigned w, unsigned h, std::string title)
 {
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
@@ -38,11 +34,13 @@ State::State(unsigned w, unsigned h, std::string title) : pacman()
 
     if (mapRatio > screenRatio)
     {
+        // mappa più larga dello schermo
         windowWidth = w * scaleFactor;
         windowHeight = windowWidth / mapRatio;
     }
     else
     {
+        // mappa più alta dello schermo
         windowHeight = h * scaleFactor;
         windowWidth = windowHeight * mapRatio;
     }
@@ -111,33 +109,6 @@ State::State(unsigned w, unsigned h, std::string title) : pacman()
     mapTextures[5].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 }
 
-void State::update(float elapsed)
-{
-    pacman.move(elapsed);
-    bounds();
-}
-
-void State::bounds()
-{
-    if (pacman.position.x < 0)
-    {
-        pacman.position.x = MAP_HEIGHT - 1;
-    }
-    else if (pacman.position.x > MAP_HEIGHT - 1)
-    {
-        pacman.position.x = 0;
-    }
-
-    if (pacman.position.y < 0)
-    {
-        pacman.position.y = MAP_WIDTH - 1;
-    }
-    else if (pacman.position.y > MAP_WIDTH - 1)
-    {
-        pacman.position.y = 0;
-    }
-}
-
 bool State::getMap(std::string mapPath)
 {
     std::fstream mapFile;
@@ -155,21 +126,11 @@ bool State::getMap(std::string mapPath)
     {
         for (int i = 0; i < mapString.size(); i++)
         {
-            if (mapString[i] == 'P')
-            {
-                pacman.setPosition(r, i);
-                map[r][i] = EMPTY_BLOCK;
-            }
-            else
-            {
-                map[r][i] = mapString[i];
-            }
+            map[r][i] = mapString[i];
         }
         r++;
     }
     mapFile.close();
-
-    pacman.setMap(map);
 
     return true;
 }
@@ -271,8 +232,6 @@ void State::doGraphics()
             }
         }
     }
-
-    pacman.draw(window);
     window.display();
 }
 
@@ -289,27 +248,6 @@ template <typename T>
 void handle(const T &, State &gs)
 {
     // eventi non gestiti
-}
-
-void handle(const sf::Event::KeyPressed &key, State &state)
-{
-    switch (key.scancode)
-    {
-    case sf::Keyboard::Scancode::Up:
-        state.pacman.setRotation(PacMan::UP);
-        break;
-    case sf::Keyboard::Scancode::Down:
-        state.pacman.setRotation(PacMan::DOWN);
-        break;
-    case sf::Keyboard::Scancode::Left:
-        state.pacman.setRotation(PacMan::LEFT);
-        break;
-    case sf::Keyboard::Scancode::Right:
-        state.pacman.setRotation(PacMan::RIGHT);
-        break;
-    default:
-        return;
-    }
 }
 
 int main()
@@ -332,7 +270,6 @@ int main()
         gs.window.handleEvents([&](const auto &event)
                                { handle(event, gs); });
 
-        gs.update(clock.restart().asSeconds());
         gs.doGraphics();
     }
 
