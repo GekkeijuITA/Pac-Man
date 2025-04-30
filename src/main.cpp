@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "../includes/textures.hpp"
 #include "../includes/global_values.hpp"
-#include "../includes/PacMan.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -18,18 +17,14 @@ struct State
 {
     sf::RenderWindow window;
     std::map<int, TileData> mapTextures;
-    PacMan pacman;
     char map[MAP_WIDTH][MAP_HEIGHT];
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
-    void update(float elapsed);
-    void bounds();
-    void collisions(float elapsed);
     void doGraphics();
 };
 
-State::State(unsigned w, unsigned h, std::string title) : pacman()
+State::State(unsigned w, unsigned h, std::string title)
 {
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
@@ -69,104 +64,13 @@ State::State(unsigned w, unsigned h, std::string title) : pacman()
     sf::Vector2u texSize = mapTextures[0].texture.getSize();
     mapTextures[0].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 
-    if (!temp.loadFromFile(STRAIGHT_LINE_V))
+    if (!temp.loadFromFile(ANGLE_0))
     {
         std::cerr << "Errore nel caricamento della texture" << std::endl;
         exit(1);
     }
     mapTextures[1].texture = temp;
     mapTextures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_0))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[2].texture = temp;
-    mapTextures[2].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_90))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[3].texture = temp;
-    mapTextures[3].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_180))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[4].texture = temp;
-    mapTextures[4].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_270))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[5].texture = temp;
-    mapTextures[5].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-}
-
-void State::update(float elapsed)
-{
-    collisions(elapsed);
-}
-
-void State::bounds()
-{
-    if (pacman.position.x < -1)
-    {
-        pacman.position.x = MAP_HEIGHT - 1;
-    }
-    else if (pacman.position.x > MAP_HEIGHT - 1)
-    {
-        pacman.position.x = -1;
-    }
-
-    if (pacman.position.y < -1)
-    {
-        pacman.position.y = MAP_WIDTH - 1;
-    }
-    else if (pacman.position.y > MAP_WIDTH - 1)
-    {
-        pacman.position.y = -1;
-    }
-}
-
-void State::collisions(float elapsed)
-{
-    int next_x = pacman.position.x;
-    int next_y = pacman.position.y;
-
-    pacman.updateDirection();
-
-    switch (pacman.direction)
-    {
-    case PacMan::UP:
-        next_x--;
-        break;
-    case PacMan::DOWN:
-        next_x++;
-        break;
-    case PacMan::LEFT:
-        next_y--;
-        break;
-    case PacMan::RIGHT:
-        next_y++;
-        break;
-    default:
-        break;
-    }
-
-    if (!pacman.isWall(next_x, next_y))
-    {
-        pacman.move(elapsed);
-    }
-
-    bounds();
 }
 
 bool State::getMap(std::string mapPath)
@@ -186,21 +90,11 @@ bool State::getMap(std::string mapPath)
     {
         for (int i = 0; i < mapString.size(); i++)
         {
-            if (mapString[i] == 'P')
-            {
-                pacman.setPosition(r, i);
-                map[r][i] = EMPTY_BLOCK;
-            }
-            else
-            {
-                map[r][i] = mapString[i];
-            }
+            map[r][i] = mapString[i];
         }
         r++;
     }
     mapFile.close();
-
-    pacman.setMap(map);
 
     return true;
 }
@@ -214,7 +108,6 @@ void State::doGraphics()
         for (int c = 0; c < MAP_WIDTH; c++)
         {
             float x = c * TILE_SIZE;
-
             switch (map[r][c])
             {
             case PACDOT:
@@ -235,41 +128,56 @@ void State::doGraphics()
             }
             case LINE_H:
             {
+                sf::Sprite wall(mapTextures[0].texture);
+                wall.setScale(mapTextures[0].scale);
+                wall.setOrigin({mapTextures[0].texture.getSize().x / 2.f,
+                                mapTextures[0].texture.getSize().y / 2.f});
+                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setRotation(sf::degrees(-90));
+                window.draw(wall);
+                break;
+            }
+            case CORNER_0:
+            {
                 sf::Sprite wall(mapTextures[1].texture);
                 wall.setScale(mapTextures[1].scale);
                 wall.setPosition({x, y});
                 window.draw(wall);
                 break;
             }
-            case CORNER_0:
-            {
-                sf::Sprite wall(mapTextures[2].texture);
-                wall.setScale(mapTextures[2].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
             case CORNER_90:
             {
-                sf::Sprite wall(mapTextures[3].texture);
-                wall.setScale(mapTextures[3].scale);
-                wall.setPosition({x, y});
+                sf::Sprite wall(mapTextures[1].texture);
+                wall.setScale(mapTextures[1].scale);
+                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
+                                mapTextures[1].texture.getSize().y / 2.f});
+
+                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setRotation(sf::degrees(-90));
                 window.draw(wall);
                 break;
             }
             case CORNER_180:
             {
-                sf::Sprite wall(mapTextures[4].texture);
-                wall.setScale(mapTextures[4].scale);
-                wall.setPosition({x, y});
+                sf::Sprite wall(mapTextures[1].texture);
+                wall.setScale(mapTextures[1].scale);
+                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
+                                mapTextures[1].texture.getSize().y / 2.f});
+
+                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setRotation(sf::degrees(-180));
                 window.draw(wall);
                 break;
             }
             case CORNER_270:
             {
-                sf::Sprite wall(mapTextures[5].texture);
-                wall.setScale(mapTextures[5].scale);
-                wall.setPosition({x, y});
+                sf::Sprite wall(mapTextures[1].texture);
+                wall.setScale(mapTextures[1].scale);
+                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
+                                mapTextures[1].texture.getSize().y / 2.f});
+
+                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setRotation(sf::degrees(-270));
                 window.draw(wall);
                 break;
             }
@@ -280,7 +188,6 @@ void State::doGraphics()
                 powerpellet.setPosition({static_cast<float>(x + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale))), static_cast<float>(y + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale)))});
                 powerpellet.setFillColor(sf::Color(255, 185, 176));
                 window.draw(powerpellet);
-
                 break;
             }
             case GHOST_DOOR:
@@ -304,8 +211,6 @@ void State::doGraphics()
             }
         }
     }
-
-    pacman.draw(window);
     window.display();
 }
 
@@ -324,31 +229,6 @@ void handle(const T &, State &gs)
     // eventi non gestiti
 }
 
-void handle(const sf::Event::KeyPressed &key, State &state)
-{
-    PacMan::Direction newDirection = state.pacman.direction;
-
-    switch (key.scancode)
-    {
-    case sf::Keyboard::Scancode::Up:
-        newDirection = PacMan::UP;
-        break;
-    case sf::Keyboard::Scancode::Down:
-        newDirection = PacMan::DOWN;
-        break;
-    case sf::Keyboard::Scancode::Left:
-        newDirection = PacMan::LEFT;
-        break;
-    case sf::Keyboard::Scancode::Right:
-        newDirection = PacMan::RIGHT;
-        break;
-    default:
-        return;
-    }
-
-    state.pacman.setRotation(newDirection);
-}
-
 int main()
 {
 
@@ -357,7 +237,6 @@ int main()
     unsigned int h = desktop.size.y;
 
     State gs(w, h, "Pac-Man");
-    sf::Clock clock;
 
     if (!gs.getMap("../resources/default_map.txt"))
     {
@@ -369,7 +248,6 @@ int main()
         gs.window.handleEvents([&](const auto &event)
                                { handle(event, gs); });
 
-        gs.update(clock.restart().asSeconds());
         gs.doGraphics();
     }
 
