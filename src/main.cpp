@@ -44,10 +44,8 @@ State::State(unsigned w, unsigned h, std::string title)
     }
 
     window = sf::RenderWindow(sf::VideoMode({windowWidth, windowHeight}), title);
-    window.setPosition({
-        static_cast<int>((w - windowWidth) / 2), 
-        static_cast<int>((h - windowHeight) / 2)
-    });
+    window.setPosition({static_cast<int>((w - windowWidth) / 2),
+                        static_cast<int>((h - windowHeight) / 2)});
     window.setFramerateLimit(60);
 
     sf::View view;
@@ -66,45 +64,13 @@ State::State(unsigned w, unsigned h, std::string title)
     sf::Vector2u texSize = mapTextures[0].texture.getSize();
     mapTextures[0].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 
-    if (!temp.loadFromFile(STRAIGHT_LINE_V))
+    if (!temp.loadFromFile(ANGLE_0))
     {
         std::cerr << "Errore nel caricamento della texture" << std::endl;
         exit(1);
     }
     mapTextures[1].texture = temp;
     mapTextures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_0))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[2].texture = temp;
-    mapTextures[2].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_90))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[3].texture = temp;
-    mapTextures[3].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_180))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[4].texture = temp;
-    mapTextures[4].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_270))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[5].texture = temp;
-    mapTextures[5].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 }
 
 bool State::getMap(std::string mapPath)
@@ -162,41 +128,56 @@ void State::doGraphics()
             }
             case LINE_H:
             {
+                sf::Sprite wall(mapTextures[0].texture);
+                wall.setScale(mapTextures[0].scale);
+                wall.setOrigin({mapTextures[0].texture.getSize().x / 2.f,
+                                mapTextures[0].texture.getSize().y / 2.f});
+                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setRotation(sf::degrees(-90));
+                window.draw(wall);
+                break;
+            }
+            case CORNER_0:
+            {
                 sf::Sprite wall(mapTextures[1].texture);
                 wall.setScale(mapTextures[1].scale);
                 wall.setPosition({x, y});
                 window.draw(wall);
                 break;
             }
-            case CORNER_0:
-            {
-                sf::Sprite wall(mapTextures[2].texture);
-                wall.setScale(mapTextures[2].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
             case CORNER_90:
             {
-                sf::Sprite wall(mapTextures[3].texture);
-                wall.setScale(mapTextures[3].scale);
-                wall.setPosition({x, y});
+                sf::Sprite wall(mapTextures[1].texture);
+                wall.setScale(mapTextures[1].scale);
+                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
+                                mapTextures[1].texture.getSize().y / 2.f});
+
+                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setRotation(sf::degrees(-90));
                 window.draw(wall);
                 break;
             }
             case CORNER_180:
             {
-                sf::Sprite wall(mapTextures[4].texture);
-                wall.setScale(mapTextures[4].scale);
-                wall.setPosition({x, y});
+                sf::Sprite wall(mapTextures[1].texture);
+                wall.setScale(mapTextures[1].scale);
+                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
+                                mapTextures[1].texture.getSize().y / 2.f});
+
+                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setRotation(sf::degrees(-180));
                 window.draw(wall);
                 break;
             }
             case CORNER_270:
             {
-                sf::Sprite wall(mapTextures[5].texture);
-                wall.setScale(mapTextures[5].scale);
-                wall.setPosition({x, y});
+                sf::Sprite wall(mapTextures[1].texture);
+                wall.setScale(mapTextures[1].scale);
+                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
+                                mapTextures[1].texture.getSize().y / 2.f});
+
+                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setRotation(sf::degrees(-270));
                 window.draw(wall);
                 break;
             }
