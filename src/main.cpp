@@ -35,9 +35,10 @@ struct State
     void collisions(float elapsed);
     void doGraphics();
     void drawChar(int x, int y, sf::Vector2i charPos);
+    void drawScore(int x, int y, int score);
 };
 
-State::State(unsigned w, unsigned h, std::string title) : lives(2)
+State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(30)
 {
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
@@ -341,25 +342,29 @@ void State::doGraphics()
     drawChar(17, 0, CHAR_R);
     drawChar(18, 0, CHAR_E);
 
-    drawChar(5, 1, CHAR_0);
-    drawChar(6, 1, CHAR_0);
+    drawScore(6, 1, score);
+
+    if (score > highscore)
+    {
+        highscore = score;
+    }
+
+    drawScore(16, 1, highscore);
 
     pacman.draw(window);
 
     sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
     float thickness = 1.0f;                              // Spessore delle linee
 
-    // Linee verticali
     for (int x = 0; x <= MAP_WIDTH; x++)
     {
         sf::RectangleShape line(sf::Vector2f({thickness, (MAP_HEIGHT + 5) * TILE_SIZE}));
-        line.setPosition({(float)x * TILE_SIZE, 0}); // +3 per l'offset iniziale
+        line.setPosition({(float)x * TILE_SIZE, 0});
         line.setFillColor(gridColor);
         window.draw(line);
     }
 
-    // Linee orizzontali
-    for (int y = 0; y <= MAP_HEIGHT + 5; y++) // +5 per lo spazio in alto
+    for (int y = 0; y <= MAP_HEIGHT + 5; y++)
     {
         sf::RectangleShape line(sf::Vector2f({MAP_WIDTH * TILE_SIZE, thickness}));
         line.setPosition({0, (float)y * TILE_SIZE});
@@ -378,6 +383,19 @@ void State::drawChar(int x, int y, sf::Vector2i charPos)
     textSprite.setPosition({(float)x * TILE_SIZE, (float)y * TILE_SIZE});
     textSprite.setScale({(float)TILE_SIZE / TEXT_SIZE, (float)TILE_SIZE / TEXT_SIZE});
     window.draw(textSprite);
+}
+
+void State::drawScore(int x, int y, int score)
+{
+    std::string scoreString = std::to_string(score);
+    int scoreLength = scoreString.length();
+    int startX = x - scoreLength;
+
+    for (size_t i = 0; i < scoreString.length(); i++)
+    {
+        char c = scoreString[i];
+        drawChar(startX + i, y, CHAR_MAP.at(c));
+    }
 }
 
 ////////////
