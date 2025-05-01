@@ -29,6 +29,7 @@
 - L'high score viene visualizzato per tutta la partita e si aggiorna subito nel caso in cui si superi
 - Deduco che ci debbano essere più livelli (storicamente 256 però guardando questo video ([link](https://www.youtube.com/watch?v=AuoH0vz3Mqk)) è sempre lo stesso livello ripetuto con lo stesso layout)
 - Ogni fantasma ha un proprio comportamento
+- Il testo del punteggio "incrementa" verso sinistra
 
 ## Link utili
 - Video di gameplay 1: [link](https://www.youtube.com/watch?v=i_OjztdQ8iw)

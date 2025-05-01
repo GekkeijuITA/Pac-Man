@@ -2,6 +2,7 @@
 inline const int MAP_WIDTH = 28;
 inline const int MAP_HEIGHT = 31;
 inline const int TILE_SIZE = 32;
+inline const int TEXT_SIZE = 8;
 
 inline const char PACDOT = '0';
 inline const char LINE_V = '1';

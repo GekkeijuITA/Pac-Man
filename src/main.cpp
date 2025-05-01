@@ -2,6 +2,7 @@
 #include "../includes/textures.hpp"
 #include "../includes/global_values.hpp"
 #include "../includes/PacMan.hpp"
+#include "../includes/text_ui.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -24,6 +25,8 @@ struct State
     PacMan pacman;
     std::vector<std::vector<char>> map;
     int lives;
+    int score;
+    int highscore;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
@@ -31,6 +34,7 @@ struct State
     void bounds();
     void collisions(float elapsed);
     void doGraphics();
+    void drawChar(int x, int y, sf::Vector2i charPos);
 };
 
 State::State(unsigned w, unsigned h, std::string title) : lives(2)
@@ -91,6 +95,15 @@ State::State(unsigned w, unsigned h, std::string title) : lives(2)
     textures[0].texture = temp;
     texSize = textures[0].texture.getSize();
     textures[0].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
+
+    if (!temp.loadFromFile(TEXT))
+    {
+        std::cerr << "Errore nel caricamento della texture" << std::endl;
+        exit(1);
+    }
+    textures[1].texture = temp;
+    texSize = textures[1].texture.getSize();
+    textures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 }
 
 void State::update(float elapsed)
@@ -313,6 +326,24 @@ void State::doGraphics()
         window.draw(pacmanSprite);
     }
 
+    drawChar(3, 0, CHAR_1);
+    drawChar(4, 0, CHAR_U);
+    drawChar(5, 0, CHAR_P);
+
+    drawChar(9, 0, CHAR_H);
+    drawChar(10, 0, CHAR_I);
+    drawChar(11, 0, CHAR_G);
+    drawChar(12, 0, CHAR_H);
+
+    drawChar(14, 0, CHAR_S);
+    drawChar(15, 0, CHAR_C);
+    drawChar(16, 0, CHAR_O);
+    drawChar(17, 0, CHAR_R);
+    drawChar(18, 0, CHAR_E);
+
+    drawChar(5, 1, CHAR_0);
+    drawChar(6, 1, CHAR_0);
+
     pacman.draw(window);
 
     sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
@@ -337,6 +368,16 @@ void State::doGraphics()
     }
 
     window.display();
+}
+
+void State::drawChar(int x, int y, sf::Vector2i charPos)
+{
+    sf::IntRect textRect({charPos.x * TEXT_SIZE, charPos.y * TEXT_SIZE}, {TEXT_SIZE, TEXT_SIZE});
+    sf::Sprite textSprite(textures[1].texture);
+    textSprite.setTextureRect(textRect);
+    textSprite.setPosition({(float)x * TILE_SIZE, (float)y * TILE_SIZE});
+    textSprite.setScale({(float)TILE_SIZE / TEXT_SIZE, (float)TILE_SIZE / TEXT_SIZE});
+    window.draw(textSprite);
 }
 
 ////////////
