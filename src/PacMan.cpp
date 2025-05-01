@@ -13,17 +13,19 @@ PacMan::PacMan() : map(nullptr)
         std::cerr << "Errore nel caricamento della texture di PacMan" << std::endl;
         exit(1);
     }
-    sf::Vector2u texSize = tex.getSize();
+
+    texSize = tex.getSize();
+    scale = {static_cast<float>(TILE_SIZE) / texSize.x,
+             static_cast<float>(TILE_SIZE) / texSize.y};
+    origin = {texSize.x / 2.f,
+              texSize.y / 2.f};
 }
 
 void PacMan::draw(sf::RenderWindow &window)
 {
     sf::Sprite sprite(tex);
-    sprite.setScale({(float)TILE_SIZE / (tex.getSize().x),
-                     (float)TILE_SIZE / (tex.getSize().y)});
-
-    sprite.setOrigin({tex.getSize().x / 2.f,
-                      tex.getSize().y / 2.f});
+    sprite.setScale(scale * 1.8f);
+    sprite.setOrigin(origin);
 
     float y = static_cast<float>((fPosition.x + position.x + 3 + 0.5f) * TILE_SIZE);
     float x = static_cast<float>((fPosition.y + position.y + 0.5f) * TILE_SIZE);

@@ -7,6 +7,9 @@ struct PacMan
     float speed;
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
+    sf::Vector2u texSize;
+    sf::Vector2f scale;
+    sf::Vector2f origin;
     sf::Vector2i position;
     sf::Vector2f fPosition;
 
