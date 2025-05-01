@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <cmath>
+#include <vector>
 
 struct TileData
 {
@@ -20,7 +21,7 @@ struct State
     sf::RenderWindow window;
     std::map<int, TileData> mapTextures;
     PacMan pacman;
-    char map[MAP_WIDTH][MAP_HEIGHT];
+    std::vector<std::vector<char>> map;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
@@ -60,6 +61,7 @@ State::State(unsigned w, unsigned h, std::string title)
     window.setView(view);
 
     sf::Texture temp;
+    sf::Vector2u texSize;
 
     if (!temp.loadFromFile(STRAIGHT_LINE_H))
     {
@@ -67,7 +69,7 @@ State::State(unsigned w, unsigned h, std::string title)
         exit(1);
     }
     mapTextures[0].texture = temp;
-    sf::Vector2u texSize = mapTextures[0].texture.getSize();
+    texSize = mapTextures[0].texture.getSize();
     mapTextures[0].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 
     if (!temp.loadFromFile(ANGLE_0))
@@ -76,6 +78,7 @@ State::State(unsigned w, unsigned h, std::string title)
         exit(1);
     }
     mapTextures[1].texture = temp;
+    texSize = mapTextures[1].texture.getSize();
     mapTextures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 }
 
@@ -86,22 +89,22 @@ void State::update(float elapsed)
 
 void State::bounds()
 {
-    if (pacman.position.x < -1)
+    if (pacman.position.x < 0)
     {
-        pacman.position.x = MAP_HEIGHT - 1;
+        pacman.position.x = MAP_HEIGHT;
     }
-    else if (pacman.position.x > MAP_HEIGHT - 1)
+    else if (pacman.position.x > MAP_HEIGHT)
     {
-        pacman.position.x = -1;
+        pacman.position.x = 0;
     }
 
-    if (pacman.position.y < -1)
+    if (pacman.position.y < 0)
     {
-        pacman.position.y = MAP_WIDTH - 1;
+        pacman.position.y = MAP_WIDTH;
     }
-    else if (pacman.position.y > MAP_WIDTH - 1)
+    else if (pacman.position.y > MAP_WIDTH)
     {
-        pacman.position.y = -1;
+        pacman.position.y = 0;
     }
 }
 
@@ -149,27 +152,26 @@ bool State::getMap(std::string mapPath)
     }
 
     std::string mapString;
-    int r = 0;
+
+    map.clear();
 
     while (std::getline(mapFile, mapString))
     {
-        for (int i = 0; i < mapString.size(); i++)
+        std::vector<char> row(mapString.begin(), mapString.end());
+        map.push_back(row);
+
+        for (int i = 0; i < row.size(); i++)
         {
-            if (mapString[i] == 'P')
+            if (row[i] == 'P')
             {
-                pacman.setPosition(r, i);
-                map[r][i] = EMPTY_BLOCK;
-            }
-            else
-            {
-                map[r][i] = mapString[i];
+                pacman.setPosition(map.size() - 1, i);
+                map.back()[i] = EMPTY_BLOCK;
             }
         }
-        r++;
     }
     mapFile.close();
 
-    pacman.setMap(map);
+    pacman.setMap(&map);
 
     return true;
 }
@@ -177,6 +179,7 @@ bool State::getMap(std::string mapPath)
 void State::doGraphics()
 {
     window.clear();
+
     for (int r = 0; r < MAP_HEIGHT; r++)
     {
         float y = (r + 3) * TILE_SIZE; // Lasciamo le prime due righe per il punteggi
@@ -306,9 +309,9 @@ void handle(const T &, State &gs)
     // eventi non gestiti
 }
 
-void handle(const sf::Event::KeyPressed &key, State &state)
+void handle(const sf::Event::KeyPressed &key, State &gs)
 {
-    PacMan::Direction newDirection = state.pacman.direction;
+    PacMan::Direction newDirection = gs.pacman.direction;
 
     switch (key.scancode)
     {
@@ -328,7 +331,7 @@ void handle(const sf::Event::KeyPressed &key, State &state)
         return;
     }
 
-    state.pacman.setRotation(newDirection);
+    gs.pacman.setRotation(newDirection);
 }
 
 int main()

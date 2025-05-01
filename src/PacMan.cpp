@@ -46,7 +46,7 @@ void PacMan::setRotation(Direction dir)
     nextDirection = dir;
 }
 
-void PacMan::setMap(char (*newMap)[MAP_HEIGHT])
+void PacMan::setMap(std::vector<std::vector<char>> *newMap)
 {
     map = newMap;
 }
@@ -56,7 +56,7 @@ bool PacMan::isWall(int x, int y)
     if (!map)
         return false;
 
-    return map[x][y] == LINE_H || map[x][y] == LINE_V || map[x][y] == CORNER_0 || map[x][y] == CORNER_90 || map[x][y] == CORNER_180 || map[x][y] == CORNER_270 || map[x][y] == GHOST_DOOR;
+    return (*map)[x][y] == LINE_H || (*map)[x][y] == LINE_V || (*map)[x][y] == CORNER_0 || (*map)[x][y] == CORNER_90 || (*map)[x][y] == CORNER_180 || (*map)[x][y] == CORNER_270 || (*map)[x][y] == GHOST_DOOR;
 }
 
 void PacMan::updateDirection()
@@ -143,12 +143,12 @@ void PacMan::move(float elapsed)
 
 void PacMan::eat(int x, int y)
 {
-    if (map[x][y] == PACDOT)
+    if ((*map)[x][y] == PACDOT)
     {
-        map[x][y] = EMPTY_BLOCK;
+        (*map)[x][y] = EMPTY_BLOCK;
     }
-    else if (map[x][y] == POWERPELLET)
+    else if ((*map)[x][y] == POWERPELLET)
     {
-        map[x][y] = EMPTY_BLOCK;
+        (*map)[x][y] = EMPTY_BLOCK;
     }
 }

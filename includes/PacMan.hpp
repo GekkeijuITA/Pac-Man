@@ -1,10 +1,11 @@
 #include <SFML/Graphics.hpp>
 #include "global_values.hpp"
+#include <vector>
 
 struct PacMan
 {
     float speed;
-    char (*map)[MAP_HEIGHT];
+    std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
     sf::Vector2f fPosition;
@@ -26,7 +27,7 @@ struct PacMan
     void move(float elapsed);
     void setPosition(int x, int y);
     void setRotation(Direction dir);
-    void setMap(char (*newMap)[MAP_HEIGHT]);
+    void setMap(std::vector<std::vector<char>> *map);
     bool isWall(int x, int y);
     void eat(int x, int y);
     void updateDirection();
