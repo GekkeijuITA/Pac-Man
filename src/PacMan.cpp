@@ -148,9 +148,11 @@ void PacMan::eat(int x, int y)
     if ((*map)[x][y] == PACDOT)
     {
         (*map)[x][y] = EMPTY_BLOCK;
+        //score += 10;
     }
     else if ((*map)[x][y] == POWERPELLET)
     {
         (*map)[x][y] = EMPTY_BLOCK;
+        //score += 50;
     }
 }

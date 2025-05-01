@@ -1,4 +1,3 @@
-#include <SFML/Graphics.hpp>
 #include "../includes/textures.hpp"
 #include "../includes/global_values.hpp"
 #include "../includes/PacMan.hpp"
@@ -20,7 +19,9 @@ struct TextureData
 struct State
 {
     sf::RenderWindow window;
+    // Textures for the map
     std::map<int, TextureData> mapTextures;
+    // Textures for the game
     std::map<int, TextureData> textures;
     PacMan pacman;
     std::vector<std::vector<char>> map;
@@ -34,11 +35,12 @@ struct State
     void bounds();
     void collisions(float elapsed);
     void doGraphics();
+    void doUI();
     void drawChar(int x, int y, sf::Vector2i charPos);
     void drawScore(int x, int y, int score);
 };
 
-State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(30)
+State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman()
 {
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
@@ -203,8 +205,6 @@ bool State::getMap(std::string mapPath)
 
 void State::doGraphics()
 {
-    window.clear();
-
     for (int r = 0; r < MAP_HEIGHT; r++)
     {
         float y = (r + 3) * TILE_SIZE; // Lasciamo le prime due righe per il punteggi
@@ -315,6 +315,30 @@ void State::doGraphics()
         }
     }
 
+    pacman.draw(window);
+
+    sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
+    float thickness = 1.0f;                              // Spessore delle linee
+
+    for (int x = 0; x <= MAP_WIDTH; x++)
+    {
+        sf::RectangleShape line(sf::Vector2f({thickness, (MAP_HEIGHT + 5) * TILE_SIZE}));
+        line.setPosition({(float)x * TILE_SIZE, 0});
+        line.setFillColor(gridColor);
+        window.draw(line);
+    }
+
+    for (int y = 0; y <= MAP_HEIGHT + 5; y++)
+    {
+        sf::RectangleShape line(sf::Vector2f({MAP_WIDTH * TILE_SIZE, thickness}));
+        line.setPosition({0, (float)y * TILE_SIZE});
+        line.setFillColor(gridColor);
+        window.draw(line);
+    }
+}
+
+void State::doUI()
+{
     sf::Sprite pacmanSprite(textures[0].texture);
     pacmanSprite.setOrigin({textures[0].texture.getSize().x / 2.f, textures[0].texture.getSize().y / 2.f});
     pacmanSprite.setScale(textures[0].scale * 2.f);
@@ -350,29 +374,6 @@ void State::doGraphics()
     }
 
     drawScore(16, 1, highscore);
-
-    pacman.draw(window);
-
-    sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
-    float thickness = 1.0f;                              // Spessore delle linee
-
-    for (int x = 0; x <= MAP_WIDTH; x++)
-    {
-        sf::RectangleShape line(sf::Vector2f({thickness, (MAP_HEIGHT + 5) * TILE_SIZE}));
-        line.setPosition({(float)x * TILE_SIZE, 0});
-        line.setFillColor(gridColor);
-        window.draw(line);
-    }
-
-    for (int y = 0; y <= MAP_HEIGHT + 5; y++)
-    {
-        sf::RectangleShape line(sf::Vector2f({MAP_WIDTH * TILE_SIZE, thickness}));
-        line.setPosition({0, (float)y * TILE_SIZE});
-        line.setFillColor(gridColor);
-        window.draw(line);
-    }
-
-    window.display();
 }
 
 void State::drawChar(int x, int y, sf::Vector2i charPos)
@@ -459,7 +460,10 @@ int main()
                                { handle(event, gs); });
 
         gs.update(clock.restart().asSeconds());
+        gs.window.clear();
         gs.doGraphics();
+        gs.doUI();
+        gs.window.display();
     }
 
     return 0;
