@@ -10,7 +10,7 @@
 #include <cmath>
 #include <vector>
 
-struct TileData
+struct TextureData
 {
     sf::Texture texture;
     sf::Vector2f scale;
@@ -19,9 +19,11 @@ struct TileData
 struct State
 {
     sf::RenderWindow window;
-    std::map<int, TileData> mapTextures;
+    std::map<int, TextureData> mapTextures;
+    std::map<int, TextureData> textures;
     PacMan pacman;
     std::vector<std::vector<char>> map;
+    int lives;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
@@ -31,7 +33,7 @@ struct State
     void doGraphics();
 };
 
-State::State(unsigned w, unsigned h, std::string title)
+State::State(unsigned w, unsigned h, std::string title) : lives(2)
 {
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
@@ -80,6 +82,15 @@ State::State(unsigned w, unsigned h, std::string title)
     mapTextures[1].texture = temp;
     texSize = mapTextures[1].texture.getSize();
     mapTextures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
+
+    if (!temp.loadFromFile(PACMAN))
+    {
+        std::cerr << "Errore nel caricamento della texture" << std::endl;
+        exit(1);
+    }
+    textures[0].texture = temp;
+    texSize = textures[0].texture.getSize();
+    textures[0].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 }
 
 void State::update(float elapsed)
@@ -290,7 +301,41 @@ void State::doGraphics()
         }
     }
 
+    sf::Sprite pacmanSprite(textures[0].texture);
+    pacmanSprite.setOrigin({textures[0].texture.getSize().x / 2.f, textures[0].texture.getSize().y / 2.f});
+    pacmanSprite.setScale(textures[0].scale * 2.f);
+    for (int i = 0; i < lives; i++)
+    {
+        pacmanSprite.setPosition({
+            (((i + 1) * 2) + 1.f) * TILE_SIZE,
+            (MAP_HEIGHT + 4) * TILE_SIZE,
+        });
+        window.draw(pacmanSprite);
+    }
+
     pacman.draw(window);
+
+    sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
+    float thickness = 1.0f;                              // Spessore delle linee
+
+    // Linee verticali
+    for (int x = 0; x <= MAP_WIDTH; x++)
+    {
+        sf::RectangleShape line(sf::Vector2f({thickness, (MAP_HEIGHT + 5) * TILE_SIZE}));
+        line.setPosition({(float)x * TILE_SIZE, 0}); // +3 per l'offset iniziale
+        line.setFillColor(gridColor);
+        window.draw(line);
+    }
+
+    // Linee orizzontali
+    for (int y = 0; y <= MAP_HEIGHT + 5; y++) // +5 per lo spazio in alto
+    {
+        sf::RectangleShape line(sf::Vector2f({MAP_WIDTH * TILE_SIZE, thickness}));
+        line.setPosition({0, (float)y * TILE_SIZE});
+        line.setFillColor(gridColor);
+        window.draw(line);
+    }
+
     window.display();
 }
 
