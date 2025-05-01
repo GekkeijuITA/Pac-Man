@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <cmath>
 
 struct TileData
 {
