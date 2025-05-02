@@ -8,31 +8,28 @@ PacMan::PacMan() : map(nullptr)
     direction = NONE;
     nextDirection = NONE;
 
-    if (!tex.loadFromFile(PACMAN))
+    if (!tex.loadFromFile(ASSET))
     {
         std::cerr << "Errore nel caricamento della texture di PacMan" << std::endl;
         exit(1);
     }
-
-    texSize = tex.getSize();
-    scale = {static_cast<float>(TILE_SIZE) / texSize.x,
-             static_cast<float>(TILE_SIZE) / texSize.y};
-    origin = {texSize.x / 2.f,
-              texSize.y / 2.f};
 }
 
 void PacMan::draw(sf::RenderWindow &window)
 {
-    sf::Sprite sprite(tex);
-    sprite.setScale(scale * 1.8f);
-    sprite.setOrigin(origin);
+    sf::Vector2i pacmanPos = PACMAN_MAP.at(direction);
+    sf::IntRect texRect({pacmanPos.x * (TILE_SIZE / 2), pacmanPos.y * (TILE_SIZE / 2)},
+                        {TILE_SIZE / 2, TILE_SIZE / 2});
+    sf::Sprite sprite(tex, texRect);
+    float scaleFactor = 1.5f;
+    sprite.setScale({2.f * scaleFactor, 2.f * scaleFactor});
+    sprite.setOrigin({(TILE_SIZE / 2) / 2.f, (TILE_SIZE / 2) / 2.f});
 
     float y = static_cast<float>((fPosition.x + position.x + 3 + 0.5f) * TILE_SIZE);
     float x = static_cast<float>((fPosition.y + position.y + 0.5f) * TILE_SIZE);
 
     sprite.setPosition({x, y});
 
-    sprite.setRotation(sf::degrees(90.f * direction));
     window.draw(sprite);
 }
 
@@ -148,11 +145,11 @@ void PacMan::eat(int x, int y)
     if ((*map)[x][y] == PACDOT)
     {
         (*map)[x][y] = EMPTY_BLOCK;
-        //score += 10;
+        // score += 10;
     }
     else if ((*map)[x][y] == POWERPELLET)
     {
         (*map)[x][y] = EMPTY_BLOCK;
-        //score += 50;
+        // score += 50;
     }
 }

@@ -36,4 +36,5 @@ struct State
     void doUI();
     void drawChar(int x, int y, sf::Vector2i charPos);
     void drawScore(int x, int y, int score);
+    void drawLives();
 };

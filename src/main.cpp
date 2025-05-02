@@ -56,14 +56,14 @@ State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), hi
     texSize = mapTextures[1].texture.getSize();
     mapTextures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 
-    if (!temp.loadFromFile(PACMAN))
+    if (!temp.loadFromFile(ASSET))
     {
         std::cerr << "Errore nel caricamento della texture" << std::endl;
         exit(1);
     }
     textures[0].texture = temp;
     texSize = textures[0].texture.getSize();
-    textures[0].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
+    textures[0].scale = {2.f, 2.f};
 
     if (!temp.loadFromFile(TEXT))
     {
@@ -305,17 +305,7 @@ void State::doGraphics()
 
 void State::doUI()
 {
-    sf::Sprite pacmanSprite(textures[0].texture);
-    pacmanSprite.setOrigin({textures[0].texture.getSize().x / 2.f, textures[0].texture.getSize().y / 2.f});
-    pacmanSprite.setScale(textures[0].scale * 2.f);
-    for (int i = 0; i < lives; i++)
-    {
-        pacmanSprite.setPosition({
-            (((i + 1) * 2) + 1.f) * TILE_SIZE,
-            (MAP_HEIGHT + 4) * TILE_SIZE,
-        });
-        window.draw(pacmanSprite);
-    }
+    drawLives();
 
     drawChar(3, 0, CHAR_1);
     drawChar(4, 0, CHAR_U);
@@ -362,6 +352,25 @@ void State::drawScore(int x, int y, int score)
     {
         char c = scoreString[i];
         drawChar(startX + i, y, CHAR_MAP.at(c));
+    }
+}
+
+void State::drawLives()
+{
+    sf::Vector2i pacmanPos = pacman.PACMAN_MAP.at(PacMan::LEFT);
+    sf::IntRect texRect({pacmanPos.x * (TILE_SIZE / 2), pacmanPos.y * (TILE_SIZE / 2)},
+                        {TILE_SIZE / 2, TILE_SIZE / 2});
+
+    sf::Sprite pacmanSprite(textures[0].texture, texRect);
+    pacmanSprite.setOrigin({(TILE_SIZE / 2) / 2.f, (TILE_SIZE / 2) / 2.f});
+    pacmanSprite.setScale(textures[0].scale * 2.f);
+    for (int i = 0; i < lives; i++)
+    {
+        pacmanSprite.setPosition({
+            (((i + 1) * 2) + 1.f) * TILE_SIZE,
+            (MAP_HEIGHT + 4) * TILE_SIZE,
+        });
+        window.draw(pacmanSprite);
     }
 }
 
@@ -427,8 +436,8 @@ int main()
 
         gs.update(clock.restart().asSeconds());
         gs.window.clear();
-        gs.doGraphics();
         gs.doUI();
+        gs.doGraphics();
         gs.window.display();
     }
 
