@@ -73,6 +73,8 @@ State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), hi
     textures[1].texture = temp;
     texSize = textures[1].texture.getSize();
     textures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
+
+    maxFruits = 12 - lives;
 }
 
 void State::update(float elapsed)
@@ -357,7 +359,7 @@ void State::drawScore(int x, int y, int score)
 
 void State::drawLives()
 {
-    sf::Vector2i pacmanPos = pacman.PACMAN_MAP.at(PacMan::LEFT);
+    sf::Vector2i pacmanPos = pacman.PACMAN_TEX_MAP.at(PacMan::LEFT);
     sf::IntRect texRect({pacmanPos.x * (TILE_SIZE / 2), pacmanPos.y * (TILE_SIZE / 2)},
                         {TILE_SIZE / 2, TILE_SIZE / 2});
 
@@ -406,6 +408,9 @@ void handle(const sf::Event::KeyPressed &key, State &gs)
         break;
     case sf::Keyboard::Scancode::Right:
         newDirection = PacMan::RIGHT;
+        break;
+    case sf::Keyboard::Scancode::NumpadPlus:
+        //gs.addFruit(Fruit(Fruit::CHERRY));
         break;
     default:
         return;

@@ -17,7 +17,7 @@ PacMan::PacMan() : map(nullptr)
 
 void PacMan::draw(sf::RenderWindow &window)
 {
-    sf::Vector2i pacmanPos = PACMAN_MAP.at(direction);
+    sf::Vector2i pacmanPos = PACMAN_TEX_MAP.at(direction);
     sf::IntRect texRect({pacmanPos.x * (TILE_SIZE / 2), pacmanPos.y * (TILE_SIZE / 2)},
                         {TILE_SIZE / 2, TILE_SIZE / 2});
     sf::Sprite sprite(tex, texRect);

@@ -5,6 +5,7 @@
 #include <map>
 #include <cmath>
 #include <vector>
+#include <deque>
 
 #include "../includes/PacMan.hpp"
 
@@ -23,9 +24,12 @@ struct State
     std::map<int, TextureData> textures;
     PacMan pacman;
     std::vector<std::vector<char>> map;
+
     int lives;
     int score;
     int highscore;
+
+    size_t maxFruits;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);

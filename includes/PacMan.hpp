@@ -3,10 +3,10 @@
 #include <vector>
 #include <map>
 
-inline const sf::Vector2i RIGHT_PACMAN = {1,0};
-inline const sf::Vector2i LEFT_PACMAN = {1,1};
-inline const sf::Vector2i UP_PACMAN = {1,2};
-inline const sf::Vector2i DOWN_PACMAN = {1,3};
+inline const sf::Vector2i RIGHT_PACMAN = {1, 0};
+inline const sf::Vector2i LEFT_PACMAN = {1, 1};
+inline const sf::Vector2i UP_PACMAN = {1, 2};
+inline const sf::Vector2i DOWN_PACMAN = {1, 3};
 
 struct PacMan
 {
@@ -28,7 +28,7 @@ struct PacMan
     Direction direction;
     Direction nextDirection;
 
-    const std::map<Direction, sf::Vector2i> PACMAN_MAP = {
+    const std::map<Direction, sf::Vector2i> PACMAN_TEX_MAP = {
         {RIGHT, RIGHT_PACMAN},
         {LEFT, LEFT_PACMAN},
         {UP, UP_PACMAN},
