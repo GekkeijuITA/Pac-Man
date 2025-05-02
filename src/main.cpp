@@ -8,6 +8,9 @@
 
 State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman()
 {
+
+    recentFruits.clear();
+
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
 
@@ -75,6 +78,7 @@ State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), hi
     textures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 
     maxFruits = 12 - lives;
+    fruitCount = 0;
 }
 
 void State::update(float elapsed)
@@ -277,6 +281,11 @@ void State::doGraphics()
                 window.draw(emptyBlock);
                 break;
             }
+            case 'C':
+            {
+                drawFruit(c + 0.5f, r + 3.5f, {2, 3}, 1.5f);
+                break;
+            }
             default:
                 break;
             }
@@ -332,6 +341,7 @@ void State::doUI()
     }
 
     drawScore(16, 1, highscore);
+    drawRecentFruits();
 }
 
 void State::drawChar(int x, int y, sf::Vector2i charPos)
@@ -375,6 +385,25 @@ void State::drawLives()
     }
 }
 
+void State::drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor)
+{
+    sf::Sprite fruitSprite = createSprite(textures[0].texture, fruitPos, textures[0].scale, scaleFactor, TILE_SIZE / 2, true);
+    fruitSprite.setPosition({x * TILE_SIZE, y * TILE_SIZE});
+    window.draw(fruitSprite);
+}
+
+void State::drawRecentFruits()
+{
+    int recentFruitsSize = recentFruits.size();
+    int startX = 24 - (recentFruitsSize - 1) * 2;
+
+    for (size_t i = 0; i < recentFruits.size(); i++)
+    {
+        sf::Vector2i fruitPos = recentFruits[i];
+        drawFruit((startX + (i * 2)) + 1.f, (MAP_HEIGHT + 4), fruitPos, 2.f);
+    }
+}
+
 ////////////
 // Events //
 ////////////
@@ -407,9 +436,6 @@ void handle(const sf::Event::KeyPressed &key, State &gs)
         break;
     case sf::Keyboard::Scancode::Right:
         newDirection = PacMan::RIGHT;
-        break;
-    case sf::Keyboard::Scancode::NumpadPlus:
-        // gs.addFruit(Fruit(Fruit::CHERRY));
         break;
     default:
         return;

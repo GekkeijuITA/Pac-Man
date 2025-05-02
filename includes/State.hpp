@@ -30,6 +30,8 @@ struct State
     int highscore;
 
     size_t maxFruits;
+    std::deque<sf::Vector2i> recentFruits;
+    int fruitCount;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
@@ -41,4 +43,6 @@ struct State
     void drawChar(int x, int y, sf::Vector2i charPos);
     void drawScore(int x, int y, int score);
     void drawLives();
+    void drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor);
+    void drawRecentFruits();
 };
