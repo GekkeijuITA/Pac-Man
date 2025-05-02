@@ -286,7 +286,7 @@ void State::doGraphics()
     pacman.draw(window);
 
     sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
-    float thickness = 1.0f;                              // Spessore delle linee
+    float thickness = 1.0f;
 
     for (int x = 0; x <= MAP_WIDTH; x++)
     {
@@ -336,11 +336,15 @@ void State::doUI()
 
 void State::drawChar(int x, int y, sf::Vector2i charPos)
 {
-    sf::IntRect textRect({charPos.x * TEXT_SIZE, charPos.y * TEXT_SIZE}, {TEXT_SIZE, TEXT_SIZE});
-    sf::Sprite textSprite(textures[1].texture);
-    textSprite.setTextureRect(textRect);
+    sf::Sprite textSprite = createSprite(
+        textures[1].texture,
+        charPos,
+        {(float)TILE_SIZE / TEXT_SIZE, (float)TILE_SIZE / TEXT_SIZE},
+        1.f,
+        TEXT_SIZE,
+        false);
+
     textSprite.setPosition({(float)x * TILE_SIZE, (float)y * TILE_SIZE});
-    textSprite.setScale({(float)TILE_SIZE / TEXT_SIZE, (float)TILE_SIZE / TEXT_SIZE});
     window.draw(textSprite);
 }
 
@@ -360,12 +364,7 @@ void State::drawScore(int x, int y, int score)
 void State::drawLives()
 {
     sf::Vector2i pacmanPos = pacman.PACMAN_TEX_MAP.at(PacMan::LEFT);
-    sf::IntRect texRect({pacmanPos.x * (TILE_SIZE / 2), pacmanPos.y * (TILE_SIZE / 2)},
-                        {TILE_SIZE / 2, TILE_SIZE / 2});
-
-    sf::Sprite pacmanSprite(textures[0].texture, texRect);
-    pacmanSprite.setOrigin({(TILE_SIZE / 2) / 2.f, (TILE_SIZE / 2) / 2.f});
-    pacmanSprite.setScale(textures[0].scale * 2.f);
+    sf::Sprite pacmanSprite = createSprite(textures[0].texture, pacmanPos, textures[0].scale, 2.f, TILE_SIZE / 2, true);
     for (int i = 0; i < lives; i++)
     {
         pacmanSprite.setPosition({
@@ -410,7 +409,7 @@ void handle(const sf::Event::KeyPressed &key, State &gs)
         newDirection = PacMan::RIGHT;
         break;
     case sf::Keyboard::Scancode::NumpadPlus:
-        //gs.addFruit(Fruit(Fruit::CHERRY));
+        // gs.addFruit(Fruit(Fruit::CHERRY));
         break;
     default:
         return;
