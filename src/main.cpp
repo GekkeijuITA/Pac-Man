@@ -294,7 +294,7 @@ void State::doGraphics()
     }
 
     pacman.draw(window);
-
+    /*
     sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
     float thickness = 1.0f;
 
@@ -313,6 +313,7 @@ void State::doGraphics()
         line.setFillColor(gridColor);
         window.draw(line);
     }
+    */
 }
 
 void State::doUI()
