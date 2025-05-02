@@ -260,7 +260,8 @@ void State::doGraphics()
             {
                 int scale = 3;
                 sf::CircleShape powerpellet(TILE_SIZE / scale);
-                powerpellet.setPosition({static_cast<float>(x + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale))), static_cast<float>(y + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale)))});
+                powerpellet.setOrigin({TILE_SIZE / scale, TILE_SIZE / scale});
+                powerpellet.setPosition({x + (TILE_SIZE / 2), y + (TILE_SIZE / 2)});
                 powerpellet.setFillColor(sf::Color(255, 185, 176));
                 window.draw(powerpellet);
                 break;
