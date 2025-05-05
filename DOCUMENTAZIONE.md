@@ -1,9 +1,9 @@
-# Tappa n.4
+# Tappa n.5
 ## Obiettivo
-L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare un minimo di ui come ad esempio il punteggio, l'high score, il numero di vite rimanenti e i frutti/oggetti raccolti. Inoltre sono state apportate alcune modifiche per prendere la texture di pacman da un foglio di sprite.
+L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare i fantasmi e il loro movimento. In questa fase non consideriamo i behaviours specifici dei fantasmi, ma ci concentriamo solo sul loro movimento. I fantasmi si muovono in modo casuale all'interno della mappa e il giocatore deve evitare di essere toccato da loro.
 ## Ostacoli
-Leak di memoria dovuto alla matrice che contiene la mappa.
+
 ## Soluzione
-Per risolvere questo problema ho cambiato mettendo la matrice come una matrice di vettori anzichè una matrice a dimensione fissa.
+
 
 ![demo](demo.png)

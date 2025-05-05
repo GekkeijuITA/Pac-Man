@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 
-State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman()
+State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman(), blinky(), pinky(), inky(), clyde()
 {
 
     recentFruits.clear();
@@ -105,6 +105,98 @@ void State::bounds()
     {
         pacman.position.y = 0;
     }
+
+    if (blinky.position.x < 0)
+    {
+        blinky.position.x = MAP_HEIGHT;
+    }
+    else if (blinky.position.x > MAP_HEIGHT)
+    {
+        blinky.position.x = 0;
+    }
+
+    if (blinky.position.y < 0)
+    {
+        blinky.position.y = MAP_WIDTH;
+    }
+    else if (blinky.position.y > MAP_WIDTH)
+    {
+        blinky.position.y = 0;
+    }
+
+    if (pinky.position.x < 0)
+    {
+        pinky.position.x = MAP_HEIGHT;
+    }
+    else if (pinky.position.x > MAP_HEIGHT)
+    {
+        pinky.position.x = 0;
+    }
+
+    if (pinky.position.y < 0)
+    {
+        pinky.position.y = MAP_WIDTH;
+    }
+    else if (pinky.position.y > MAP_WIDTH)
+    {
+        pinky.position.y = 0;
+    }   
+
+    if (inky.position.x < 0)
+    {
+        inky.position.x = MAP_HEIGHT;
+    }
+    else if (inky.position.x > MAP_HEIGHT)
+    {
+        inky.position.x = 0;
+    }
+    if (inky.position.y < 0)
+    {
+        inky.position.y = MAP_WIDTH;
+    }
+    else if (inky.position.y > MAP_WIDTH)
+    {
+        inky.position.y = 0;
+    }
+
+    if (clyde.position.x < 0)
+    {
+        clyde.position.x = MAP_HEIGHT;
+    }
+    else if (clyde.position.x > MAP_HEIGHT)
+    {
+        clyde.position.x = 0;
+    }
+    if (clyde.position.y < 0)
+    {
+        clyde.position.y = MAP_WIDTH;
+    }
+    else if (clyde.position.y > MAP_WIDTH)
+    {
+        clyde.position.y = 0;
+    }
+}
+
+void State::ghost_collisions(float elapsed)
+{
+    if (blinky.fPosition.x == 0.f && blinky.fPosition.y == 0.f)
+        blinky.chooseDirection();
+    if (!blinky.isWall(blinky.position.x, blinky.position.y))
+        blinky.move(elapsed);
+    if (pinky.fPosition.x == 0.f && pinky.fPosition.y == 0.f)
+        pinky.chooseDirection();
+    if (!pinky.isWall(pinky.position.x, pinky.position.y))
+        pinky.move(elapsed);
+
+    if (inky.fPosition.x == 0.f && inky.fPosition.y == 0.f)
+        inky.chooseDirection();
+    if (!inky.isWall(inky.position.x, inky.position.y))
+        inky.move(elapsed);
+
+    if (clyde.fPosition.x == 0.f && clyde.fPosition.y == 0.f)
+        clyde.chooseDirection();       
+    if (!clyde.isWall(clyde.position.x, clyde.position.y))
+        clyde.move(elapsed);
 }
 
 void State::collisions(float elapsed)
@@ -137,6 +229,8 @@ void State::collisions(float elapsed)
         pacman.move(elapsed);
     }
 
+    ghost_collisions(elapsed);
+
     bounds();
 }
 
@@ -161,9 +255,29 @@ bool State::getMap(std::string mapPath)
 
         for (int i = 0; i < row.size(); i++)
         {
-            if (row[i] == 'P')
+            if (row[i] == PACMAN)
             {
                 pacman.setPosition(map.size() - 1, i);
+                map.back()[i] = EMPTY_BLOCK;
+            }
+            else if (row[i] == BLINKY)
+            {
+                blinky.setPosition(map.size() - 1, i);
+                map.back()[i] = EMPTY_BLOCK;
+            }
+            else if (row[i] == PINKY)
+            {
+                pinky.setPosition(map.size() - 1, i);
+                map.back()[i] = EMPTY_BLOCK;
+            }
+            else if (row[i] == INKY)
+            {
+                inky.setPosition(map.size() - 1, i);
+                map.back()[i] = EMPTY_BLOCK;
+            }
+            else if (row[i] == CLYDE)
+            {
+                clyde.setPosition(map.size() - 1, i);
                 map.back()[i] = EMPTY_BLOCK;
             }
         }
@@ -171,6 +285,10 @@ bool State::getMap(std::string mapPath)
     mapFile.close();
 
     pacman.setMap(&map);
+    blinky.setMap(&map);
+    pinky.setMap(&map);
+    inky.setMap(&map);
+    clyde.setMap(&map);
 
     return true;
 }
@@ -293,8 +411,12 @@ void State::doGraphics()
         }
     }
 
+    blinky.draw(window);
+    pinky.draw(window);
+    inky.draw(window);
+    clyde.draw(window);
     pacman.draw(window);
-    /*
+    
     sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
     float thickness = 1.0f;
 
@@ -313,7 +435,7 @@ void State::doGraphics()
         line.setFillColor(gridColor);
         window.draw(line);
     }
-    */
+    
 }
 
 void State::doUI()

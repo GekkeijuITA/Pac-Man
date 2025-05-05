@@ -17,7 +17,7 @@ inline const char EMPTY_BLOCK = '9';
 
 inline const char PACMAN = 'P';
 inline const char BLINKY = 'B';
-inline const char PINKY = 'P';
+inline const char PINKY = 'N';
 inline const char INKY = 'I';
 inline const char CLYDE = 'C';
 

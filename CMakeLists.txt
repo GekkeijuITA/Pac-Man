@@ -15,6 +15,11 @@ FetchContent_MakeAvailable(SFML)
 add_executable(main 
     src/main.cpp
     src/PacMan.cpp
+    src/Ghost.cpp
+    src/ghosts/Blinky.cpp
+    src/ghosts/Inky.cpp
+    src/ghosts/Pinky.cpp
+    src/ghosts/Clyde.cpp
     src/textures.cpp
 )
 

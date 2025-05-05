@@ -8,6 +8,10 @@
 #include <deque>
 
 #include "../includes/PacMan.hpp"
+#include "../includes/ghosts/Blinky.hpp"
+#include "../includes/ghosts/Pinky.hpp"
+#include "../includes/ghosts/Inky.hpp"
+#include "../includes/ghosts/Clyde.hpp"
 
 struct TextureData
 {
@@ -25,6 +29,11 @@ struct State
     PacMan pacman;
     std::vector<std::vector<char>> map;
 
+    Blinky blinky;
+    Pinky pinky;
+    Inky inky;
+    Clyde clyde;
+
     int lives;
     int score;
     int highscore;
@@ -38,6 +47,7 @@ struct State
     void update(float elapsed);
     void bounds();
     void collisions(float elapsed);
+    void ghost_collisions(float elapsed);
     void doGraphics();
     void doUI();
     void drawChar(int x, int y, sf::Vector2i charPos);
