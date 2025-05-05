@@ -137,14 +137,48 @@ void PacMan::move(float elapsed)
 
 void PacMan::eat(int x, int y)
 {
-    if ((*map)[x][y] == PACDOT)
+    switch ((*map)[x][y])
     {
+    case PACDOT:
         (*map)[x][y] = EMPTY_BLOCK;
         // score += 10;
-    }
-    else if ((*map)[x][y] == POWERPELLET)
-    {
+        break;
+    case POWERPELLET:
         (*map)[x][y] = EMPTY_BLOCK;
         // score += 50;
+    case CHERRY:
+        (*map)[x][y] = EMPTY_BLOCK;
+        // score += 100;
+        break;
+    case STRAWBERRY:
+        (*map)[x][y] = EMPTY_BLOCK;
+        // score += 300;
+        break;
+    case ORANGE:
+        (*map)[x][y] = EMPTY_BLOCK;
+        // score += 500;
+        break;
+    case APPLE:
+        (*map)[x][y] = EMPTY_BLOCK;
+        // score += 700;
+        break;
+    case MELON:
+        (*map)[x][y] = EMPTY_BLOCK;
+        // score += 1000;
+        break;
+    case GALAXIAN:
+        (*map)[x][y] = EMPTY_BLOCK;
+        // score += 2000;
+        break;
+    case BELL:
+        (*map)[x][y] = EMPTY_BLOCK;
+        // score += 3000;
+        break;
+    case KEY:
+        (*map)[x][y] = EMPTY_BLOCK;
+        // score += 5000;
+        break;
+    default:
+        break;
     }
 }

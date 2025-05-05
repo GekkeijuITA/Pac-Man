@@ -258,7 +258,7 @@ void State::doGraphics()
             }
             case POWERPELLET:
             {
-                int scale = 3;
+                float scale = 3.f;
                 sf::CircleShape powerpellet(TILE_SIZE / scale);
                 powerpellet.setOrigin({TILE_SIZE / scale, TILE_SIZE / scale});
                 powerpellet.setPosition({x + (TILE_SIZE / 2), y + (TILE_SIZE / 2)});
@@ -282,7 +282,7 @@ void State::doGraphics()
                 window.draw(emptyBlock);
                 break;
             }
-            case 'C':
+            case CHERRY:
             {
                 drawFruit(c + 0.5f, r + 3.5f, {2, 3}, 1.5f);
                 break;
