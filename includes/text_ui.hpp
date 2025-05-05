@@ -71,7 +71,7 @@ inline const std::map<char, sf::Vector2i> CHAR_MAP = {
     {'Y', CHAR_Y},
     {'Z', CHAR_Z},
     {'!', CHAR_EXCLAMATION_MARK},
-    {'©', CHAR_COPYRIGHT},
+    {'CPYRGHT', CHAR_COPYRIGHT},
     {'0', CHAR_0},
     {'1', CHAR_1},
     {'2', CHAR_2},
