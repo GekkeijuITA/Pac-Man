@@ -11,6 +11,7 @@ struct Ghost
     sf::Texture tex;
     sf::Vector2i position;
     sf::Vector2f fPosition;
+    bool leftHouse;
 
     enum Direction
     {

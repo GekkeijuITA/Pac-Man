@@ -140,7 +140,7 @@ void State::bounds()
     else if (pinky.position.y > MAP_WIDTH)
     {
         pinky.position.y = 0;
-    }   
+    }
 
     if (inky.position.x < 0)
     {
@@ -179,24 +179,10 @@ void State::bounds()
 
 void State::ghost_collisions(float elapsed)
 {
-    if (blinky.fPosition.x == 0.f && blinky.fPosition.y == 0.f)
-        blinky.chooseDirection();
-    if (!blinky.isWall(blinky.position.x, blinky.position.y))
-        blinky.move(elapsed);
-    if (pinky.fPosition.x == 0.f && pinky.fPosition.y == 0.f)
-        pinky.chooseDirection();
-    if (!pinky.isWall(pinky.position.x, pinky.position.y))
-        pinky.move(elapsed);
-
-    if (inky.fPosition.x == 0.f && inky.fPosition.y == 0.f)
-        inky.chooseDirection();
-    if (!inky.isWall(inky.position.x, inky.position.y))
-        inky.move(elapsed);
-
-    if (clyde.fPosition.x == 0.f && clyde.fPosition.y == 0.f)
-        clyde.chooseDirection();       
-    if (!clyde.isWall(clyde.position.x, clyde.position.y))
-        clyde.move(elapsed);
+    blinky.move(elapsed);
+    pinky.move(elapsed);
+    inky.move(elapsed);
+    clyde.move(elapsed);
 }
 
 void State::collisions(float elapsed)
@@ -416,8 +402,8 @@ void State::doGraphics()
     inky.draw(window);
     clyde.draw(window);
     pacman.draw(window);
-    
-    sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
+
+    /*sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
     float thickness = 1.0f;
 
     for (int x = 0; x <= MAP_WIDTH; x++)
@@ -434,8 +420,7 @@ void State::doGraphics()
         line.setPosition({0, (float)y * TILE_SIZE});
         line.setFillColor(gridColor);
         window.draw(line);
-    }
-    
+    }*/
 }
 
 void State::doUI()

@@ -7,6 +7,7 @@ Ghost::Ghost() : map(nullptr)
     speed = 2.5f;
     direction = NONE;
     lastDirection = NONE;
+    leftHouse = false;
 
     if (!tex.loadFromFile(ASSET))
     {
@@ -50,7 +51,7 @@ bool Ghost::isWall(int x, int y)
     if (!map)
         return false;
 
-    return (*map)[x][y] == LINE_H || (*map)[x][y] == LINE_V || (*map)[x][y] == CORNER_0 || (*map)[x][y] == CORNER_90 || (*map)[x][y] == CORNER_180 || (*map)[x][y] == CORNER_270 || (*map)[x][y] == BLINKY || (*map)[x][y] == PINKY || (*map)[x][y] == INKY || (*map)[x][y] == CLYDE;
+    return (*map)[x][y] == LINE_H || (*map)[x][y] == LINE_V || (*map)[x][y] == CORNER_0 || (*map)[x][y] == CORNER_90 || (*map)[x][y] == CORNER_180 || (*map)[x][y] == CORNER_270;
 }
 
 void Ghost::chooseDirection()
@@ -89,7 +90,6 @@ void Ghost::chooseDirection()
 
 void Ghost::move(float elapsed)
 {
-    // Prova a continuare nella direzione corrente prima di cambiare
     sf::Vector2i nextTile = position;
 
     switch (direction)
@@ -110,11 +110,29 @@ void Ghost::move(float elapsed)
         break;
     }
 
-    // Se la prossima tile è valida, continua
+    bool alignedToCell = std::abs(fPosition.x) < 0.01f && std::abs(fPosition.y) < 0.01f;
+
+    if (alignedToCell)
+    {
+        int available = 0;
+        if (!isWall(position.x - 1, position.y))
+            available++;
+        if (!isWall(position.x + 1, position.y))
+            available++;
+        if (!isWall(position.x, position.y - 1))
+            available++;
+        if (!isWall(position.x, position.y + 1))
+            available++;
+
+        if (available >= 2)
+        {
+            chooseDirection();
+        }
+    }
+
     if (!isWall(nextTile.x, nextTile.y))
     {
         sf::Vector2f movement(0, 0);
-
         switch (direction)
         {
         case UP:
@@ -132,16 +150,13 @@ void Ghost::move(float elapsed)
         default:
             break;
         }
-
         fPosition += movement;
     }
     else
     {
-        // Se c'è un muro, scegli nuova direzione
         chooseDirection();
     }
 
-    // Aggiorna la posizione intera quando supera 1.0
     if (std::abs(fPosition.x) >= 1.0f)
     {
         position.x += static_cast<int>(fPosition.x);
