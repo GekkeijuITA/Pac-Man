@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SFML/Graphics.hpp>
 #include "global_values.hpp"
 #include <vector>
@@ -11,6 +13,8 @@ inline const sf::Vector2i DOWN_PACMAN = {1, 3};
 struct PacMan
 {
     float speed;
+    int dotEaten;
+
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
@@ -45,4 +49,5 @@ struct PacMan
     bool isWall(int x, int y);
     void eat(int x, int y);
     void updateDirection();
+    int getDotEaten();
 };

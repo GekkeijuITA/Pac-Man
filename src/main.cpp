@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 
-State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman(), blinky(), pinky(), inky(), clyde()
+State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman(), blinky(pacman), pinky(pacman), inky(pacman), clyde(pacman)
 {
 
     recentFruits.clear();

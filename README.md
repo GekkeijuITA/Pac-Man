@@ -30,6 +30,10 @@
 - Deduco che ci debbano essere più livelli (storicamente 256 però guardando questo video ([link](https://www.youtube.com/watch?v=AuoH0vz3Mqk)) è sempre lo stesso livello ripetuto con lo stesso layout)
 - Ogni fantasma ha un proprio comportamento
 - Il testo del punteggio "incrementa" verso sinistra
+- I fantasmi escono dalla casa secondo quanti pacdot sono stati mangiati:
+    - 0 pacdot = Blinky (rosso) e Pinky (rosa)
+    - 30 pacdot = Inky (azzurro)
+    - 60 pacdot = Clyde (arancione)
 
 ## Link utili
 - Video di gameplay 1: [link](https://www.youtube.com/watch?v=i_OjztdQ8iw)

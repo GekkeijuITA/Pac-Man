@@ -1,6 +1,6 @@
 #include "../../includes/ghosts/Pinky.hpp"
 
-Pinky::Pinky() : Ghost(IN_HOUSE, 0.f)
+Pinky::Pinky(PacMan &pacmanRef) : Ghost(IN_HOUSE, 0, pacmanRef)
 {
     GHOST_TEX_MAP = {
         {RIGHT, PINKY_R},

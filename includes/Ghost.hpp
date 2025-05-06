@@ -2,17 +2,20 @@
 
 #include <SFML/Graphics.hpp>
 #include "global_values.hpp"
+#include "PacMan.hpp"
 #include <map>
 
 struct Ghost
 {
     float speed;
+    int dotLimit;
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
     sf::Vector2f fPosition;
     std::vector<sf::Vector2i> exitTiles;
     sf::Vector2i nearestExitTile;
+    PacMan &pacman;
 
     enum Direction
     {
@@ -32,12 +35,11 @@ struct Ghost
     };
 
     GhostState state;
-    float timerToLeaveHouse;
 
     protected:
         std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
 
-    Ghost(GhostState state, float timerToLeaveHouse);
+    Ghost(GhostState state, int dotLimit, PacMan &pacman);
 
     private:
         void setDirection(Direction dir);

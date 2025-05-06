@@ -2,7 +2,7 @@
 #include "../includes/textures.hpp"
 #include <iostream>
 
-Ghost::Ghost(GhostState state, float timerToLeaveHouse) : map(nullptr), state(state), timerToLeaveHouse(timerToLeaveHouse)
+Ghost::Ghost(GhostState state, int dotLimit, PacMan &pacmanRef) : map(nullptr), state(state), dotLimit(dotLimit), pacman(pacmanRef)
 {
     speed = 2.5f;
     direction = NONE;
@@ -97,8 +97,7 @@ void Ghost::move(float elapsed)
 {
     if (state == IN_HOUSE)
     {
-        timerToLeaveHouse -= elapsed;
-        if (timerToLeaveHouse <= 0.f)
+        if (pacman.getDotEaten() >= dotLimit)
         {
             if (position != nearestExitTile)
             {

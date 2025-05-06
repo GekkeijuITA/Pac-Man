@@ -5,6 +5,7 @@
 PacMan::PacMan() : map(nullptr)
 {
     speed = 5.f;
+    dotEaten = 0;
     direction = NONE;
     nextDirection = NONE;
 
@@ -141,6 +142,7 @@ void PacMan::eat(int x, int y)
     {
     case PACDOT:
         (*map)[x][y] = EMPTY_BLOCK;
+        dotEaten++;
         // score += 10;
         break;
     case POWERPELLET:
@@ -180,5 +182,10 @@ void PacMan::eat(int x, int y)
         break;
     default:
         break;
-    }
+    }    
+}
+
+int PacMan::getDotEaten()
+{
+    return dotEaten;
 }

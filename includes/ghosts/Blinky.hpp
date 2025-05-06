@@ -7,5 +7,5 @@ inline const sf::Vector2i BLINKY_D = {6, 4};
 
 struct Blinky : public Ghost
 {
-    Blinky();
+    Blinky(PacMan &pacman);
 };

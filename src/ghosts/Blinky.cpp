@@ -1,6 +1,6 @@
 #include "../../includes/ghosts/Blinky.hpp"
 
-Blinky::Blinky() : Ghost(NORMAL, 0) {
+Blinky::Blinky(PacMan &pacmanRef) : Ghost(NORMAL, 0, pacmanRef) {
     GHOST_TEX_MAP = {
         {RIGHT, BLINKY_R},
         {LEFT, BLINKY_L},

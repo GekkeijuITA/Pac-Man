@@ -1,6 +1,6 @@
 #include "../../includes/ghosts/Inky.hpp"
 
-Inky::Inky() : Ghost(IN_HOUSE, 6.f)
+Inky::Inky(PacMan &pacmanRef) : Ghost(IN_HOUSE, 30, pacmanRef)
 {
     GHOST_TEX_MAP = {
         {RIGHT, INKY_R},

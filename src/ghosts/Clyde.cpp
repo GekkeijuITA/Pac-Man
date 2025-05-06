@@ -1,6 +1,6 @@
 #include "../../includes/ghosts/Clyde.hpp"
 
-Clyde::Clyde() : Ghost(IN_HOUSE, 3.f) {
+Clyde::Clyde(PacMan &pacmanRef) : Ghost(IN_HOUSE, 60, pacmanRef) {
     GHOST_TEX_MAP = {
         {RIGHT, CLYDE_R},
         {LEFT, CLYDE_L},
