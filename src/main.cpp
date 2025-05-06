@@ -86,103 +86,39 @@ void State::update(float elapsed)
     collisions(elapsed);
 }
 
+void checkBounds(sf::Vector2i &pos)
+{
+    if (pos.x < 0)
+    {
+        pos.x = MAP_HEIGHT;
+    }
+    else if (pos.x > MAP_HEIGHT)
+    {
+        pos.x = 0;
+    }
+
+    if (pos.y < 0)
+    {
+        pos.y = MAP_WIDTH;
+    }
+    else if (pos.y > MAP_WIDTH)
+    {
+        pos.y = 0;
+    }
+}
+
 void State::bounds()
 {
-    if (pacman.position.x < 0)
-    {
-        pacman.position.x = MAP_HEIGHT;
-    }
-    else if (pacman.position.x > MAP_HEIGHT)
-    {
-        pacman.position.x = 0;
-    }
-
-    if (pacman.position.y < 0)
-    {
-        pacman.position.y = MAP_WIDTH;
-    }
-    else if (pacman.position.y > MAP_WIDTH)
-    {
-        pacman.position.y = 0;
-    }
-
-    if (blinky.position.x < 0)
-    {
-        blinky.position.x = MAP_HEIGHT;
-    }
-    else if (blinky.position.x > MAP_HEIGHT)
-    {
-        blinky.position.x = 0;
-    }
-
-    if (blinky.position.y < 0)
-    {
-        blinky.position.y = MAP_WIDTH;
-    }
-    else if (blinky.position.y > MAP_WIDTH)
-    {
-        blinky.position.y = 0;
-    }
-
-    if (pinky.position.x < 0)
-    {
-        pinky.position.x = MAP_HEIGHT;
-    }
-    else if (pinky.position.x > MAP_HEIGHT)
-    {
-        pinky.position.x = 0;
-    }
-
-    if (pinky.position.y < 0)
-    {
-        pinky.position.y = MAP_WIDTH;
-    }
-    else if (pinky.position.y > MAP_WIDTH)
-    {
-        pinky.position.y = 0;
-    }
-
-    if (inky.position.x < 0)
-    {
-        inky.position.x = MAP_HEIGHT;
-    }
-    else if (inky.position.x > MAP_HEIGHT)
-    {
-        inky.position.x = 0;
-    }
-    if (inky.position.y < 0)
-    {
-        inky.position.y = MAP_WIDTH;
-    }
-    else if (inky.position.y > MAP_WIDTH)
-    {
-        inky.position.y = 0;
-    }
-
-    if (clyde.position.x < 0)
-    {
-        clyde.position.x = MAP_HEIGHT;
-    }
-    else if (clyde.position.x > MAP_HEIGHT)
-    {
-        clyde.position.x = 0;
-    }
-    if (clyde.position.y < 0)
-    {
-        clyde.position.y = MAP_WIDTH;
-    }
-    else if (clyde.position.y > MAP_WIDTH)
-    {
-        clyde.position.y = 0;
-    }
+    checkBounds(pacman.position);
+    checkBounds(blinky.position);
+    checkBounds(pinky.position);
+    checkBounds(inky.position);
+    checkBounds(clyde.position);
 }
 
 void State::ghost_collisions(float elapsed)
 {
-    blinky.move(elapsed);
-    pinky.move(elapsed);
-    inky.move(elapsed);
-    clyde.move(elapsed);
+
 }
 
 void State::collisions(float elapsed)
@@ -215,7 +151,10 @@ void State::collisions(float elapsed)
         pacman.move(elapsed);
     }
 
-    ghost_collisions(elapsed);
+    blinky.move(elapsed);
+    pinky.move(elapsed);
+    inky.move(elapsed);
+    clyde.move(elapsed);
 
     bounds();
 }

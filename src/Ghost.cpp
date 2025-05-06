@@ -69,9 +69,9 @@ void Ghost::chooseDirection()
         possibleDirections.push_back(UP);
     if (lastDirection != UP && !isWall(x + 1, y))
         possibleDirections.push_back(DOWN);
-    if (lastDirection != RIGHT && !isWall(x, y - 1))
+    if (lastDirection != RIGHT && !isWall(x, y - 1)  && state != IN_HOUSE)
         possibleDirections.push_back(LEFT);
-    if (lastDirection != LEFT && !isWall(x, y + 1))
+    if (lastDirection != LEFT && !isWall(x, y + 1)  && state != IN_HOUSE)
         possibleDirections.push_back(RIGHT);
 
     if (possibleDirections.empty())
@@ -117,7 +117,7 @@ void Ghost::move(float elapsed)
         }
         else
         {
-            return;
+            chooseDirection();
         }
     }
 
