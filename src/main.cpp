@@ -265,12 +265,18 @@ bool State::getMap(std::string mapPath)
             {
                 clyde.setPosition(map.size() - 1, i);
                 map.back()[i] = EMPTY_BLOCK;
+            } else if(row[i] == GHOST_DOOR) {
+                blinky.addExitTile(map.size() - 1, i);
+                pinky.addExitTile(map.size() - 1, i);
+                inky.addExitTile(map.size() - 1, i);
+                clyde.addExitTile(map.size() - 1, i);
             }
         }
     }
     mapFile.close();
 
     pacman.setMap(&map);
+
     blinky.setMap(&map);
     pinky.setMap(&map);
     inky.setMap(&map);
