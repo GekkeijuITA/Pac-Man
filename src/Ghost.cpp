@@ -1,20 +1,20 @@
 #include "../includes/Ghost.hpp"
 #include "../includes/textures.hpp"
 #include <iostream>
+#include <climits>
 
-Ghost::Ghost(GhostState state, int dotLimit, PacMan &pacmanRef) : map(nullptr), state(state), dotLimit(dotLimit), pacman(pacmanRef)
+Ghost::Ghost(GhostState state, int dotLimit, PacMan &pacmanRef, sf::IntRect preferredZone, std::string name) : map(nullptr), state(state), dotLimit(dotLimit), pacman(pacmanRef), preferredZone(preferredZone), name(name)
 {
     speed = 2.5f;
     direction = NONE;
     lastDirection = NONE;
+    goingToZone = false;
 
     if (!tex.loadFromFile(ASSET))
     {
         std::cerr << "Errore nel caricamento della texture del fantasma" << std::endl;
         exit(1);
     }
-
-    srand(time(0));
 }
 
 void Ghost::draw(sf::RenderWindow &window)
@@ -28,6 +28,31 @@ void Ghost::draw(sf::RenderWindow &window)
     sprite.setPosition({x, y});
 
     window.draw(sprite);
+
+    //  DEBUG
+    sf::RectangleShape rect(static_cast<sf::Vector2f>(preferredZone.size));
+    rect.setPosition(static_cast<sf::Vector2f>(preferredZone.position));
+    sf::Color color;
+    if (name == "Blinky")
+    {
+        color = sf::Color::Red;
+    }
+    else if (name == "Pinky")
+    {
+        color = sf::Color::Magenta;
+    }
+    else if (name == "Inky")
+    {
+        color = sf::Color::Cyan;
+    }
+    else if (name == "Clyde")
+    {
+        color = sf::Color::Yellow;
+    }
+    rect.setOutlineThickness(2);
+    rect.setOutlineColor(color);
+    rect.setFillColor(sf::Color::Transparent);
+    window.draw(rect);
 }
 
 void Ghost::setPosition(int x, int y)
@@ -59,6 +84,11 @@ bool Ghost::isWall(int x, int y)
     return (*map)[x][y] == LINE_H || (*map)[x][y] == LINE_V || (*map)[x][y] == CORNER_0 || (*map)[x][y] == CORNER_90 || (*map)[x][y] == CORNER_180 || (*map)[x][y] == CORNER_270;
 }
 
+bool Ghost::isInsideZone(int x, int y)
+{
+    return preferredZone.contains({x, y});
+}
+
 void Ghost::chooseDirection()
 {
     std::vector<Direction> possibleDirections;
@@ -69,9 +99,9 @@ void Ghost::chooseDirection()
         possibleDirections.push_back(UP);
     if (lastDirection != UP && !isWall(x + 1, y))
         possibleDirections.push_back(DOWN);
-    if (lastDirection != RIGHT && !isWall(x, y - 1)  && state != IN_HOUSE)
+    if (lastDirection != RIGHT && !isWall(x, y - 1) && state != IN_HOUSE)
         possibleDirections.push_back(LEFT);
-    if (lastDirection != LEFT && !isWall(x, y + 1)  && state != IN_HOUSE)
+    if (lastDirection != LEFT && !isWall(x, y + 1) && state != IN_HOUSE)
         possibleDirections.push_back(RIGHT);
 
     if (possibleDirections.empty())
@@ -84,6 +114,62 @@ void Ghost::chooseDirection()
             possibleDirections.push_back(LEFT);
         if (!isWall(x, y + 1))
             possibleDirections.push_back(RIGHT);
+    }
+
+    // logica per la zona preferita del fantasma
+    if (state == NORMAL && !possibleDirections.empty() && goingToZone)
+    {
+        sf::Vector2i center = preferredZone.getCenter();
+
+        if (position.x < center.x && !isWall(position.x + 1, position.y))
+            direction = DOWN;
+        else if (position.x > center.x && !isWall(position.x - 1, position.y))
+            direction = UP;
+        else if (position.y < center.y && !isWall(position.x, position.y + 1))
+            direction = RIGHT;
+        else if (position.y > center.y && !isWall(position.x, position.y - 1))
+            direction = LEFT;
+
+        /*std::pair<Direction, int> bestDirection = {NONE, INT_MAX};
+
+        for (Direction dir : possibleDirections)
+        {
+            sf::Vector2i nextTile = position;
+
+            switch (dir)
+            {
+            case UP:
+                nextTile.x--;
+                break;
+            case DOWN:
+                nextTile.x++;
+                break;
+            case LEFT:
+                nextTile.y--;
+                break;
+            case RIGHT:
+                nextTile.y++;
+                break;
+            default:
+                break;
+            }
+
+            if (!isWall(nextTile.x, nextTile.y))
+            {
+                int dist = std::abs(center.x - nextTile.x) + std::abs(center.y - nextTile.y);
+                if (dist < bestDirection.second)
+                {
+                    bestDirection = {dir, dist};
+                }
+            }
+        }
+
+        if (bestDirection.first != NONE)
+        {
+            direction = bestDirection.first;
+            lastDirection = direction;
+            return;
+        }*/
     }
 
     if (!possibleDirections.empty())
@@ -113,6 +199,7 @@ void Ghost::move(float elapsed)
             else
             {
                 state = NORMAL;
+                goingToZone = false;
             }
         }
         else
@@ -155,7 +242,7 @@ void Ghost::move(float elapsed)
         if (!isWall(position.x, position.y + 1))
             available++;
 
-        if (available >= 2)
+        if (available > 1)
         {
             chooseDirection();
         }
@@ -212,6 +299,12 @@ void Ghost::addExitTile(int x, int y)
 
 sf::Vector2i Ghost::getNearestExitTile()
 {
+    if (exitTiles.empty())
+    {
+        std::cerr << "Nessun tile di uscita disponibile" << std::endl;
+        return {0, 0};
+    }
+
     sf::Vector2i nearest = exitTiles[0];
     int minDist = std::abs(position.x - nearest.x) + std::abs(position.y - nearest.y);
 

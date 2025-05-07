@@ -6,9 +6,8 @@
 #include <fstream>
 #include <iostream>
 
-State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman(), blinky(pacman), pinky(pacman), inky(pacman), clyde(pacman)
+State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman()
 {
-
     recentFruits.clear();
 
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
@@ -32,6 +31,12 @@ State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), hi
     window.setPosition({static_cast<int>((w - windowWidth) / 2),
                         static_cast<int>((h - windowHeight) / 2)});
     window.setFramerateLimit(60);
+
+    srand(time(0));
+    blinky = std::make_unique<Blinky>(pacman, windowWidth, windowHeight);
+    pinky = std::make_unique<Pinky>(pacman, windowWidth, windowHeight);
+    inky = std::make_unique<Inky>(pacman, windowWidth, windowHeight);
+    clyde = std::make_unique<Clyde>(pacman, windowWidth, windowHeight);
 
     sf::View view;
     view.setSize({MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE});
@@ -110,15 +115,14 @@ void checkBounds(sf::Vector2i &pos)
 void State::bounds()
 {
     checkBounds(pacman.position);
-    checkBounds(blinky.position);
-    checkBounds(pinky.position);
-    checkBounds(inky.position);
-    checkBounds(clyde.position);
+    checkBounds(blinky->position);
+    checkBounds(pinky->position);
+    checkBounds(inky->position);
+    checkBounds(clyde->position);
 }
 
 void State::ghost_collisions(float elapsed)
 {
-
 }
 
 void State::collisions(float elapsed)
@@ -151,10 +155,10 @@ void State::collisions(float elapsed)
         pacman.move(elapsed);
     }
 
-    blinky.move(elapsed);
-    pinky.move(elapsed);
-    inky.move(elapsed);
-    clyde.move(elapsed);
+    blinky->move(elapsed);
+    pinky->move(elapsed);
+    inky->move(elapsed);
+    clyde->move(elapsed);
 
     bounds();
 }
@@ -187,28 +191,30 @@ bool State::getMap(std::string mapPath)
             }
             else if (row[i] == BLINKY)
             {
-                blinky.setPosition(map.size() - 1, i);
+                blinky->setPosition(map.size() - 1, i);
                 map.back()[i] = EMPTY_BLOCK;
             }
             else if (row[i] == PINKY)
             {
-                pinky.setPosition(map.size() - 1, i);
+                pinky->setPosition(map.size() - 1, i);
                 map.back()[i] = EMPTY_BLOCK;
             }
             else if (row[i] == INKY)
             {
-                inky.setPosition(map.size() - 1, i);
+                inky->setPosition(map.size() - 1, i);
                 map.back()[i] = EMPTY_BLOCK;
             }
             else if (row[i] == CLYDE)
             {
-                clyde.setPosition(map.size() - 1, i);
+                clyde->setPosition(map.size() - 1, i);
                 map.back()[i] = EMPTY_BLOCK;
-            } else if(row[i] == GHOST_DOOR) {
-                blinky.addExitTile(map.size() - 1, i);
-                pinky.addExitTile(map.size() - 1, i);
-                inky.addExitTile(map.size() - 1, i);
-                clyde.addExitTile(map.size() - 1, i);
+            }
+            else if (row[i] == GHOST_DOOR)
+            {
+                blinky->addExitTile(map.size() - 1, i);
+                pinky->addExitTile(map.size() - 1, i);
+                inky->addExitTile(map.size() - 1, i);
+                clyde->addExitTile(map.size() - 1, i);
             }
         }
     }
@@ -216,10 +222,10 @@ bool State::getMap(std::string mapPath)
 
     pacman.setMap(&map);
 
-    blinky.setMap(&map);
-    pinky.setMap(&map);
-    inky.setMap(&map);
-    clyde.setMap(&map);
+    blinky->setMap(&map);
+    pinky->setMap(&map);
+    inky->setMap(&map);
+    clyde->setMap(&map);
 
     return true;
 }
@@ -342,10 +348,10 @@ void State::doGraphics()
         }
     }
 
-    blinky.draw(window);
-    pinky.draw(window);
-    inky.draw(window);
-    clyde.draw(window);
+    blinky->draw(window);
+    pinky->draw(window);
+    inky->draw(window);
+    clyde->draw(window);
     pacman.draw(window);
 
     /*sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente

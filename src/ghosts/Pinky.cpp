@@ -1,6 +1,6 @@
 #include "../../includes/ghosts/Pinky.hpp"
 
-Pinky::Pinky(PacMan &pacmanRef) : Ghost(IN_HOUSE, 0, pacmanRef)
+Pinky::Pinky(PacMan &pacmanRef, unsigned int w, unsigned int h) : Ghost(IN_HOUSE, 0, pacmanRef, sf::IntRect({0, 3 * TILE_SIZE}, {(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}), "Pinky")
 {
     GHOST_TEX_MAP = {
         {RIGHT, PINKY_R},

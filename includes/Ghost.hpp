@@ -4,6 +4,7 @@
 #include "global_values.hpp"
 #include "PacMan.hpp"
 #include <map>
+#include <string>
 
 struct Ghost
 {
@@ -15,7 +16,10 @@ struct Ghost
     sf::Vector2f fPosition;
     std::vector<sf::Vector2i> exitTiles;
     sf::Vector2i nearestExitTile;
+    sf::IntRect preferredZone;
     PacMan &pacman;
+    std::string name;
+    bool goingToZone;
 
     enum Direction
     {
@@ -39,7 +43,7 @@ struct Ghost
     protected:
         std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
 
-    Ghost(GhostState state, int dotLimit, PacMan &pacman);
+    Ghost(GhostState state, int dotLimit, PacMan &pacman, sf::IntRect preferredZone, std::string name);
 
     private:
         void setDirection(Direction dir);
@@ -52,6 +56,7 @@ struct Ghost
         void setMap(std::vector<std::vector<char>> *map);
         void move(float elapsed);
         bool isWall(int x, int y);
+        bool isInsideZone(int x, int y);
         void setState(GhostState state);
         void addExitTile(int x, int y);
 };
