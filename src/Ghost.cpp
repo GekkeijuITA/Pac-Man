@@ -20,6 +20,7 @@ Ghost::Ghost(
     speed = 2.5f;
     direction = NONE;
     lastDirection = NONE;
+    isTransitioning = false;
 
     if (!tex.loadFromFile(ASSET))
     {
@@ -219,6 +220,7 @@ void Ghost::move(float elapsed)
             else
             {
                 state = NORMAL;
+                isTransitioning = true;
             }
         }
         else
@@ -249,19 +251,26 @@ void Ghost::move(float elapsed)
 
     bool alignedToCell = std::abs(fPosition.x) < 0.01f && std::abs(fPosition.y) < 0.01f;
 
-    if (alignedToCell)
+    if (alignedToCell && !isTransitioning)
     {
-        int available = 0;
-        if (!isWall(position.x - 1, position.y))
-            available++;
-        if (!isWall(position.x + 1, position.y))
-            available++;
-        if (!isWall(position.x, position.y - 1))
-            available++;
-        if (!isWall(position.x, position.y + 1))
-            available++;
+        bool canMove = false;
+        switch (direction)
+        {
+        case UP:
+            canMove = !isWall(position.x - 1, position.y);
+            break;
+        case DOWN:
+            canMove = !isWall(position.x + 1, position.y);
+            break;
+        case LEFT:
+            canMove = !isWall(position.x, position.y - 1);
+            break;
+        case RIGHT:
+            canMove = !isWall(position.x, position.y + 1);
+            break;
+        }
 
-        if (available > 1)
+        if (!canMove)
         {
             chooseDirection();
         }
@@ -289,7 +298,7 @@ void Ghost::move(float elapsed)
         }
         fPosition += movement;
     }
-    else
+    else if (!isTransitioning)
     {
         chooseDirection();
     }
@@ -298,11 +307,21 @@ void Ghost::move(float elapsed)
     {
         position.x += static_cast<int>(fPosition.x);
         fPosition.x -= static_cast<int>(fPosition.x);
+
+        if (isTransitioning && position != nearestExitTile)
+        {
+            isTransitioning = false;
+        }
     }
     if (std::abs(fPosition.y) >= 1.0f)
     {
         position.y += static_cast<int>(fPosition.y);
         fPosition.y -= static_cast<int>(fPosition.y);
+
+        if (isTransitioning && position != nearestExitTile)
+        {
+            isTransitioning = false;
+        }
     }
 
     if (state == NORMAL)
@@ -355,7 +374,6 @@ void Ghost::eat(int x, int y)
 
     if (distance < 1.f)
     {
-        std::cout << "Ghost " << name << " ha mangiato Pacman!" << std::endl;
         gameState.lives--;
         gameState.resetRound();
     }
@@ -366,4 +384,6 @@ void Ghost::respawn(GhostState state)
     setState(state);
     setPosition(spawn.x, spawn.y);
     setDirection(NONE);
+    lastDirection = NONE;
+    isTransitioning = false;
 }

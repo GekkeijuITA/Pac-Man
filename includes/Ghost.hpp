@@ -11,6 +11,7 @@ struct Ghost
 {
     float speed;
     int dotLimit;
+    bool isTransitioning;
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
