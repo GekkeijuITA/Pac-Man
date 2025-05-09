@@ -30,10 +30,10 @@ struct State
     PacMan pacman;
     std::vector<std::vector<char>> map;
 
-    std::unique_ptr<Blinky> blinky;
-    std::unique_ptr<Pinky> pinky;
-    std::unique_ptr<Inky> inky;
-    std::unique_ptr<Clyde> clyde;
+    Blinky blinky;
+    Pinky pinky;
+    Inky inky;
+    Clyde clyde;
 
     int lives;
     int score;

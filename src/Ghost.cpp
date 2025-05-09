@@ -2,19 +2,26 @@
 #include "../includes/textures.hpp"
 #include <iostream>
 #include <climits>
+#include <algorithm>
 
-Ghost::Ghost(GhostState state, int dotLimit, PacMan &pacmanRef, sf::IntRect preferredZone, std::string name) : map(nullptr), state(state), dotLimit(dotLimit), pacman(pacmanRef), preferredZone(preferredZone), name(name)
+Ghost::Ghost(GhostState state, int dotLimit, PacMan &pacmanRef, /*sf::IntRect preferredZone,*/ std::string name) : map(nullptr), state(state), dotLimit(dotLimit), pacman(pacmanRef), /*preferredZone(preferredZone),*/ name(name)
 {
     speed = 2.5f;
     direction = NONE;
     lastDirection = NONE;
-    goingToZone = false;
 
     if (!tex.loadFromFile(ASSET))
     {
         std::cerr << "Errore nel caricamento della texture del fantasma" << std::endl;
         exit(1);
     }
+
+    /*if (name == "Blinky")
+    {
+        std::cout << "====== " << name << " ======" << std::endl;
+        std::cout << "Prefered zone: " << preferredZone.size.x << ", " << preferredZone.size.y << std::endl;
+        std::cout << "Prefered zone: " << preferredZone.position.x << ", " << preferredZone.position.y << std::endl;
+    }*/
 }
 
 void Ghost::draw(sf::RenderWindow &window)
@@ -30,7 +37,7 @@ void Ghost::draw(sf::RenderWindow &window)
     window.draw(sprite);
 
     //  DEBUG
-    sf::RectangleShape rect(static_cast<sf::Vector2f>(preferredZone.size));
+    /*sf::RectangleShape rect(static_cast<sf::Vector2f>(preferredZone.size));
     rect.setPosition(static_cast<sf::Vector2f>(preferredZone.position));
     sf::Color color;
     if (name == "Blinky")
@@ -53,6 +60,12 @@ void Ghost::draw(sf::RenderWindow &window)
     rect.setOutlineColor(color);
     rect.setFillColor(sf::Color::Transparent);
     window.draw(rect);
+
+    rect.setPosition(static_cast<sf::Vector2f>(preferredZone.getCenter()));
+    rect.setSize({TILE_SIZE, TILE_SIZE});
+    rect.setFillColor(color);
+    rect.setOutlineThickness(0);
+    window.draw(rect);*/
 }
 
 void Ghost::setPosition(int x, int y)
@@ -84,10 +97,11 @@ bool Ghost::isWall(int x, int y)
     return (*map)[x][y] == LINE_H || (*map)[x][y] == LINE_V || (*map)[x][y] == CORNER_0 || (*map)[x][y] == CORNER_90 || (*map)[x][y] == CORNER_180 || (*map)[x][y] == CORNER_270;
 }
 
-bool Ghost::isInsideZone(int x, int y)
+/*bool Ghost::isInsideZone(int x, int y)
 {
+    // std::cout << "Ghost " << name << " isInsideZone: " << x << ", " << y << std::endl;
     return preferredZone.contains({x, y});
-}
+}*/
 
 void Ghost::chooseDirection()
 {
@@ -117,20 +131,10 @@ void Ghost::chooseDirection()
     }
 
     // logica per la zona preferita del fantasma
-    if (state == NORMAL && !possibleDirections.empty() && goingToZone)
+    /*if (state == NORMAL && !possibleDirections.empty())
     {
+        std::pair<Direction, int> bestDirection = {NONE, INT_MAX};
         sf::Vector2i center = preferredZone.getCenter();
-
-        if (position.x < center.x && !isWall(position.x + 1, position.y))
-            direction = DOWN;
-        else if (position.x > center.x && !isWall(position.x - 1, position.y))
-            direction = UP;
-        else if (position.y < center.y && !isWall(position.x, position.y + 1))
-            direction = RIGHT;
-        else if (position.y > center.y && !isWall(position.x, position.y - 1))
-            direction = LEFT;
-
-        /*std::pair<Direction, int> bestDirection = {NONE, INT_MAX};
 
         for (Direction dir : possibleDirections)
         {
@@ -156,10 +160,15 @@ void Ghost::chooseDirection()
 
             if (!isWall(nextTile.x, nextTile.y))
             {
-                int dist = std::abs(center.x - nextTile.x) + std::abs(center.y - nextTile.y);
-                if (dist < bestDirection.second)
+                // Distanza di Manhattan
+                int dist = std::abs((nextTile.x * TILE_SIZE) - center.x) + std::abs((nextTile.y * TILE_SIZE) - center.y);
+
+                if (isInsideZone(nextTile.x * TILE_SIZE, nextTile.y * TILE_SIZE))
                 {
-                    bestDirection = {dir, dist};
+                    if (dist < bestDirection.second)
+                    {
+                        bestDirection = {dir, dist};
+                    }
                 }
             }
         }
@@ -169,8 +178,8 @@ void Ghost::chooseDirection()
             direction = bestDirection.first;
             lastDirection = direction;
             return;
-        }*/
-    }
+        }
+    }*/
 
     if (!possibleDirections.empty())
     {
@@ -199,7 +208,6 @@ void Ghost::move(float elapsed)
             else
             {
                 state = NORMAL;
-                goingToZone = false;
             }
         }
         else

@@ -7,5 +7,5 @@ inline const sf::Vector2i CLYDE_D = {6, 7};
 
 struct Clyde : public Ghost
 {
-    Clyde(PacMan &pacman, unsigned int w, unsigned int h);
+    Clyde(PacMan &pacman);
 };
