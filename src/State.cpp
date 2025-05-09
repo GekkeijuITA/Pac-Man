@@ -9,6 +9,8 @@
 State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman(), blinky(*this), pinky(*this), inky(*this), clyde(*this)
 {
     recentFruits.clear();
+    gameOver = false;
+    pause = false;
 
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
@@ -82,6 +84,9 @@ State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), hi
 
 void State::update(float elapsed)
 {
+    if (gameOver || pause)
+        return;
+
     collisions(elapsed);
 }
 
@@ -470,4 +475,16 @@ void State::resetRound()
     pinky.respawn(Ghost::IN_HOUSE);
     inky.respawn(Ghost::IN_HOUSE);
     clyde.respawn(Ghost::IN_HOUSE);
+
+    if(lives <= 0)
+    {
+        setGameOver();
+    }
+}
+
+void State::setGameOver()
+{
+    std::cout << "Game Over" << std::endl;
+    gameOver = true;
+    pause = true;
 }

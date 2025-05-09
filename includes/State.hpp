@@ -38,10 +38,13 @@ struct State
     int lives;
     int score;
     int highscore;
+    bool gameOver;
 
     size_t maxFruits;
     std::deque<sf::Vector2i> recentFruits;
     int fruitCount;
+
+    bool pause;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
@@ -57,4 +60,5 @@ struct State
     void drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor);
     void drawRecentFruits();
     void resetRound();
+    void setGameOver();
 };
