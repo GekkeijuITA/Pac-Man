@@ -5,6 +5,8 @@
 #include <climits>
 #include <algorithm>
 
+#define COLLIDE_BOX 1.5f
+
 Ghost::Ghost(
     GhostState state,
     int dotLimit,
@@ -48,9 +50,11 @@ void Ghost::draw(sf::RenderWindow &window)
 
     window.draw(sprite);
 
+
     //  DEBUG
-    /*sf::RectangleShape rect(static_cast<sf::Vector2f>(preferredZone.size));
-    rect.setPosition(static_cast<sf::Vector2f>(preferredZone.position));
+    sf::RectangleShape rect({COLLIDE_BOX * TILE_SIZE, COLLIDE_BOX * TILE_SIZE});
+    rect.setPosition({x,y});
+    rect.setOrigin({COLLIDE_BOX * TILE_SIZE / 2, COLLIDE_BOX * TILE_SIZE / 2});
     sf::Color color;
     if (name == "Blinky")
     {
@@ -73,7 +77,7 @@ void Ghost::draw(sf::RenderWindow &window)
     rect.setFillColor(sf::Color::Transparent);
     window.draw(rect);
 
-    rect.setPosition(static_cast<sf::Vector2f>(preferredZone.getCenter()));
+    /*rect.setPosition(static_cast<sf::Vector2f>(preferredZone.getCenter()));
     rect.setSize({TILE_SIZE, TILE_SIZE});
     rect.setFillColor(color);
     rect.setOutlineThickness(0);
@@ -372,7 +376,7 @@ void Ghost::eat(int x, int y)
     sf::Vector2i distanceFromPacman = gameState.pacman.position - position;
     float distance = std::sqrt(distanceFromPacman.x * distanceFromPacman.x + distanceFromPacman.y * distanceFromPacman.y);
 
-    if (distance < 1.f)
+    if (distance < COLLIDE_BOX)
     {
         gameState.lives--;
         gameState.resetRound();
