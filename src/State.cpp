@@ -88,6 +88,13 @@ void State::update(float elapsed)
         return;
 
     collisions(elapsed);
+    
+    blinky.move(elapsed);
+    pinky.move(elapsed);
+    inky.move(elapsed);
+    clyde.move(elapsed);
+
+    bounds();
 }
 
 void checkBounds(sf::Vector2i &pos)
@@ -120,10 +127,6 @@ void State::bounds()
     checkBounds(clyde.position);
 }
 
-void State::ghost_collisions(float elapsed)
-{
-}
-
 void State::collisions(float elapsed)
 {
     int next_x = pacman.position.x;
@@ -153,13 +156,6 @@ void State::collisions(float elapsed)
     {
         pacman.move(elapsed);
     }
-
-    blinky.move(elapsed);
-    pinky.move(elapsed);
-    inky.move(elapsed);
-    clyde.move(elapsed);
-
-    bounds();
 }
 
 bool State::getMap(std::string mapPath)
@@ -357,7 +353,7 @@ void State::doGraphics()
     pinky.draw(window);
     inky.draw(window);
     clyde.draw(window);
-    
+
     /*sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
     float thickness = 1.0f;
 
@@ -476,7 +472,7 @@ void State::resetRound()
     inky.respawn(Ghost::IN_HOUSE);
     clyde.respawn(Ghost::IN_HOUSE);
 
-    if(lives <= 0)
+    if (lives <= 0)
     {
         setGameOver();
     }
