@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 
-State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman(), blinky(*this), pinky(*this), inky(*this), clyde(*this)
+State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman(*this), blinky(*this), pinky(*this), inky(*this), clyde(*this)
 {
     recentFruits.clear();
     gameOver = false;
@@ -87,8 +87,56 @@ void State::update(float elapsed)
     if (gameOver || pause)
         return;
 
+    if (pacman.powerPellet)
+    {
+        if (blinky.state == Ghost::NORMAL)
+        {
+            blinky.setState(Ghost::SCARED);
+        }
+        if (pinky.state == Ghost::NORMAL)
+        {
+            pinky.setState(Ghost::SCARED);
+        }
+        if (inky.state == Ghost::NORMAL)
+        {
+            inky.setState(Ghost::SCARED);
+        }
+        if (clyde.state == Ghost::NORMAL)
+        {
+            clyde.setState(Ghost::SCARED);
+        }
+
+        pacman.powerPelletTimer -= elapsed;
+        if (pacman.powerPelletTimer <= 0.f)
+        {
+            pacman.powerPellet = false;
+            pacman.powerPelletTimer = 3.f; // Reset
+            pacman.ghostStreak = 0;
+
+            if (blinky.state == Ghost::SCARED)
+            {
+                blinky.setState(Ghost::NORMAL);
+            }
+
+            if (pinky.state == Ghost::SCARED)
+            {
+                pinky.setState(Ghost::NORMAL);
+            }
+
+            if (inky.state == Ghost::SCARED)
+            {
+                inky.setState(Ghost::NORMAL);
+            }
+
+            if (clyde.state == Ghost::SCARED)
+            {
+                clyde.setState(Ghost::NORMAL);
+            }
+        }
+    }
+
     collisions(elapsed);
-    
+
     blinky.move(elapsed);
     pinky.move(elapsed);
     inky.move(elapsed);
@@ -354,13 +402,13 @@ void State::doGraphics()
     inky.draw(window);
     clyde.draw(window);
 
-    /*sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
+    sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
     float thickness = 1.0f;
 
     for (int x = 0; x <= MAP_WIDTH; x++)
     {
         sf::RectangleShape line(sf::Vector2f({thickness, (MAP_HEIGHT + 5) * TILE_SIZE}));
-        line.setPosition({(float)x * TILE_SIZE, 0});
+        line.setPosition({(float)x * TILE_SIZE, 3 * TILE_SIZE});
         line.setFillColor(gridColor);
         window.draw(line);
     }
@@ -371,7 +419,7 @@ void State::doGraphics()
         line.setPosition({0, (float)y * TILE_SIZE});
         line.setFillColor(gridColor);
         window.draw(line);
-    }*/
+    }
 }
 
 void State::doUI()

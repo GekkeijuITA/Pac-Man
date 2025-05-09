@@ -10,16 +10,20 @@ inline const sf::Vector2i LEFT_PACMAN = {1, 1};
 inline const sf::Vector2i UP_PACMAN = {1, 2};
 inline const sf::Vector2i DOWN_PACMAN = {1, 3};
 
+struct State;
+
 struct PacMan
 {
-    float speed;
-    int dotEaten;
+    float speed, powerPelletTimer;
+    int dotEaten, ghostStreak;
+    bool powerPellet;
 
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
     sf::Vector2f fPosition;
     sf::Vector2i spawn;
+    State &gameState;
 
     enum Direction
     {
@@ -41,7 +45,7 @@ struct PacMan
         {NONE, RIGHT_PACMAN} // Default
     };
 
-    PacMan();
+    PacMan(State &gameState);
     void draw(sf::RenderWindow &window);
     void move(float elapsed);
     void setPosition(int x, int y);
@@ -52,4 +56,5 @@ struct PacMan
     void updateDirection();
     int getDotEaten();
     void respawn();
+    void checkForGhosts();
 };

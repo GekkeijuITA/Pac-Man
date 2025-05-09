@@ -4,8 +4,25 @@
 #include <iostream>
 #include <climits>
 #include <algorithm>
+#include <queue>
+#include <array>
+#include <unordered_map>
 
 #define COLLIDE_BOX 1.5f
+
+namespace std
+{
+    template <>
+    struct hash<sf::Vector2i>
+    {
+        size_t operator()(const sf::Vector2i &vector) const noexcept
+        {
+            size_t h1 = std::hash<int>{}(vector.x);
+            size_t h2 = std::hash<int>{}(vector.y);
+            return h1 ^ (h2 << 1);
+        }
+    };
+}
 
 Ghost::Ghost(
     GhostState state,
@@ -23,24 +40,31 @@ Ghost::Ghost(
     direction = NONE;
     lastDirection = NONE;
     isTransitioning = false;
+    isGoingToExit = false;
+    isGoingToSpawn = false;
 
     if (!tex.loadFromFile(ASSET))
     {
         std::cerr << "Errore nel caricamento della texture del fantasma" << std::endl;
         exit(1);
     }
-
-    /*if (name == "Blinky")
-    {
-        std::cout << "====== " << name << " ======" << std::endl;
-        std::cout << "Prefered zone: " << preferredZone.size.x << ", " << preferredZone.size.y << std::endl;
-        std::cout << "Prefered zone: " << preferredZone.position.x << ", " << preferredZone.position.y << std::endl;
-    }*/
 }
 
 void Ghost::draw(sf::RenderWindow &window)
 {
-    sf::Vector2i ghostPos = GHOST_TEX_MAP.at(direction);
+    sf::Vector2i ghostPos;
+    if (state == EATEN)
+    {
+        ghostPos = GHOST_EYES_TEX_MAP.at(direction);
+    }
+    else if (state == SCARED)
+    {
+        ghostPos = GHOST_SCARED;
+    }
+    else
+    {
+        ghostPos = GHOST_TEX_MAP.at(direction);
+    }
     sf::Sprite sprite = createSprite(tex, ghostPos, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true);
 
     float y = static_cast<float>((fPosition.x + position.x + 3 + 0.5f) * TILE_SIZE);
@@ -49,39 +73,6 @@ void Ghost::draw(sf::RenderWindow &window)
     sprite.setPosition({x, y});
 
     window.draw(sprite);
-
-
-    //  DEBUG
-    sf::RectangleShape rect({COLLIDE_BOX * TILE_SIZE, COLLIDE_BOX * TILE_SIZE});
-    rect.setPosition({x,y});
-    rect.setOrigin({COLLIDE_BOX * TILE_SIZE / 2, COLLIDE_BOX * TILE_SIZE / 2});
-    sf::Color color;
-    if (name == "Blinky")
-    {
-        color = sf::Color::Red;
-    }
-    else if (name == "Pinky")
-    {
-        color = sf::Color::Magenta;
-    }
-    else if (name == "Inky")
-    {
-        color = sf::Color::Cyan;
-    }
-    else if (name == "Clyde")
-    {
-        color = sf::Color::Yellow;
-    }
-    rect.setOutlineThickness(2);
-    rect.setOutlineColor(color);
-    rect.setFillColor(sf::Color::Transparent);
-    window.draw(rect);
-
-    /*rect.setPosition(static_cast<sf::Vector2f>(preferredZone.getCenter()));
-    rect.setSize({TILE_SIZE, TILE_SIZE});
-    rect.setFillColor(color);
-    rect.setOutlineThickness(0);
-    window.draw(rect);*/
 }
 
 void Ghost::setPosition(int x, int y)
@@ -113,12 +104,6 @@ bool Ghost::isWall(int x, int y)
     return (*map)[x][y] == LINE_H || (*map)[x][y] == LINE_V || (*map)[x][y] == CORNER_0 || (*map)[x][y] == CORNER_90 || (*map)[x][y] == CORNER_180 || (*map)[x][y] == CORNER_270;
 }
 
-/*bool Ghost::isInsideZone(int x, int y)
-{
-    // std::cout << "Ghost " << name << " isInsideZone: " << x << ", " << y << std::endl;
-    return preferredZone.contains({x, y});
-}*/
-
 void Ghost::chooseDirection()
 {
     std::vector<Direction> possibleDirections;
@@ -146,62 +131,104 @@ void Ghost::chooseDirection()
             possibleDirections.push_back(RIGHT);
     }
 
-    // logica per la zona preferita del fantasma
-    /*if (state == NORMAL && !possibleDirections.empty())
-    {
-        std::pair<Direction, int> bestDirection = {NONE, INT_MAX};
-        sf::Vector2i center = preferredZone.getCenter();
-
-        for (Direction dir : possibleDirections)
-        {
-            sf::Vector2i nextTile = position;
-
-            switch (dir)
-            {
-            case UP:
-                nextTile.x--;
-                break;
-            case DOWN:
-                nextTile.x++;
-                break;
-            case LEFT:
-                nextTile.y--;
-                break;
-            case RIGHT:
-                nextTile.y++;
-                break;
-            default:
-                break;
-            }
-
-            if (!isWall(nextTile.x, nextTile.y))
-            {
-                // Distanza di Manhattan
-                int dist = std::abs((nextTile.x * TILE_SIZE) - center.x) + std::abs((nextTile.y * TILE_SIZE) - center.y);
-
-                if (isInsideZone(nextTile.x * TILE_SIZE, nextTile.y * TILE_SIZE))
-                {
-                    if (dist < bestDirection.second)
-                    {
-                        bestDirection = {dir, dist};
-                    }
-                }
-            }
-        }
-
-        if (bestDirection.first != NONE)
-        {
-            direction = bestDirection.first;
-            lastDirection = direction;
-            return;
-        }
-    }*/
-
     if (!possibleDirections.empty())
     {
         direction = possibleDirections[rand() % possibleDirections.size()];
         lastDirection = direction;
     }
+}
+
+// https://medium.com/@RobuRishabh/classic-graph-algorithms-c-9773f2841f2e
+std::vector<sf::Vector2i> Ghost::findPathBFS(sf::Vector2i destination)
+{
+    if (!map)
+        return {};
+
+    std::vector<sf::Vector2i> path;
+    std::unordered_map<sf::Vector2i, bool> visited;
+    std::unordered_map<sf::Vector2i, sf::Vector2i> parent;
+    std::queue<sf::Vector2i> q;
+    visited[position] = true;
+    parent[position] = position;
+    q.push(position);
+
+    while (!q.empty())
+    {
+        sf::Vector2i current = q.front();
+        q.pop();
+
+        if (current == destination)
+        {
+            sf::Vector2i step = current;
+            while (parent[step] != position)
+            {
+                path.push_back(step);
+                step = parent[step];
+            }
+            path.push_back(position);
+            std::reverse(path.begin(), path.end());
+
+            // print the path
+            std::cout << "Path from " << position.x << "," << position.y << " to " << destination.x << "," << destination.y << ": ";
+            for (const auto &p : path)
+            {
+                std::cout << "(" << p.x << "," << p.y << ") ";
+            }
+            std::cout << std::endl;
+
+            return path;
+        }
+
+        std::vector<sf::Vector2i> neighbours = {
+            {current.x - 1, current.y},
+            {current.x + 1, current.y},
+            {current.x, current.y - 1},
+            {current.x, current.y + 1}};
+
+        for (sf::Vector2i neighbour : neighbours)
+        {
+            if (!visited[neighbour] &&
+                neighbour.x >= 0 &&
+                neighbour.x < map->size() &&
+                neighbour.y >= 0 &&
+                neighbour.y < (*map)[0].size() &&
+                !isWall(neighbour.x, neighbour.y))
+            {
+                visited[neighbour] = true;
+                parent[neighbour] = current;
+                q.push(neighbour);
+            }
+        }
+    }
+
+    return {};
+}
+
+void Ghost::followPathTo(sf::Vector2i destination, bool &isGoing)
+{
+    if (isGoing)
+        return;
+
+    std::vector<sf::Vector2i> path = findPathBFS(destination);
+    if (path.size() < 2)
+    {
+        return;
+    }
+
+    sf::Vector2i nextTarget = path[1];
+    sf::Vector2i currentTile = position;
+
+    if (nextTarget.x < currentTile.x)
+        direction = UP;
+    else if (nextTarget.x > currentTile.x)
+        direction = DOWN;
+    else if (nextTarget.y < currentTile.y)
+        direction = LEFT;
+    else if (nextTarget.y > currentTile.y)
+        direction = RIGHT;
+
+    lastDirection = direction;
+    isGoing = true;
 }
 
 void Ghost::move(float elapsed)
@@ -220,6 +247,8 @@ void Ghost::move(float elapsed)
                     direction = RIGHT;
                 else if (position.y > nearestExitTile.y && !isWall(position.x, position.y - 1))
                     direction = LEFT;
+
+                lastDirection = direction;
             }
             else
             {
@@ -232,25 +261,27 @@ void Ghost::move(float elapsed)
             chooseDirection();
         }
     }
-
-    sf::Vector2i nextTile = position;
-
-    switch (direction)
+    else if (state == EATEN)
     {
-    case UP:
-        nextTile.x--;
-        break;
-    case DOWN:
-        nextTile.x++;
-        break;
-    case LEFT:
-        nextTile.y--;
-        break;
-    case RIGHT:
-        nextTile.y++;
-        break;
-    default:
-        break;
+        // Fare BFS per tornare a casa
+        if (position != spawn)
+        {
+            if (position.x < spawn.x && !isWall(position.x + 1, position.y))
+                direction = DOWN;
+            else if (position.x > spawn.x && !isWall(position.x - 1, position.y))
+                direction = UP;
+            else if (position.y < spawn.y && !isWall(position.x, position.y + 1))
+                direction = RIGHT;
+            else if (position.y > spawn.y && !isWall(position.x, position.y - 1))
+                direction = LEFT;
+
+            lastDirection = direction;
+        }
+        else
+        {
+            state = IN_HOUSE;
+            isTransitioning = true;
+        }
     }
 
     bool alignedToCell = std::abs(fPosition.x) < 0.01f && std::abs(fPosition.y) < 0.01f;
@@ -278,6 +309,26 @@ void Ghost::move(float elapsed)
         {
             chooseDirection();
         }
+    }
+
+    sf::Vector2i nextTile = position;
+
+    switch (direction)
+    {
+    case UP:
+        nextTile.x--;
+        break;
+    case DOWN:
+        nextTile.x++;
+        break;
+    case LEFT:
+        nextTile.y--;
+        break;
+    case RIGHT:
+        nextTile.y++;
+        break;
+    default:
+        break;
     }
 
     if (!isWall(nextTile.x, nextTile.y))
@@ -328,7 +379,7 @@ void Ghost::move(float elapsed)
         }
     }
 
-    if (state == NORMAL)
+    if (state != EATEN)
     {
         eat(position.x, position.y);
     }
@@ -336,7 +387,8 @@ void Ghost::move(float elapsed)
 
 void Ghost::setState(GhostState newState)
 {
-    state = newState;
+    if (state != newState)
+        state = newState;
 }
 
 void Ghost::addExitTile(int x, int y)
@@ -370,16 +422,23 @@ sf::Vector2i Ghost::getNearestExitTile()
 
 void Ghost::eat(int x, int y)
 {
-    if (map == nullptr)
-        return;
-
     sf::Vector2i distanceFromPacman = gameState.pacman.position - position;
     float distance = std::sqrt(distanceFromPacman.x * distanceFromPacman.x + distanceFromPacman.y * distanceFromPacman.y);
 
     if (distance < COLLIDE_BOX)
     {
-        gameState.lives--;
-        gameState.resetRound();
+        if (state == SCARED || state == RETURNING_FROM_SCARED)
+        {
+            setState(EATEN);
+            speed *= 2;
+            gameState.score += (200 * gameState.pacman.ghostStreak);
+            gameState.pacman.ghostStreak++;
+        }
+        else
+        {
+            gameState.lives--;
+            gameState.resetRound();
+        }
     }
 }
 

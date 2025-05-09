@@ -1,13 +1,17 @@
 #include "../includes/PacMan.hpp"
+#include "../includes/State.hpp"
 #include "../includes/textures.hpp"
 #include <iostream>
 
-PacMan::PacMan() : map(nullptr)
+PacMan::PacMan(State &gameState) : map(nullptr), gameState(gameState)
 {
     speed = 5.f;
     dotEaten = 0;
     direction = NONE;
     nextDirection = NONE;
+    powerPellet = false;
+    powerPelletTimer = 3.f; // in secondi
+    ghostStreak = 0;
 
     if (!tex.loadFromFile(ASSET))
     {
@@ -143,46 +147,17 @@ void PacMan::eat(int x, int y)
     case PACDOT:
         (*map)[x][y] = EMPTY_BLOCK;
         dotEaten++;
-        // score += 10;
+        gameState.score += 10;
         break;
     case POWERPELLET:
         (*map)[x][y] = EMPTY_BLOCK;
-        // score += 50;
-    case CHERRY:
-        (*map)[x][y] = EMPTY_BLOCK;
-        // score += 100;
-        break;
-    case STRAWBERRY:
-        (*map)[x][y] = EMPTY_BLOCK;
-        // score += 300;
-        break;
-    case ORANGE:
-        (*map)[x][y] = EMPTY_BLOCK;
-        // score += 500;
-        break;
-    case APPLE:
-        (*map)[x][y] = EMPTY_BLOCK;
-        // score += 700;
-        break;
-    case MELON:
-        (*map)[x][y] = EMPTY_BLOCK;
-        // score += 1000;
-        break;
-    case GALAXIAN:
-        (*map)[x][y] = EMPTY_BLOCK;
-        // score += 2000;
-        break;
-    case BELL:
-        (*map)[x][y] = EMPTY_BLOCK;
-        // score += 3000;
-        break;
-    case KEY:
-        (*map)[x][y] = EMPTY_BLOCK;
-        // score += 5000;
-        break;
+        if (powerPellet)
+            break;
+        powerPellet = true;
+        gameState.score += 50;
     default:
         break;
-    }    
+    }
 }
 
 int PacMan::getDotEaten()

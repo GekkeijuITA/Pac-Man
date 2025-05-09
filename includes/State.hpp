@@ -51,7 +51,6 @@ struct State
     void update(float elapsed);
     void bounds();
     void collisions(float elapsed);
-    void ghost_collisions(float elapsed);
     void doGraphics();
     void doUI();
     void drawChar(int x, int y, sf::Vector2i charPos);

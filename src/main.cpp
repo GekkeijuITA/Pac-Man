@@ -40,6 +40,16 @@ void handle(const sf::Event::KeyPressed &key, State &gs)
     gs.pacman.setRotation(newDirection);
 }
 
+void handle(const sf::Event::FocusGained &, State &gs)
+{
+    gs.pause = false;
+}
+
+void handle(const sf::Event::FocusLost &, State &gs)
+{
+    gs.pause = true;
+}
+
 int main()
 {
     srand(time(0));
