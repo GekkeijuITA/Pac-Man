@@ -189,3 +189,10 @@ int PacMan::getDotEaten()
 {
     return dotEaten;
 }
+
+void PacMan::respawn()
+{
+    setPosition(spawn.x, spawn.y);
+    setRotation(NONE);
+    direction = NONE;
+}

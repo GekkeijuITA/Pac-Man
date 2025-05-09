@@ -56,4 +56,5 @@ struct State
     void drawLives();
     void drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor);
     void drawRecentFruits();
+    void resetRound();
 };

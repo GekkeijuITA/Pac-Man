@@ -1,6 +1,6 @@
 #include "../../includes/ghosts/Clyde.hpp"
 
-Clyde::Clyde(PacMan &pacmanRef) : Ghost(IN_HOUSE, 60, pacmanRef, /*sf::IntRect({0, ((MAP_HEIGHT * TILE_SIZE) / 2) + (3 * TILE_SIZE)}, {(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}),*/ "Clyde")
+Clyde::Clyde(State &gameState) : Ghost(IN_HOUSE, 60, /*sf::IntRect({0, ((MAP_HEIGHT * TILE_SIZE) / 2) + (3 * TILE_SIZE)}, {(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}),*/ "Clyde", gameState)
 {
     GHOST_TEX_MAP = {
         {RIGHT, CLYDE_R},

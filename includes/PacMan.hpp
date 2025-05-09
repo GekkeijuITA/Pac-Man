@@ -19,6 +19,7 @@ struct PacMan
     sf::Texture tex;
     sf::Vector2i position;
     sf::Vector2f fPosition;
+    sf::Vector2i spawn;
 
     enum Direction
     {
@@ -50,4 +51,5 @@ struct PacMan
     void eat(int x, int y);
     void updateDirection();
     int getDotEaten();
+    void respawn();
 };

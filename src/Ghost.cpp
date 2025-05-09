@@ -1,10 +1,21 @@
 #include "../includes/Ghost.hpp"
+#include "../includes/State.hpp"
 #include "../includes/textures.hpp"
 #include <iostream>
 #include <climits>
 #include <algorithm>
 
-Ghost::Ghost(GhostState state, int dotLimit, PacMan &pacmanRef, /*sf::IntRect preferredZone,*/ std::string name) : map(nullptr), state(state), dotLimit(dotLimit), pacman(pacmanRef), /*preferredZone(preferredZone),*/ name(name)
+Ghost::Ghost(
+    GhostState state,
+    int dotLimit,
+    /*sf::IntRect preferredZone,*/
+    std::string name,
+    State &gameState) : map(nullptr),
+                        state(state),
+                        dotLimit(dotLimit),
+                        /*preferredZone(preferredZone),*/
+                        name(name),
+                        gameState(gameState)
 {
     speed = 2.5f;
     direction = NONE;
@@ -192,7 +203,7 @@ void Ghost::move(float elapsed)
 {
     if (state == IN_HOUSE)
     {
-        if (pacman.getDotEaten() >= dotLimit)
+        if (gameState.pacman.getDotEaten() >= dotLimit)
         {
             if (position != nearestExitTile)
             {
@@ -293,6 +304,11 @@ void Ghost::move(float elapsed)
         position.y += static_cast<int>(fPosition.y);
         fPosition.y -= static_cast<int>(fPosition.y);
     }
+
+    if (state == NORMAL)
+    {
+        eat(position.x, position.y);
+    }
 }
 
 void Ghost::setState(GhostState newState)
@@ -327,4 +343,27 @@ sf::Vector2i Ghost::getNearestExitTile()
     }
 
     return nearest;
+}
+
+void Ghost::eat(int x, int y)
+{
+    if (map == nullptr)
+        return;
+
+    sf::Vector2i distanceFromPacman = gameState.pacman.position - position;
+    float distance = std::sqrt(distanceFromPacman.x * distanceFromPacman.x + distanceFromPacman.y * distanceFromPacman.y);
+
+    if (distance < 1.f)
+    {
+        std::cout << "Ghost " << name << " ha mangiato Pacman!" << std::endl;
+        gameState.lives--;
+        gameState.resetRound();
+    }
+}
+
+void Ghost::respawn(GhostState state)
+{
+    setState(state);
+    setPosition(spawn.x, spawn.y);
+    setDirection(NONE);
 }

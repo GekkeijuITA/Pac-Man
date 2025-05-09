@@ -7,5 +7,5 @@ inline const sf::Vector2i INKY_D = {6, 6};
 
 struct Inky : public Ghost
 {
-    Inky(PacMan &pacman);
+    Inky(State &gameState);
 };

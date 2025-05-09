@@ -2,9 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 #include "global_values.hpp"
-#include "PacMan.hpp"
 #include <map>
 #include <string>
+
+struct State;
 
 struct Ghost
 {
@@ -14,11 +15,12 @@ struct Ghost
     sf::Texture tex;
     sf::Vector2i position;
     sf::Vector2f fPosition;
+    sf::Vector2i spawn;
     std::vector<sf::Vector2i> exitTiles;
     sf::Vector2i nearestExitTile;
     //sf::IntRect preferredZone;
-    PacMan &pacman;
     std::string name;
+    State &gameState;
 
     enum Direction
     {
@@ -42,12 +44,19 @@ struct Ghost
     protected:
         std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
 
-    Ghost(GhostState state, int dotLimit, PacMan &pacman, /*sf::IntRect preferredZone,*/ std::string name);
+    Ghost(
+        GhostState state, 
+        int dotLimit,
+        /*sf::IntRect preferredZone,*/ 
+        std::string name,
+        State &gameState
+    );
 
     private:
         void setDirection(Direction dir);
         void chooseDirection();
         sf::Vector2i getNearestExitTile();
+        void eat(int x, int y);
 
     public:
         void draw(sf::RenderWindow &window);
@@ -58,4 +67,5 @@ struct Ghost
         //bool isInsideZone(int x, int y);
         void setState(GhostState state);
         void addExitTile(int x, int y);
+        void respawn(GhostState state);
 };

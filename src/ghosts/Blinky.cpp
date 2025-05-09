@@ -1,6 +1,12 @@
 #include "../../includes/ghosts/Blinky.hpp"
 
-Blinky::Blinky(PacMan &pacmanRef) : Ghost(NORMAL, 0, pacmanRef, /*sf::IntRect({(MAP_WIDTH * TILE_SIZE) / 2, 3 * TILE_SIZE}, {(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}),*/ "Blinky")
+Blinky::Blinky(State &gameState) 
+: Ghost(NORMAL, 
+    0,
+    /*sf::IntRect({(MAP_WIDTH * TILE_SIZE) / 2, 3 * TILE_SIZE}, {(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}),*/ 
+    "Blinky",
+    gameState
+)
 {
     GHOST_TEX_MAP = {
         {RIGHT, BLINKY_R},
