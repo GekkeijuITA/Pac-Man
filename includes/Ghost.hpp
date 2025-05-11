@@ -15,9 +15,9 @@ struct State;
 
 struct Ghost
 {
-    float speed;
+    float speed, currentSpeed, timeToEnterHouse;
     int dotLimit;
-    bool isTransitioning, isGoingToExit, isGoingToSpawn;
+    bool isTransitioning, enteredHouse;
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
@@ -25,9 +25,9 @@ struct Ghost
     sf::Vector2i spawn;
     std::vector<sf::Vector2i> exitTiles;
     sf::Vector2i nearestExitTile;
-    // sf::IntRect preferredZone;
     std::string name;
     State &gameState;
+    std::vector<sf::Vector2i> path;
 
     enum Direction
     {
@@ -47,10 +47,9 @@ struct Ghost
         NORMAL,
         EATEN,
         SCARED,
-        RETURNING_FROM_SCARED,
     };
 
-    GhostState state;
+    GhostState state, lastState;
 
 protected:
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
@@ -64,25 +63,24 @@ protected:
     Ghost(
         GhostState state,
         int dotLimit,
-        /*sf::IntRect preferredZone,*/
         std::string name,
         State &gameState);
 
 private:
     void setDirection(Direction dir);
     void chooseDirection();
-    sf::Vector2i getNearestExitTile();
+    void getExitTiles();
     void eat(int x, int y);
-    void followPathTo(sf::Vector2i destination, bool &isGoing);
-    std::vector<sf::Vector2i> findPathBFS(sf::Vector2i destination);
+    void findPathBFS(sf::Vector2i destination);
+    void computeNextDirection(sf::Vector2i destination);
 
 public:
     void draw(sf::RenderWindow &window);
     void setPosition(int x, int y);
     void setMap(std::vector<std::vector<char>> *map);
     void move(float elapsed);
+    double distance(sf::Vector2i target);
     bool isWall(int x, int y);
-    // bool isInsideZone(int x, int y);
     void setState(GhostState state);
     void addExitTile(int x, int y);
     void respawn(GhostState state);

@@ -24,24 +24,34 @@ namespace std
     };
 }
 
+namespace sf
+{
+    bool operator<(const sf::Vector2i a, const sf::Vector2i b)
+    {
+        if (a.x != b.x)
+            return a.x < b.x;
+        return a.y < b.y;
+    }
+}
+
 Ghost::Ghost(
     GhostState state,
     int dotLimit,
-    /*sf::IntRect preferredZone,*/
     std::string name,
     State &gameState) : map(nullptr),
                         state(state),
                         dotLimit(dotLimit),
-                        /*preferredZone(preferredZone),*/
                         name(name),
                         gameState(gameState)
 {
     speed = 2.5f;
+    currentSpeed = speed;
     direction = NONE;
     lastDirection = NONE;
     isTransitioning = false;
-    isGoingToExit = false;
-    isGoingToSpawn = false;
+    timeToEnterHouse = 0.f;
+    enteredHouse = false;
+    lastState = state;
 
     if (!tex.loadFromFile(ASSET))
     {
@@ -73,6 +83,20 @@ void Ghost::draw(sf::RenderWindow &window)
     sprite.setPosition({x, y});
 
     window.draw(sprite);
+
+    sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
+    rect.setFillColor(sf::Color::Transparent);
+    rect.setOutlineThickness(1);
+    // Disegna la BFS
+    for (const auto &p : path)
+    {
+        float y_l = static_cast<float>((p.x + 3) * TILE_SIZE);
+        float x_l = static_cast<float>(p.y * TILE_SIZE);
+
+        rect.setOutlineColor(sf::Color::Red);
+        rect.setPosition({x_l, y_l});
+        window.draw(rect);
+    }
 }
 
 void Ghost::setPosition(int x, int y)
@@ -85,7 +109,7 @@ void Ghost::setPosition(int x, int y)
 void Ghost::setMap(std::vector<std::vector<char>> *newMap)
 {
     map = newMap;
-    nearestExitTile = getNearestExitTile();
+    getExitTiles();
 }
 
 void Ghost::setDirection(Direction dir)
@@ -110,25 +134,45 @@ void Ghost::chooseDirection()
     int x = position.x;
     int y = position.y;
 
-    if (lastDirection != DOWN && !isWall(x - 1, y))
-        possibleDirections.push_back(UP);
-    if (lastDirection != UP && !isWall(x + 1, y))
-        possibleDirections.push_back(DOWN);
-    if (lastDirection != RIGHT && !isWall(x, y - 1) && state != IN_HOUSE)
-        possibleDirections.push_back(LEFT);
-    if (lastDirection != LEFT && !isWall(x, y + 1) && state != IN_HOUSE)
-        possibleDirections.push_back(RIGHT);
+    bool isOrWasInHouse = (state == SCARED && lastState == IN_HOUSE) || state == IN_HOUSE;
 
-    if (possibleDirections.empty())
+    if (isOrWasInHouse)
     {
-        if (!isWall(x - 1, y))
+        if (lastDirection != DOWN && !isWall(x - 1, y))
             possibleDirections.push_back(UP);
-        if (!isWall(x + 1, y))
+        if (lastDirection != UP && !isWall(x + 1, y))
             possibleDirections.push_back(DOWN);
-        if (!isWall(x, y - 1))
+
+        if (possibleDirections.empty())
+        {
+            if (lastDirection == UP && !isWall(x + 1, y))
+                possibleDirections.push_back(DOWN);
+            else if (lastDirection == DOWN && !isWall(x - 1, y))
+                possibleDirections.push_back(UP);
+        }
+    }
+    else
+    {
+        if (lastDirection != DOWN && !isWall(x - 1, y))
+            possibleDirections.push_back(UP);
+        if (lastDirection != UP && !isWall(x + 1, y))
+            possibleDirections.push_back(DOWN);
+        if (lastDirection != RIGHT && !isWall(x, y - 1))
             possibleDirections.push_back(LEFT);
-        if (!isWall(x, y + 1))
+        if (lastDirection != LEFT && !isWall(x, y + 1))
             possibleDirections.push_back(RIGHT);
+
+        if (possibleDirections.empty())
+        {
+            if (!isWall(x - 1, y))
+                possibleDirections.push_back(UP);
+            if (!isWall(x + 1, y))
+                possibleDirections.push_back(DOWN);
+            if (!isWall(x, y - 1))
+                possibleDirections.push_back(LEFT);
+            if (!isWall(x, y + 1))
+                possibleDirections.push_back(RIGHT);
+        }
     }
 
     if (!possibleDirections.empty())
@@ -139,12 +183,13 @@ void Ghost::chooseDirection()
 }
 
 // https://medium.com/@RobuRishabh/classic-graph-algorithms-c-9773f2841f2e
-std::vector<sf::Vector2i> Ghost::findPathBFS(sf::Vector2i destination)
+void Ghost::findPathBFS(sf::Vector2i destination)
 {
     if (!map)
-        return {};
+        return;
 
-    std::vector<sf::Vector2i> path;
+    path.clear();
+
     std::unordered_map<sf::Vector2i, bool> visited;
     std::unordered_map<sf::Vector2i, sf::Vector2i> parent;
     std::queue<sf::Vector2i> q;
@@ -160,30 +205,21 @@ std::vector<sf::Vector2i> Ghost::findPathBFS(sf::Vector2i destination)
         if (current == destination)
         {
             sf::Vector2i step = current;
-            while (parent[step] != position)
+            while (step != position)
             {
                 path.push_back(step);
                 step = parent[step];
             }
             path.push_back(position);
-            std::reverse(path.begin(), path.end());
 
-            // print the path
-            std::cout << "Path from " << position.x << "," << position.y << " to " << destination.x << "," << destination.y << ": ";
-            for (const auto &p : path)
-            {
-                std::cout << "(" << p.x << "," << p.y << ") ";
-            }
-            std::cout << std::endl;
-
-            return path;
+            return;
         }
 
         std::vector<sf::Vector2i> neighbours = {
-            {current.x - 1, current.y},
-            {current.x + 1, current.y},
-            {current.x, current.y - 1},
-            {current.x, current.y + 1}};
+            {current.x - 1, current.y},  // UP
+            {current.x + 1, current.y},  // DOWN
+            {current.x, current.y - 1},  // LEFT
+            {current.x, current.y + 1}}; // RIGHT
 
         for (sf::Vector2i neighbour : neighbours)
         {
@@ -200,35 +236,6 @@ std::vector<sf::Vector2i> Ghost::findPathBFS(sf::Vector2i destination)
             }
         }
     }
-
-    return {};
-}
-
-void Ghost::followPathTo(sf::Vector2i destination, bool &isGoing)
-{
-    if (isGoing)
-        return;
-
-    std::vector<sf::Vector2i> path = findPathBFS(destination);
-    if (path.size() < 2)
-    {
-        return;
-    }
-
-    sf::Vector2i nextTarget = path[1];
-    sf::Vector2i currentTile = position;
-
-    if (nextTarget.x < currentTile.x)
-        direction = UP;
-    else if (nextTarget.x > currentTile.x)
-        direction = DOWN;
-    else if (nextTarget.y < currentTile.y)
-        direction = LEFT;
-    else if (nextTarget.y > currentTile.y)
-        direction = RIGHT;
-
-    lastDirection = direction;
-    isGoing = true;
 }
 
 void Ghost::move(float elapsed)
@@ -239,20 +246,11 @@ void Ghost::move(float elapsed)
         {
             if (position != nearestExitTile)
             {
-                if (position.x < nearestExitTile.x && !isWall(position.x + 1, position.y))
-                    direction = DOWN;
-                else if (position.x > nearestExitTile.x && !isWall(position.x - 1, position.y))
-                    direction = UP;
-                else if (position.y < nearestExitTile.y && !isWall(position.x, position.y + 1))
-                    direction = RIGHT;
-                else if (position.y > nearestExitTile.y && !isWall(position.x, position.y - 1))
-                    direction = LEFT;
-
-                lastDirection = direction;
+                computeNextDirection(nearestExitTile);
             }
             else
             {
-                state = NORMAL;
+                setState(NORMAL);
                 isTransitioning = true;
             }
         }
@@ -263,28 +261,44 @@ void Ghost::move(float elapsed)
     }
     else if (state == EATEN)
     {
-        // Fare BFS per tornare a casa
-        if (position != spawn)
+        if (position != nearestExitTile && !enteredHouse)
         {
-            if (position.x < spawn.x && !isWall(position.x + 1, position.y))
-                direction = DOWN;
-            else if (position.x > spawn.x && !isWall(position.x - 1, position.y))
-                direction = UP;
-            else if (position.y < spawn.y && !isWall(position.x, position.y + 1))
-                direction = RIGHT;
-            else if (position.y > spawn.y && !isWall(position.x, position.y - 1))
-                direction = LEFT;
+            if (!path.empty())
+            {
+                sf::Vector2i nextTile = path.back();
 
-            lastDirection = direction;
+                if (position == nextTile)
+                {
+                    path.pop_back();
+                }
+                computeNextDirection(nextTile);
+            }
+            else
+            {
+                computeNextDirection(nearestExitTile);
+            }
+            timeToEnterHouse = 0.f;
         }
         else
         {
-            state = IN_HOUSE;
-            isTransitioning = true;
+            timeToEnterHouse += elapsed;
+            direction = lastDirection;
+            if (!enteredHouse)
+                enteredHouse = true;
+
+            if (timeToEnterHouse >= .5f)
+            {
+                setState(IN_HOUSE);
+                isTransitioning = true;
+                path.clear();
+                currentSpeed = speed;
+                enteredHouse = false;
+            }
         }
     }
 
-    bool alignedToCell = std::abs(fPosition.x) < 0.01f && std::abs(fPosition.y) < 0.01f;
+    float tolerance = 0.01f;
+    bool alignedToCell = std::abs(fPosition.x) < tolerance && std::abs(fPosition.y) < tolerance;
 
     if (alignedToCell && !isTransitioning)
     {
@@ -337,16 +351,16 @@ void Ghost::move(float elapsed)
         switch (direction)
         {
         case UP:
-            movement.x = -speed * elapsed;
+            movement.x = -currentSpeed * elapsed;
             break;
         case DOWN:
-            movement.x = speed * elapsed;
+            movement.x = currentSpeed * elapsed;
             break;
         case LEFT:
-            movement.y = -speed * elapsed;
+            movement.y = -currentSpeed * elapsed;
             break;
         case RIGHT:
-            movement.y = speed * elapsed;
+            movement.y = currentSpeed * elapsed;
             break;
         default:
             break;
@@ -385,10 +399,34 @@ void Ghost::move(float elapsed)
     }
 }
 
+// Calcola la distanza tra il fantasma e il bersaglio
+double Ghost::distance(sf::Vector2i target)
+{
+    return std::sqrt(std::pow(target.x - position.x, 2) + std::pow(target.y - position.y, 2));
+}
+
+// Un semplice pathfinding in base alla posizione del fantasma e del bersaglio
+void Ghost::computeNextDirection(sf::Vector2i destination)
+{
+    if (position.x < destination.x && !isWall(position.x + 1, position.y))
+        direction = DOWN;
+    else if (position.x > destination.x && !isWall(position.x - 1, position.y))
+        direction = UP;
+    else if (position.y < destination.y && !isWall(position.x, position.y + 1))
+        direction = RIGHT;
+    else if (position.y > destination.y && !isWall(position.x, position.y - 1))
+        direction = LEFT;
+
+    lastDirection = direction;
+}
+
 void Ghost::setState(GhostState newState)
 {
     if (state != newState)
+    {
+        lastState = state;
         state = newState;
+    }
 }
 
 void Ghost::addExitTile(int x, int y)
@@ -396,43 +434,39 @@ void Ghost::addExitTile(int x, int y)
     exitTiles.push_back({x, y});
 }
 
-sf::Vector2i Ghost::getNearestExitTile()
+void Ghost::getExitTiles()
 {
     if (exitTiles.empty())
     {
         std::cerr << "Nessun tile di uscita disponibile" << std::endl;
-        return {0, 0};
+        return;
     }
 
-    sf::Vector2i nearest = exitTiles[0];
-    int minDist = std::abs(position.x - nearest.x) + std::abs(position.y - nearest.y);
+    std::map<sf::Vector2i, int> distances;
 
     for (const auto &tile : exitTiles)
     {
         int dist = std::abs(position.x - tile.x) + std::abs(position.y - tile.y);
-        if (dist < minDist)
-        {
-            minDist = dist;
-            nearest = tile;
-        }
+        distances[tile] = dist;
     }
 
-    return nearest;
+    auto minIt = std::min_element(distances.begin(), distances.end(), [](const auto &a, const auto &b)
+                                  { return a.second < b.second; });
+    nearestExitTile = minIt->first;
 }
 
 void Ghost::eat(int x, int y)
 {
-    sf::Vector2i distanceFromPacman = gameState.pacman.position - position;
-    float distance = std::sqrt(distanceFromPacman.x * distanceFromPacman.x + distanceFromPacman.y * distanceFromPacman.y);
-
-    if (distance < COLLIDE_BOX)
+    if (distance(gameState.pacman.position) < COLLIDE_BOX)
     {
-        if (state == SCARED || state == RETURNING_FROM_SCARED)
+        if (state == SCARED)
         {
             setState(EATEN);
-            speed *= 2;
+            currentSpeed *= 2;
             gameState.score += (200 * gameState.pacman.ghostStreak);
             gameState.pacman.ghostStreak++;
+            getExitTiles();
+            findPathBFS(nearestExitTile);
         }
         else
         {
