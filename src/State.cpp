@@ -215,31 +215,31 @@ bool State::getMap(std::string mapPath)
             if (row[i] == PACMAN)
             {
                 pacman.setPosition(map.size() - 1, i);
-                pacman.spawn = {map.size() - 1, i};
+                pacman.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
             }
             else if (row[i] == BLINKY)
             {
                 blinky.setPosition(map.size() - 1, i);
-                blinky.spawn = {map.size() - 1, i};
+                blinky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
             }
             else if (row[i] == PINKY)
             {
                 pinky.setPosition(map.size() - 1, i);
-                pinky.spawn = {map.size() - 1, i};
+                pinky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
             }
             else if (row[i] == INKY)
             {
                 inky.setPosition(map.size() - 1, i);
-                inky.spawn = {map.size() - 1, i};
+                inky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
             }
             else if (row[i] == CLYDE)
             {
                 clyde.setPosition(map.size() - 1, i);
-                clyde.spawn = {map.size() - 1, i};
+                clyde.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
             }
             else if (row[i] == GHOST_DOOR)
