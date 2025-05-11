@@ -10,7 +10,7 @@ PacMan::PacMan(State &gameState) : map(nullptr), gameState(gameState)
     direction = NONE;
     nextDirection = NONE;
     powerPellet = false;
-    powerPelletTimer = 3.f; // in secondi
+    powerPelletDuration = POWER_PELLET_DURATION; // in secondi
     ghostStreak = 0;
 
     if (!tex.loadFromFile(ASSET))
@@ -155,6 +155,18 @@ void PacMan::eat(int x, int y)
             break;
         powerPellet = true;
         gameState.score += 50;
+        powerPelletDuration = POWER_PELLET_DURATION;
+        ghostStreak = 0;
+
+        if (gameState.blinky.state != Ghost::EATEN)
+            gameState.blinky.setState(Ghost::SCARED);
+        if (gameState.pinky.state != Ghost::EATEN)
+            gameState.pinky.setState(Ghost::SCARED);
+        if (gameState.inky.state != Ghost::EATEN)
+            gameState.inky.setState(Ghost::SCARED);
+        if (gameState.clyde.state != Ghost::EATEN)
+            gameState.clyde.setState(Ghost::SCARED);
+
     default:
         break;
     }
@@ -170,4 +182,6 @@ void PacMan::respawn()
     setPosition(spawn.x, spawn.y);
     setRotation(NONE);
     direction = NONE;
+    powerPellet = false;
+    powerPelletDuration = POWER_PELLET_DURATION;
 }

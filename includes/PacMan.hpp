@@ -9,12 +9,13 @@ inline const sf::Vector2i RIGHT_PACMAN = {1, 0};
 inline const sf::Vector2i LEFT_PACMAN = {1, 1};
 inline const sf::Vector2i UP_PACMAN = {1, 2};
 inline const sf::Vector2i DOWN_PACMAN = {1, 3};
+inline const float POWER_PELLET_DURATION = 5.f;
 
 struct State;
 
 struct PacMan
 {
-    float speed, powerPelletTimer;
+    float speed, powerPelletDuration;
     int dotEaten, ghostStreak;
     bool powerPellet;
 

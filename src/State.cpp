@@ -89,48 +89,33 @@ void State::update(float elapsed)
 
     if (pacman.powerPellet)
     {
-        if (blinky.state == Ghost::NORMAL)
-        {
-            blinky.setState(Ghost::SCARED);
-        }
-        if (pinky.state == Ghost::NORMAL)
-        {
-            pinky.setState(Ghost::SCARED);
-        }
-        if (inky.state == Ghost::NORMAL)
-        {
-            inky.setState(Ghost::SCARED);
-        }
-        if (clyde.state == Ghost::NORMAL)
-        {
-            clyde.setState(Ghost::SCARED);
-        }
-
-        pacman.powerPelletTimer -= elapsed;
-        if (pacman.powerPelletTimer <= 0.f)
+        pacman.powerPelletDuration -= elapsed;
+        if (pacman.powerPelletDuration <= 0.f)
         {
             pacman.powerPellet = false;
-            pacman.powerPelletTimer = 3.f; // Reset
-            pacman.ghostStreak = 0;
 
             if (blinky.state == Ghost::SCARED)
             {
-                blinky.setState(Ghost::NORMAL);
+                blinky.setState(blinky.lastState);
+                blinky.isTransitioning = (blinky.lastState == Ghost::IN_HOUSE);
             }
 
             if (pinky.state == Ghost::SCARED)
             {
-                pinky.setState(Ghost::NORMAL);
+                pinky.setState(pinky.lastState);
+                pinky.isTransitioning = (pinky.lastState == Ghost::IN_HOUSE);
             }
 
             if (inky.state == Ghost::SCARED)
             {
-                inky.setState(Ghost::NORMAL);
+                inky.setState(inky.lastState);
+                inky.isTransitioning = (inky.lastState == Ghost::IN_HOUSE);
             }
 
             if (clyde.state == Ghost::SCARED)
             {
-                clyde.setState(Ghost::NORMAL);
+                clyde.setState(clyde.lastState);
+                clyde.isTransitioning = (clyde.lastState == Ghost::IN_HOUSE);
             }
         }
     }
@@ -402,7 +387,7 @@ void State::doGraphics()
     inky.draw(window);
     clyde.draw(window);
 
-    sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
+    /*sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
     float thickness = 1.0f;
 
     for (int x = 0; x <= MAP_WIDTH; x++)
@@ -419,7 +404,7 @@ void State::doGraphics()
         line.setPosition({0, (float)y * TILE_SIZE});
         line.setFillColor(gridColor);
         window.draw(line);
-    }
+    }*/
 }
 
 void State::doUI()
