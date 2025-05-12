@@ -101,8 +101,17 @@ void Ghost::draw(sf::RenderWindow &window)
     {
         float y_l = static_cast<float>((p.x + 3) * TILE_SIZE);
         float x_l = static_cast<float>(p.y * TILE_SIZE);
-
-        rect.setOutlineColor(sf::Color::Red);
+        if (name == "Blinky")
+            rect.setOutlineColor(sf::Color::Red);
+        else if (name == "Pinky")
+            rect.setOutlineColor(sf::Color::Magenta);
+        else if (name == "Inky")
+            rect.setOutlineColor(sf::Color::Cyan);
+        else if (name == "Clyde")
+            rect.setOutlineColor(sf::Color(255, 165, 0)); // Orange
+        else
+            rect.setOutlineColor(sf::Color::White);
+            
         rect.setPosition({x_l, y_l});
         window.draw(rect);
     }
@@ -119,6 +128,7 @@ void Ghost::setMap(std::vector<std::vector<char>> *newMap)
 {
     map = newMap;
     getExitTile();
+    findPathBFS(nearestExitTile);
 }
 
 void Ghost::setDirection(Direction dir)
@@ -260,7 +270,20 @@ void Ghost::move(float elapsed)
         {
             if (position != nearestExitTile)
             {
-                computeNextDirection(nearestExitTile);
+                if (!path.empty())
+                {
+                    sf::Vector2i nextTile = path.back();
+
+                    if (position == nextTile)
+                    {
+                        path.pop_back();
+                    }
+                    computeNextDirection(nextTile);
+                }
+                else
+                {
+                    computeNextDirection(nearestExitTile);
+                }
             }
             else
             {
@@ -505,6 +528,8 @@ void Ghost::respawn(GhostState state)
     setDirection(NONE);
     lastDirection = NONE;
     isTransitioning = false;
+    getExitTile();
+    findPathBFS(nearestExitTile);
 }
 
 void Ghost::drawScore()
