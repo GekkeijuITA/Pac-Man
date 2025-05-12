@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #define COLLIDE_BOX 1.5f
+#define SCORE_DISPLAY_TIME 1.5f;
 
 namespace std
 {
@@ -52,6 +53,9 @@ Ghost::Ghost(
     timeToEnterHouse = 0.f;
     enteredHouse = false;
     lastState = state;
+    score = 0;
+    scoreDisplayTimer = SCORE_DISPLAY_TIME;
+    stoppedForScore = false;
 
     if (!tex.loadFromFile(ASSET))
     {
@@ -62,22 +66,27 @@ Ghost::Ghost(
 
 void Ghost::draw(sf::RenderWindow &window)
 {
-    sf::Vector2i ghostPos;
+    if (stoppedForScore)
+    {
+        return;
+    }
+
+    sf::Vector2i texPos;
     if (state == EATEN)
     {
-        ghostPos = GHOST_EYES_TEX_MAP.at(direction);
+        texPos = GHOST_EYES_TEX_MAP.at(direction);
     }
     else if (state == SCARED)
     {
-        ghostPos = GHOST_SCARED;
+        texPos = GHOST_SCARED;
     }
     else
     {
-        ghostPos = GHOST_TEX_MAP.at(direction);
+        texPos = GHOST_TEX_MAP.at(direction);
     }
-    sf::Sprite sprite = createSprite(tex, ghostPos, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true);
+    sf::Sprite sprite = createSprite(tex, texPos, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true);
 
-    float y = static_cast<float>((fPosition.x + position.x + 3 + 0.5f) * TILE_SIZE);
+    float y = static_cast<float>((fPosition.x + position.x + 3.5f) * TILE_SIZE);
     float x = static_cast<float>((fPosition.y + position.y + 0.5f) * TILE_SIZE);
 
     sprite.setPosition({x, y});
@@ -109,7 +118,7 @@ void Ghost::setPosition(int x, int y)
 void Ghost::setMap(std::vector<std::vector<char>> *newMap)
 {
     map = newMap;
-    getExitTiles();
+    getExitTile();
 }
 
 void Ghost::setDirection(Direction dir)
@@ -240,6 +249,11 @@ void Ghost::findPathBFS(sf::Vector2i destination)
 
 void Ghost::move(float elapsed)
 {
+    if (stoppedForScore)
+    {
+        return;
+    }
+
     if (state == IN_HOUSE)
     {
         if (gameState.pacman.getDotEaten() >= dotLimit)
@@ -434,7 +448,7 @@ void Ghost::addExitTile(int x, int y)
     exitTiles.push_back({x, y});
 }
 
-void Ghost::getExitTiles()
+void Ghost::getExitTile()
 {
     if (exitTiles.empty())
     {
@@ -463,9 +477,17 @@ void Ghost::eat(int x, int y)
         {
             setState(EATEN);
             currentSpeed *= 2;
-            gameState.score += (200 * gameState.pacman.ghostStreak);
-            gameState.pacman.ghostStreak++;
-            getExitTiles();
+            score = 200 * (std::pow(2, gameState.pacman.ghostStreak));
+
+            if (gameState.pacman.ghostStreak < 4)
+                gameState.pacman.ghostStreak++;
+            else
+                gameState.pacman.ghostStreak = 0;
+
+            stoppedForScore = true;
+            scoreDisplayTimer = SCORE_DISPLAY_TIME;
+            gameState.score += score;
+            getExitTile();
             findPathBFS(nearestExitTile);
         }
         else
@@ -483,4 +505,31 @@ void Ghost::respawn(GhostState state)
     setDirection(NONE);
     lastDirection = NONE;
     isTransitioning = false;
+}
+
+void Ghost::drawScore()
+{
+    sf::Vector2i scorePos;
+
+    switch (score)
+    {
+    case 200:
+        scorePos = GHOST_SCORE_200;
+        break;
+    case 400:
+        scorePos = GHOST_SCORE_400;
+        break;
+    case 800:
+        scorePos = GHOST_SCORE_800;
+        break;
+    case 1600:
+        scorePos = GHOST_SCORE_1600;
+        break;
+    default:
+        return;
+    }
+
+    sf::Sprite sprite = createSprite(tex, scorePos, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true);
+    sprite.setPosition({(fPosition.y + position.y + .5f) * TILE_SIZE, (fPosition.x + position.x + 3.5f) * TILE_SIZE});
+    gameState.window.draw(sprite);
 }

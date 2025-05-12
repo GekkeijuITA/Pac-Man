@@ -70,10 +70,12 @@ int main()
         gs.window.handleEvents([&](const auto &event)
                                { handle(event, gs); });
 
-        gs.update(clock.restart().asSeconds());
+        float elapsed = clock.restart().asSeconds();
+        
+        gs.update(elapsed);
         gs.window.clear();
         gs.doUI();
-        gs.doGraphics();
+        gs.doGraphics(elapsed);
         gs.window.display();
     }
 

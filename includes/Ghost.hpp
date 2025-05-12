@@ -11,13 +11,18 @@ inline const sf::Vector2i GHOST_L = {9, 5};
 inline const sf::Vector2i GHOST_U = {10, 5};
 inline const sf::Vector2i GHOST_D = {11, 5};
 
+inline const sf::Vector2i GHOST_SCORE_200 = {0, 8};
+inline const sf::Vector2i GHOST_SCORE_400 = {1, 8};
+inline const sf::Vector2i GHOST_SCORE_800 = {2, 8};
+inline const sf::Vector2i GHOST_SCORE_1600 = {3, 8};
+
 struct State;
 
 struct Ghost
 {
-    float speed, currentSpeed, timeToEnterHouse;
-    int dotLimit;
-    bool isTransitioning, enteredHouse;
+    float speed, currentSpeed, timeToEnterHouse, scoreDisplayTimer;
+    int dotLimit, score;
+    bool isTransitioning, enteredHouse, stoppedForScore;
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
@@ -69,7 +74,7 @@ protected:
 private:
     void setDirection(Direction dir);
     void chooseDirection();
-    void getExitTiles();
+    void getExitTile();
     void eat(int x, int y);
     void findPathBFS(sf::Vector2i destination);
     void computeNextDirection(sf::Vector2i destination);
@@ -84,4 +89,5 @@ public:
     void setState(GhostState state);
     void addExitTile(int x, int y);
     void respawn(GhostState state);
+    void drawScore();
 };

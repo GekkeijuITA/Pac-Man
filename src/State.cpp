@@ -94,38 +94,22 @@ void State::update(float elapsed)
         {
             pacman.powerPellet = false;
 
-            if (blinky.state == Ghost::SCARED)
+            for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
             {
-                blinky.setState(blinky.lastState);
-                blinky.isTransitioning = (blinky.lastState == Ghost::IN_HOUSE);
-            }
-
-            if (pinky.state == Ghost::SCARED)
-            {
-                pinky.setState(pinky.lastState);
-                pinky.isTransitioning = (pinky.lastState == Ghost::IN_HOUSE);
-            }
-
-            if (inky.state == Ghost::SCARED)
-            {
-                inky.setState(inky.lastState);
-                inky.isTransitioning = (inky.lastState == Ghost::IN_HOUSE);
-            }
-
-            if (clyde.state == Ghost::SCARED)
-            {
-                clyde.setState(clyde.lastState);
-                clyde.isTransitioning = (clyde.lastState == Ghost::IN_HOUSE);
+                if (ghost->state == Ghost::SCARED)
+                {
+                    ghost->setState(ghost->lastState);
+                    ghost->isTransitioning = (ghost->lastState == Ghost::IN_HOUSE);
+                }
             }
         }
     }
 
     collisions(elapsed);
-
-    blinky.move(elapsed);
-    pinky.move(elapsed);
-    inky.move(elapsed);
-    clyde.move(elapsed);
+    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    {
+        ghost->move(elapsed);
+    }
 
     bounds();
 }
@@ -154,10 +138,11 @@ void checkBounds(sf::Vector2i &pos)
 void State::bounds()
 {
     checkBounds(pacman.position);
-    checkBounds(blinky.position);
-    checkBounds(pinky.position);
-    checkBounds(inky.position);
-    checkBounds(clyde.position);
+
+    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    {
+        checkBounds(ghost->position);
+    }
 }
 
 void State::collisions(float elapsed)
@@ -255,15 +240,15 @@ bool State::getMap(std::string mapPath)
 
     pacman.setMap(&map);
 
-    blinky.setMap(&map);
-    pinky.setMap(&map);
-    inky.setMap(&map);
-    clyde.setMap(&map);
+    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    {
+        ghost->setMap(&map);
+    }
 
     return true;
 }
 
-void State::doGraphics()
+void State::doGraphics(float elapsed)
 {
     for (int r = 0; r < MAP_HEIGHT; r++)
     {
@@ -382,12 +367,23 @@ void State::doGraphics()
     }
 
     pacman.draw(window);
-    blinky.draw(window);
-    pinky.draw(window);
-    inky.draw(window);
-    clyde.draw(window);
 
-    /*sf::Color gridColor = sf::Color(255, 255, 255, 100); // Colore grigio semi-trasparente
+    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    {
+        ghost->draw(window);
+
+        if (ghost->scoreDisplayTimer > 0.f)
+        {
+            ghost->drawScore();
+            ghost->scoreDisplayTimer -= elapsed;
+        }
+        else
+        {
+            ghost->stoppedForScore = false;
+        }
+    }
+
+    /*sf::Color gridColor = sf::Color(255, 255, 255, 100);
     float thickness = 1.0f;
 
     for (int x = 0; x <= MAP_WIDTH; x++)
@@ -500,10 +496,17 @@ void State::drawRecentFruits()
 void State::resetRound()
 {
     pacman.respawn();
-    blinky.respawn(Ghost::NORMAL);
-    pinky.respawn(Ghost::IN_HOUSE);
-    inky.respawn(Ghost::IN_HOUSE);
-    clyde.respawn(Ghost::IN_HOUSE);
+    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    {
+        if (ghost == &blinky)
+        {
+            ghost->respawn(Ghost::NORMAL);
+        }
+        else
+        {
+            ghost->respawn(Ghost::IN_HOUSE);
+        }
+    }
 
     if (lives <= 0)
     {
