@@ -41,4 +41,14 @@
 - Wiki: [link](https://pacman.holenet.info/)
 
 ## Roadmap
-- [ ] Sistema layout mappa (mappa di default) con file di testo per ora
+- [x] Sistema layout mappa (mappa di default) con file di testo
+- [x] Aggiungere pac-man con il movimento classico
+- [x] Aggiungere sistema di punteggio
+- [ ] Aggiungere frutti
+- [x] Aggiungere fantasmi con movimento classico
+- [x] Aggiungere collisioni con i fantasmi
+- [x] Aggiungere reazione fantasmi al power pellet
+- [ ] Aggiungere schermate varie (game over, pausa, ecc.)
+- [ ] Aggiungere schermata titolo
+- [ ] Aggiungere editor livelli
+- [ ] Aggiungere schermata di selezione livello
