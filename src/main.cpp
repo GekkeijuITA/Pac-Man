@@ -21,8 +21,6 @@ struct State
     char map[MAP_WIDTH][MAP_HEIGHT];
 
     State(unsigned w, unsigned h, std::string title);
-    bool getMap(std::string mapPath);
-    void doGraphics();
 };
 
 State::State(unsigned w, unsigned h, std::string title)
@@ -110,132 +108,6 @@ State::State(unsigned w, unsigned h, std::string title)
     mapTextures[5].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
 }
 
-bool State::getMap(std::string mapPath)
-{
-    std::fstream mapFile;
-    mapFile.open(mapPath, std::ios::in);
-    if (!mapFile.is_open())
-    {
-        std::cerr << "Errore nell'apertura del file contenente la mappa" << std::endl;
-        return false;
-    }
-
-    std::string mapString;
-    int r = 0;
-
-    while (std::getline(mapFile, mapString))
-    {
-        for (int i = 0; i < mapString.size(); i++)
-        {
-            map[r][i] = mapString[i];
-        }
-        r++;
-    }
-    mapFile.close();
-
-    return true;
-}
-
-void State::doGraphics()
-{
-    window.clear();
-    for (int r = 0; r < MAP_HEIGHT; r++)
-    {
-        float y = (r + 3) * TILE_SIZE; // Lasciamo le prime due righe per il punteggi
-        for (int c = 0; c < MAP_WIDTH; c++)
-        {
-            float x = c * TILE_SIZE;
-            switch (map[r][c])
-            {
-            case PACDOT:
-            {
-                sf::CircleShape pacdot(TILE_SIZE / 10.f);
-                pacdot.setPosition({x + (TILE_SIZE / 2) - 4, y + (TILE_SIZE / 2) - 4});
-                pacdot.setFillColor(sf::Color(255, 185, 176));
-                window.draw(pacdot);
-                break;
-            }
-            case LINE_V:
-            {
-                sf::Sprite wall(mapTextures[0].texture);
-                wall.setScale(mapTextures[0].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
-            case LINE_H:
-            {
-                sf::Sprite wall(mapTextures[1].texture);
-                wall.setScale(mapTextures[1].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
-            case CORNER_0:
-            {
-                sf::Sprite wall(mapTextures[2].texture);
-                wall.setScale(mapTextures[2].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
-            case CORNER_90:
-            {
-                sf::Sprite wall(mapTextures[3].texture);
-                wall.setScale(mapTextures[3].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
-            case CORNER_180:
-            {
-                sf::Sprite wall(mapTextures[4].texture);
-                wall.setScale(mapTextures[4].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
-            case CORNER_270:
-            {
-                sf::Sprite wall(mapTextures[5].texture);
-                wall.setScale(mapTextures[5].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
-            case POWERPELLET:
-            {
-                int scale = 3;
-                sf::CircleShape powerpellet(TILE_SIZE / scale);
-                powerpellet.setPosition({static_cast<float>(x + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale))), static_cast<float>(y + (TILE_SIZE / scale) - std::floor(static_cast<double>(TILE_SIZE / scale)))});
-                powerpellet.setFillColor(sf::Color(255, 185, 176));
-                window.draw(powerpellet);
-                break;
-            }
-            case GHOST_DOOR:
-            {
-                sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
-                ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
-                ghostDoor.setFillColor(sf::Color(255, 203, 255));
-                window.draw(ghostDoor);
-                break;
-            }
-            case EMPTY_BLOCK:
-            {
-                sf::RectangleShape emptyBlock({TILE_SIZE, TILE_SIZE});
-                emptyBlock.setPosition({x, y});
-                emptyBlock.setFillColor(sf::Color::Black);
-                window.draw(emptyBlock);
-                break;
-            }
-            default:
-                break;
-            }
-        }
-    }
-    window.display();
-}
-
 ////////////
 // Events //
 ////////////
@@ -261,17 +133,10 @@ int main()
     State gs(w, h, "Pac-Man");
     sf::Clock clock;
 
-    if (!gs.getMap("../resources/default_map.txt"))
-    {
-        return 1;
-    }
-
     while (gs.window.isOpen())
     {
         gs.window.handleEvents([&](const auto &event)
                                { handle(event, gs); });
-
-        gs.doGraphics();
     }
 
     return 0;
