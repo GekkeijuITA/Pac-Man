@@ -34,15 +34,6 @@ struct Ghost
     State &gameState;
     std::vector<sf::Vector2i> path;
 
-    enum Direction
-    {
-        UP = 1,
-        DOWN = 3,
-        LEFT = 0,
-        RIGHT = 2,
-        NONE = 4
-    };
-
     Direction direction;
     Direction lastDirection;
 
@@ -78,6 +69,8 @@ private:
     void eat(int x, int y);
     void findPathBFS(sf::Vector2i destination);
     void computeNextDirection(sf::Vector2i destination);
+    Direction getOppositeDirection(Direction dir);
+    sf::Vector2i getPacmanPosition();
 
 public:
     void draw(sf::RenderWindow &window);

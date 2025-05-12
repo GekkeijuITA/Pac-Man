@@ -185,3 +185,8 @@ void PacMan::respawn()
     powerPellet = false;
     powerPelletDuration = POWER_PELLET_DURATION;
 }
+
+sf::Vector2i PacMan::getPosition()
+{
+    return position;
+}

@@ -154,16 +154,16 @@ void State::collisions(float elapsed)
 
     switch (pacman.direction)
     {
-    case PacMan::UP:
+    case UP:
         next_x--;
         break;
-    case PacMan::DOWN:
+    case DOWN:
         next_x++;
         break;
-    case PacMan::LEFT:
+    case LEFT:
         next_y--;
         break;
-    case PacMan::RIGHT:
+    case RIGHT:
         next_y++;
         break;
     default:
@@ -462,7 +462,7 @@ void State::drawScore(int x, int y, int score)
 
 void State::drawLives()
 {
-    sf::Vector2i pacmanPos = pacman.PACMAN_TEX_MAP.at(PacMan::LEFT);
+    sf::Vector2i pacmanPos = pacman.PACMAN_TEX_MAP.at(LEFT);
     sf::Sprite pacmanSprite = createSprite(textures[0].texture, pacmanPos, textures[0].scale, 2.f, TILE_SIZE / 2, true);
     for (int i = 0; i < lives; i++)
     {

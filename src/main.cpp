@@ -17,21 +17,21 @@ void handle(const T &, State &gs)
 
 void handle(const sf::Event::KeyPressed &key, State &gs)
 {
-    PacMan::Direction newDirection = gs.pacman.direction;
+    Direction newDirection = gs.pacman.direction;
 
     switch (key.scancode)
     {
     case sf::Keyboard::Scancode::Up:
-        newDirection = PacMan::UP;
+        newDirection = UP;
         break;
     case sf::Keyboard::Scancode::Down:
-        newDirection = PacMan::DOWN;
+        newDirection = DOWN;
         break;
     case sf::Keyboard::Scancode::Left:
-        newDirection = PacMan::LEFT;
+        newDirection = LEFT;
         break;
     case sf::Keyboard::Scancode::Right:
-        newDirection = PacMan::RIGHT;
+        newDirection = RIGHT;
         break;
     default:
         return;

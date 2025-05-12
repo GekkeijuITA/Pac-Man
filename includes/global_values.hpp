@@ -1,5 +1,5 @@
 #pragma once
-inline const int MAP_WIDTH = 28; // area di gioco
+inline const int MAP_WIDTH = 28;  // area di gioco
 inline const int MAP_HEIGHT = 31; // area di gioco
 inline const int TILE_SIZE = 32;
 inline const int TEXT_SIZE = 8;
@@ -29,3 +29,12 @@ inline const char MELON = 'm';
 inline const char GALAXIAN = 'g';
 inline const char BELL = 'b';
 inline const char KEY = 'k';
+
+enum Direction
+{
+    UP = 1,
+    DOWN = 3,
+    LEFT = 0,
+    RIGHT = 2,
+    NONE = 4
+};

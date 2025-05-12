@@ -111,7 +111,7 @@ void Ghost::draw(sf::RenderWindow &window)
             rect.setOutlineColor(sf::Color(255, 165, 0)); // Orange
         else
             rect.setOutlineColor(sf::Color::White);
-            
+
         rect.setPosition({x_l, y_l});
         window.draw(rect);
     }
@@ -193,7 +193,6 @@ void Ghost::chooseDirection()
                 possibleDirections.push_back(RIGHT);
         }
     }
-
     if (!possibleDirections.empty())
     {
         direction = possibleDirections[rand() % possibleDirections.size()];
@@ -328,7 +327,6 @@ void Ghost::move(float elapsed)
                 setState(IN_HOUSE);
                 isTransitioning = true;
                 path.clear();
-                currentSpeed = speed;
                 enteredHouse = false;
             }
         }
@@ -464,6 +462,17 @@ void Ghost::setState(GhostState newState)
         lastState = state;
         state = newState;
     }
+
+    if(state == SCARED) {
+        direction = getOppositeDirection(direction);
+        lastDirection = direction;
+
+        currentSpeed = speed / 1.5f;
+    } else if(state == EATEN) {
+        currentSpeed = speed * 2.f;
+    } else {
+        currentSpeed = speed;
+    }
 }
 
 void Ghost::addExitTile(int x, int y)
@@ -494,12 +503,11 @@ void Ghost::getExitTile()
 
 void Ghost::eat(int x, int y)
 {
-    if (distance(gameState.pacman.position) < COLLIDE_BOX)
+    if (distance(getPacmanPosition()) < COLLIDE_BOX)
     {
         if (state == SCARED)
         {
             setState(EATEN);
-            currentSpeed *= 2;
             score = 200 * (std::pow(2, gameState.pacman.ghostStreak));
 
             if (gameState.pacman.ghostStreak < 4)
@@ -557,4 +565,26 @@ void Ghost::drawScore()
     sf::Sprite sprite = createSprite(tex, scorePos, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true);
     sprite.setPosition({(fPosition.y + position.y + .5f) * TILE_SIZE, (fPosition.x + position.x + 3.5f) * TILE_SIZE});
     gameState.window.draw(sprite);
+}
+
+sf::Vector2i Ghost::getPacmanPosition()
+{
+    return gameState.pacman.getPosition();
+}
+
+Direction Ghost::getOppositeDirection(Direction dir)
+{
+    switch (dir)
+    {
+    case UP:
+        return DOWN;
+    case DOWN:
+        return UP;
+    case LEFT:
+        return RIGHT;
+    case RIGHT:
+        return LEFT;
+    default:
+        return NONE;
+    }
 }

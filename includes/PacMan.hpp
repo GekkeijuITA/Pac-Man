@@ -26,15 +26,6 @@ struct PacMan
     sf::Vector2i spawn;
     State &gameState;
 
-    enum Direction
-    {
-        UP = 1,
-        DOWN = 3,
-        LEFT = 0,
-        RIGHT = 2,
-        NONE = 4
-    };
-
     Direction direction;
     Direction nextDirection;
 
@@ -57,5 +48,5 @@ struct PacMan
     void updateDirection();
     int getDotEaten();
     void respawn();
-    void checkForGhosts();
+    sf::Vector2i getPosition();
 };
