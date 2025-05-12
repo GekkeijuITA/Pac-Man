@@ -1,4 +1,4 @@
-![pacmanlogo](https://loodibee.com/wp-content/uploads/Pac-Man-Logo.png)
+![pacmanlogo](logo.png)
 
 ## Regole
 - Ogni 10000 punti si guadagna una vita (modificabile a 15000, 20000 o niente)
