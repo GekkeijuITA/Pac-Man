@@ -7,5 +7,4 @@ L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare il 
 
 ## Soluzione
 
-
 ![demo](demo.png)
