@@ -75,7 +75,7 @@ int main()
         gs.update(elapsed);
         gs.window.clear();
         gs.doUI();
-        gs.doGraphics(elapsed);
+        gs.doGraphics();
         gs.window.display();
     }
 

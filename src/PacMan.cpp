@@ -166,7 +166,6 @@ void PacMan::eat(int x, int y)
             gameState.inky.setState(Ghost::SCARED);
         if (gameState.clyde.state != Ghost::EATEN)
             gameState.clyde.setState(Ghost::SCARED);
-
     default:
         break;
     }

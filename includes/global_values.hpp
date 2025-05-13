@@ -21,14 +21,7 @@ inline const char PINKY = 'N';
 inline const char INKY = 'I';
 inline const char CLYDE = 'C';
 
-inline const char CHERRY = 'c';
-inline const char STRAWBERRY = 's';
-inline const char ORANGE = 'o';
-inline const char APPLE = 'a';
-inline const char MELON = 'm';
-inline const char GALAXIAN = 'g';
-inline const char BELL = 'b';
-inline const char KEY = 'k';
+inline const char FRUIT = 'F';
 
 enum Direction
 {

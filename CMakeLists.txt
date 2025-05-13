@@ -22,6 +22,15 @@ add_executable(main
     src/ghosts/Pinky.cpp
     src/ghosts/Clyde.cpp
     src/textures.cpp
+    src/Fruit.cpp
+    src/fruits/Cherry.cpp
+    src/fruits/Strawberry.cpp
+    src/fruits/Orange.cpp
+    src/fruits/Apple.cpp
+    src/fruits/Grape.cpp
+    src/fruits/Galaxian.cpp
+    src/fruits/Key.cpp
+    src/fruits/Bell.cpp
 )
 
 target_compile_features(main PRIVATE cxx_std_17)

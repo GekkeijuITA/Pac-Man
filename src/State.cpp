@@ -5,12 +5,21 @@
 
 #include <fstream>
 #include <iostream>
+#include <bits/stdc++.h>
 
-State::State(unsigned w, unsigned h, std::string title) : lives(3), score(0), highscore(0), pacman(*this), blinky(*this), pinky(*this), inky(*this), clyde(*this)
+State::State(unsigned w, unsigned h, std::string title) : lives(3),
+                                                          score(0),
+                                                          highscore(0),
+                                                          pacman(*this),
+                                                          blinky(*this),
+                                                          pinky(*this),
+                                                          inky(*this),
+                                                          clyde(*this)
 {
     recentFruits.clear();
     gameOver = false;
     pause = false;
+    level = 1;
 
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
@@ -109,6 +118,45 @@ void State::update(float elapsed)
     for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
     {
         ghost->move(elapsed);
+        if (ghost->state == Ghost::EATEN)
+        {
+            if (ghost->scoreDisplayTimer > 0.f)
+                ghost->scoreDisplayTimer -= elapsed;
+        }
+    }
+
+    for (auto &fruit : fruits)
+    {
+        bool isFruitDisplayed = find(fruitPositions.begin(), fruitPositions.end(), fruit->position) != fruitPositions.end();
+
+        if (fruit->fruitDisplayTimer > 0.f)
+        {
+            if (!isFruitDisplayed)
+            {
+                fruitPositions.push_back(fruit->position);
+            }
+
+            fruit->fruitDisplayTimer -= elapsed;
+        }
+
+        if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
+        {
+            fruit->scoreDisplayTimer -= elapsed;
+        }
+
+        if (fruit->scoreDisplayTimer <= 0.f && fruit->eaten)
+        {
+            isFruitDisplayed = false;
+            fruitPositions.erase(std::remove(fruitPositions.begin(), fruitPositions.end(), fruit->position), fruitPositions.end());
+            fruit->fruitDisplayTimer = 0.f;
+            fruit->eaten = false;
+            fruit->scoreDisplayTimer = 0.f;
+        }
+
+        if ((pacman.getDotEaten() == 7 || pacman.getDotEaten() == 170) && !isFruitDisplayed)
+        {
+            fruit->setTimer();
+        }
     }
 
     bounds();
@@ -174,6 +222,19 @@ void State::collisions(float elapsed)
     {
         pacman.move(elapsed);
     }
+
+    for (auto &fruit : fruits)
+    {
+        if (fruit->fruitDisplayTimer > 0.f && fruit->position == pacman.position)
+        {
+            score += fruit->getScore();
+            fruitCount++;
+            recentFruits.push_back(fruit->texPosition);
+            fruit->fruitDisplayTimer = 0.f;
+            fruit->eaten = true;
+            fruit->scoreDisplayTimer = SCORE_DISPLAY_TIME;
+        }
+    }
 }
 
 bool State::getMap(std::string mapPath)
@@ -234,6 +295,36 @@ bool State::getMap(std::string mapPath)
                 inky.addExitTile(map.size() - 1, i);
                 clyde.addExitTile(map.size() - 1, i);
             }
+            else if (row[i] == FRUIT)
+            {
+                switch (level)
+                {
+                case 1:
+                    fruits.push_back(std::make_unique<Cherry>(sf::Vector2i(map.size() - 1, i)));
+                    break;
+                case 2:
+                    fruits.push_back(std::make_unique<Strawberry>(sf::Vector2i(map.size() - 1, i)));
+                    break;
+                case 3:
+                    fruits.push_back(std::make_unique<Orange>(sf::Vector2i(map.size() - 1, i)));
+                    break;
+                case 4:
+                    fruits.push_back(std::make_unique<Apple>(sf::Vector2i(map.size() - 1, i)));
+                    break;
+                case 5:
+                    fruits.push_back(std::make_unique<Grape>(sf::Vector2i(map.size() - 1, i)));
+                    break;
+                case 6:
+                    fruits.push_back(std::make_unique<Galaxian>(sf::Vector2i(map.size() - 1, i)));
+                    break;
+                case 7:
+                    fruits.push_back(std::make_unique<Bell>(sf::Vector2i(map.size() - 1, i)));
+                    break;
+                default:
+                    fruits.push_back(std::make_unique<Key>(sf::Vector2i(map.size() - 1, i)));
+                    break;
+                }
+            }
         }
     }
     mapFile.close();
@@ -248,7 +339,7 @@ bool State::getMap(std::string mapPath)
     return true;
 }
 
-void State::doGraphics(float elapsed)
+void State::doGraphics()
 {
     for (int r = 0; r < MAP_HEIGHT; r++)
     {
@@ -355,52 +446,58 @@ void State::doGraphics(float elapsed)
                 window.draw(emptyBlock);
                 break;
             }
-            case CHERRY:
-            {
-                drawFruit(c + 0.5f, r + 3.5f, {2, 3}, 1.5f);
-                break;
-            }
             default:
                 break;
             }
         }
-    }
 
-    pacman.draw(window);
+        pacman.draw(window);
 
-    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
-    {
-        ghost->draw(window);
-
-        if (ghost->scoreDisplayTimer > 0.f)
+        for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
         {
-            ghost->drawScore();
-            ghost->scoreDisplayTimer -= elapsed;
+            ghost->draw(window);
+
+            if (ghost->scoreDisplayTimer > 0.f)
+            {
+                ghost->drawScore();
+            }
+            else
+            {
+                ghost->stoppedForScore = false;
+            }
         }
-        else
+
+        for (const auto &fruit : fruits)
         {
-            ghost->stoppedForScore = false;
+            if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
+            {
+                fruit->draw(window);
+            }
+            else if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
+            {
+                fruit->drawScore(window);
+            }
         }
+
+        /*sf::Color gridColor = sf::Color(255, 255, 255, 100);
+        float thickness = 1.0f;
+
+        for (int x = 0; x <= MAP_WIDTH; x++)
+        {
+            sf::RectangleShape line(sf::Vector2f({thickness, (MAP_HEIGHT + 5) * TILE_SIZE}));
+            line.setPosition({(float)x * TILE_SIZE, 3 * TILE_SIZE});
+            line.setFillColor(gridColor);
+            window.draw(line);
+        }
+
+        for (int y = 0; y <= MAP_HEIGHT + 5; y++)
+        {
+            sf::RectangleShape line(sf::Vector2f({MAP_WIDTH * TILE_SIZE, thickness}));
+            line.setPosition({0, (float)y * TILE_SIZE});
+            line.setFillColor(gridColor);
+            window.draw(line);
+        }*/
     }
-
-    /*sf::Color gridColor = sf::Color(255, 255, 255, 100);
-    float thickness = 1.0f;
-
-    for (int x = 0; x <= MAP_WIDTH; x++)
-    {
-        sf::RectangleShape line(sf::Vector2f({thickness, (MAP_HEIGHT + 5) * TILE_SIZE}));
-        line.setPosition({(float)x * TILE_SIZE, 3 * TILE_SIZE});
-        line.setFillColor(gridColor);
-        window.draw(line);
-    }
-
-    for (int y = 0; y <= MAP_HEIGHT + 5; y++)
-    {
-        sf::RectangleShape line(sf::Vector2f({MAP_WIDTH * TILE_SIZE, thickness}));
-        line.setPosition({0, (float)y * TILE_SIZE});
-        line.setFillColor(gridColor);
-        window.draw(line);
-    }*/
 }
 
 void State::doUI()
@@ -484,6 +581,13 @@ void State::drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor
 void State::drawRecentFruits()
 {
     int recentFruitsSize = recentFruits.size();
+
+    if (recentFruitsSize > maxFruits)
+    {
+        recentFruits.pop_front();
+        recentFruitsSize--;
+    }
+
     int startX = 24 - (recentFruitsSize - 1) * 2;
 
     for (size_t i = 0; i < recentFruits.size(); i++)

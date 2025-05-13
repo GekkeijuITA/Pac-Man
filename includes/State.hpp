@@ -14,6 +14,15 @@
 #include "../includes/ghosts/Inky.hpp"
 #include "../includes/ghosts/Clyde.hpp"
 
+#include "../includes/fruits/Cherry.hpp"
+#include "../includes/fruits/Orange.hpp"
+#include "../includes/fruits/Strawberry.hpp"
+#include "../includes/fruits/Grape.hpp"
+#include "../includes/fruits/Apple.hpp"
+#include "../includes/fruits/Bell.hpp"
+#include "../includes/fruits/Key.hpp"
+#include "../includes/fruits/Galaxian.hpp"
+
 struct TextureData
 {
     sf::Texture texture;
@@ -35,23 +44,20 @@ struct State
     Inky inky;
     Clyde clyde;
 
-    int lives;
-    int score;
-    int highscore;
-    bool gameOver;
+    int lives, score, highscore, level, fruitCount;
+    bool gameOver, pause;
 
     size_t maxFruits;
     std::deque<sf::Vector2i> recentFruits;
-    int fruitCount;
-
-    bool pause;
+    std::vector<std::unique_ptr<Fruit>> fruits;
+    std::vector<sf::Vector2i> fruitPositions;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
     void update(float elapsed);
     void bounds();
     void collisions(float elapsed);
-    void doGraphics(float elapsed);
+    void doGraphics();
     void doUI();
     void drawChar(int x, int y, sf::Vector2i charPos);
     void drawScore(int x, int y, int score);

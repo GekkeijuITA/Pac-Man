@@ -1,21 +1,25 @@
 #include "../includes/textures.hpp"
 #include "../includes/global_values.hpp"
 
+// Crea uno sprite da un asset di texture
+// con la posizione, la scala e il fattore di scala specificati
 sf::Sprite createSprite(
     const sf::Texture &texture,
     const sf::Vector2i &position,
     const sf::Vector2f &scale,
     float scaleFactor,
-    int tileSize = TILE_SIZE,
-    bool withOrigin = true)
+    int tileSize,
+    bool withOrigin,
+    int offset, 
+    float extraWidth)
 {
-    sf::IntRect texRect({position.x * tileSize, position.y * tileSize},
-                        {tileSize, tileSize});
+    sf::IntRect texRect({(position.x * tileSize) - offset, position.y * tileSize},
+                        {tileSize + extraWidth, tileSize});
 
-    sf::Sprite pacmanSprite(texture, texRect);
+    sf::Sprite sprite(texture, texRect);
     if (withOrigin)
-        pacmanSprite.setOrigin({tileSize / 2.f, tileSize / 2.f});
-    pacmanSprite.setScale(scale * scaleFactor);
+        sprite.setOrigin({(tileSize + offset) / 2.f, (tileSize + offset) / 2.f});
+    sprite.setScale(scale * scaleFactor);
 
-    return pacmanSprite;
+    return sprite;
 }

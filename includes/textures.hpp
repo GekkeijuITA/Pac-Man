@@ -12,5 +12,7 @@ sf::Sprite createSprite(const sf::Texture &texture,
                         const sf::Vector2f &scale,
                         float scaleFactor,
                         int tileSize,
-                        bool withOrigin
+                        bool withOrigin,
+                        int offset = 0,
+                        float extraWidth = 0.f
                     );
