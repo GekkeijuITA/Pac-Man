@@ -153,7 +153,7 @@ void State::update(float elapsed)
             fruit->scoreDisplayTimer = 0.f;
         }
 
-        if ((pacman.getDotEaten() == 7 || pacman.getDotEaten() == 170) && !isFruitDisplayed)
+        if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !isFruitDisplayed)
         {
             fruit->setTimer();
         }
