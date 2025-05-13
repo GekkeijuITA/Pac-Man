@@ -8,7 +8,7 @@ Il tipo di frutta dipende dal livello in cui siamo (es. al livello 1 sarà sempr
 
 (https://pacman.fandom.com/wiki/Fruits)
 ## Ostacoli
-
+Nessun ostacolo particolare
 ## Soluzione
 
 ![demo](demo.png)
