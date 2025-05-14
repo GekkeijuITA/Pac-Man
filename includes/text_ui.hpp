@@ -2,6 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <map>
+#include <string>
+
+#include "../includes/textures.hpp"
+#include "../includes/global_values.hpp"
 
 inline const sf::Vector2i CHAR_A = {0, 0};
 inline const sf::Vector2i CHAR_B = {1, 0};
@@ -87,4 +91,20 @@ inline const std::map<std::string, sf::Vector2i> CHAR_MAP = {
     {"/", CHAR_SLASH},
     {"-", CHAR_MINUS},
     {"'", CHAR_QUOTE}
+};
+
+struct ArcadeText
+{
+    sf::Texture tex;
+    std::string text;
+
+    ArcadeText();
+
+public:
+    void drawChar(int x, int y, sf::Vector2i charPos, sf::RenderWindow &window, float scaleFactor = 1.f, int i = 0);
+    
+    void drawString(std::string str, int x, int y, sf::RenderWindow &window);
+    void drawString(std::string str, int x, int y, sf::RenderWindow &window, sf::Vector2i offset);
+    void drawString(std::string str, int x, int y, sf::RenderWindow &window, float scaleFactor);
+    void drawString(std::string str, int x, int y, sf::RenderWindow &window, float scaleFactor, sf::Vector2i offset);
 };

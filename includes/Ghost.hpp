@@ -16,7 +16,7 @@ inline const sf::Vector2i GHOST_SCORE_400 = {1, 8};
 inline const sf::Vector2i GHOST_SCORE_800 = {2, 8};
 inline const sf::Vector2i GHOST_SCORE_1600 = {3, 8};
 
-struct State;
+struct GameState;
 
 struct Ghost
 {
@@ -31,7 +31,7 @@ struct Ghost
     std::vector<sf::Vector2i> exitTiles;
     sf::Vector2i nearestExitTile;
     std::string name;
-    State &gameState;
+    GameState &gameState;
     std::vector<sf::Vector2i> path;
 
     Direction direction;
@@ -60,7 +60,7 @@ protected:
         GhostState state,
         int dotLimit,
         std::string name,
-        State &gameState);
+        GameState &gameState);
 
 private:
     void setDirection(Direction dir);

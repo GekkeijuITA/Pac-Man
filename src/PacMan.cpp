@@ -1,13 +1,13 @@
 #include "../includes/PacMan.hpp"
-#include "../includes/State.hpp"
+#include "../includes/GameState.hpp"
 #include "../includes/textures.hpp"
 #include <iostream>
 
-PacMan::PacMan(State &gameState) : map(nullptr), gameState(gameState)
+PacMan::PacMan(GameState &gameState) : map(nullptr), gameState(gameState)
 {
     speed = 5.f;
     dotEaten = 0;
-    direction = NONE;
+    direction = LEFT;
     nextDirection = NONE;
     powerPellet = false;
     powerPelletDuration = POWER_PELLET_DURATION; // in secondi
@@ -157,6 +157,7 @@ void PacMan::eat(int x, int y)
         gameState.score += 50;
         powerPelletDuration = POWER_PELLET_DURATION;
         ghostStreak = 0;
+        dotEaten++;
 
         if (gameState.blinky.state != Ghost::EATEN)
             gameState.blinky.setState(Ghost::SCARED);
@@ -180,7 +181,7 @@ void PacMan::respawn()
 {
     setPosition(spawn.x, spawn.y);
     setRotation(NONE);
-    direction = NONE;
+    direction = LEFT;
     powerPellet = false;
     powerPelletDuration = POWER_PELLET_DURATION;
 }

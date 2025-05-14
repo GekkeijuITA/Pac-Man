@@ -1,25 +1,37 @@
 #include "../includes/textures.hpp"
 #include "../includes/global_values.hpp"
-#include "../includes/State.hpp"
+#include "../includes/GameState.hpp"
 #include "../includes/text_ui.hpp"
+#include "../includes/Debug.hpp"
 
 #include <fstream>
 #include <iostream>
 #include <bits/stdc++.h>
 
-State::State(unsigned w, unsigned h, std::string title) : lives(1),
-                                                          score(0),
-                                                          highscore(0),
-                                                          pacman(*this),
-                                                          blinky(*this),
-                                                          pinky(*this),
-                                                          inky(*this),
-                                                          clyde(*this)
+GameState::GameState(unsigned w, unsigned h, std::string title, std::string mapPath) : lives(1),
+                                                                                       score(0),
+                                                                                       highscore(0),
+                                                                                       pacman(*this),
+                                                                                       blinky(*this),
+                                                                                       pinky(*this),
+                                                                                       inky(*this),
+                                                                                       clyde(*this),
+                                                                                       eatableTiles(0),
+                                                                                       gameOver(false),
+                                                                                       pause(false),
+                                                                                       startGame(false),
+                                                                                       level(1),
+                                                                                       fruitCount(0),
+                                                                                       startGameTimer(START_GAME_TIME),
+                                                                                       mapPath(mapPath)
 {
+    if (!getMap())
+    {
+        std::cerr << "Errore nel caricamento della mappa" << std::endl;
+        exit(1);
+    }
+
     recentFruits.clear();
-    gameOver = false;
-    pause = false;
-    level = 1;
 
     float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
     float screenRatio = (float)w / h;
@@ -48,7 +60,7 @@ State::State(unsigned w, unsigned h, std::string title) : lives(1),
     view.setCenter({view.getSize().x / 2.f, view.getSize().y / 2.f});
     window.setView(view);
 
-    pauseMenu = PauseMenu(view);
+    pauseMenu = GameMenu(view, "PAUSE", {"CONTINUE", "RESTART", "QUIT"});
 
     sf::Texture temp;
     sf::Vector2u texSize;
@@ -91,24 +103,49 @@ State::State(unsigned w, unsigned h, std::string title) : lives(1),
 
     maxFruits = 12 - lives;
     fruitCount = 0;
+
+    std::ifstream highscoreFile;
+    highscoreFile.open("../resources/highscore.txt", std::ios::in);
+    if (!highscoreFile.is_open())
+    {
+        std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
+        return;
+    }
+    std::string highscoreString;
+    std::getline(highscoreFile, highscoreString);
+    highscore = highscoreString.empty() ? 0 : std::stoi(highscoreString);
+    highscoreFile.close();
+
+    ArcadeText arcadeText;
 }
 
-void State::update(float elapsed)
+void GameState::update(float elapsed)
 {
     if (pause)
         return;
+
+    if (startGame)
+    {
+        if (startGameTimer > 0.f)
+        {
+            startGameTimer -= elapsed;
+            return;
+        }
+        startGame = false;
+    }
 
     if (gameOver)
     {
         if (gameOverTimer > 0.f)
         {
-            std::cout << gameOverTimer << std::endl;
+            // std::cout << gameOverTimer << std::endl;
             gameOverTimer -= elapsed;
         }
-        else
-        {
-            // Torna al menu principale magari premendo enter(?)
-        }
+    }
+
+    if (pacman.getDotEaten() == eatableTiles)
+    {
+        nextLevel();
     }
 
     if (pacman.powerPellet)
@@ -130,6 +167,7 @@ void State::update(float elapsed)
     }
 
     collisions(elapsed);
+
     for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
     {
         ghost->move(elapsed);
@@ -198,7 +236,7 @@ void checkBounds(sf::Vector2i &pos)
     }
 }
 
-void State::bounds()
+void GameState::bounds()
 {
     checkBounds(pacman.position);
 
@@ -208,7 +246,7 @@ void State::bounds()
     }
 }
 
-void State::collisions(float elapsed)
+void GameState::collisions(float elapsed)
 {
     int next_x = pacman.position.x;
     int next_y = pacman.position.y;
@@ -252,7 +290,7 @@ void State::collisions(float elapsed)
     }
 }
 
-bool State::getMap(std::string mapPath)
+bool GameState::getMap()
 {
     std::fstream mapFile;
     mapFile.open(mapPath, std::ios::in);
@@ -340,6 +378,10 @@ bool State::getMap(std::string mapPath)
                     break;
                 }
             }
+            else if (row[i] == PACDOT || row[i] == POWERPELLET)
+            {
+                eatableTiles++;
+            }
         }
     }
     mapFile.close();
@@ -354,7 +396,7 @@ bool State::getMap(std::string mapPath)
     return true;
 }
 
-void State::doGraphics()
+void GameState::doGraphics()
 {
     for (int r = 0; r < MAP_HEIGHT; r++)
     {
@@ -496,55 +538,35 @@ void State::doGraphics()
                 }
             }
         }
-
-        /*sf::Color gridColor = sf::Color(255, 255, 255, 100);
-        float thickness = 1.0f;
-
-        for (int x = 0; x <= MAP_WIDTH; x++)
-        {
-            sf::RectangleShape line(sf::Vector2f({thickness, (MAP_HEIGHT + 5) * TILE_SIZE}));
-            line.setPosition({(float)x * TILE_SIZE, 3 * TILE_SIZE});
-            line.setFillColor(gridColor);
-            window.draw(line);
-        }
-
-        for (int y = 0; y <= MAP_HEIGHT + 5; y++)
-        {
-            sf::RectangleShape line(sf::Vector2f({MAP_WIDTH * TILE_SIZE, thickness}));
-            line.setPosition({0, (float)y * TILE_SIZE});
-            line.setFillColor(gridColor);
-            window.draw(line);
-        }*/
     }
+
+    // Debug::drawGrid(window);
 }
 
-void State::doUI()
+void GameState::doUI()
 {
+
+    if (startGame && !gameOver)
+    {
+        arcadeText.drawString("READY!", 11, 20, window, sf::Vector2i(0, 24));
+    }
+
     drawLives();
 
-    drawChar(3, 0, CHAR_1);
-    drawChar(4, 0, CHAR_U);
-    drawChar(5, 0, CHAR_P);
+    arcadeText.drawString("1UP", 3, 0, window);
+    arcadeText.drawString("HIGH SCORE", 9, 0, window);
 
-    drawChar(9, 0, CHAR_H);
-    drawChar(10, 0, CHAR_I);
-    drawChar(11, 0, CHAR_G);
-    drawChar(12, 0, CHAR_H);
-
-    drawChar(14, 0, CHAR_S);
-    drawChar(15, 0, CHAR_C);
-    drawChar(16, 0, CHAR_O);
-    drawChar(17, 0, CHAR_R);
-    drawChar(18, 0, CHAR_E);
-
-    drawScore(6, 1, score);
+    drawScore(7, 1, score);
 
     if (score > highscore)
     {
-        highscore = score;
+        drawScore(17, 1, score);
+    }
+    else
+    {
+        drawScore(17, 1, highscore);
     }
 
-    drawScore(16, 1, highscore);
     drawRecentFruits();
 
     if (pause)
@@ -558,34 +580,16 @@ void State::doUI()
     }
 }
 
-void State::drawChar(int x, int y, sf::Vector2i charPos)
-{
-    sf::Sprite textSprite = createSprite(
-        textures[1].texture,
-        charPos,
-        {(float)TILE_SIZE / TEXT_SIZE, (float)TILE_SIZE / TEXT_SIZE},
-        1.f,
-        TEXT_SIZE,
-        false);
-
-    textSprite.setPosition({(float)x * TILE_SIZE, (float)y * TILE_SIZE});
-    window.draw(textSprite);
-}
-
-void State::drawScore(int x, int y, int score)
+void GameState::drawScore(int x, int y, int score)
 {
     std::string scoreString = std::to_string(score);
     int scoreLength = scoreString.length();
     int startX = x - scoreLength;
 
-    for (size_t i = 0; i < scoreString.length(); i++)
-    {
-        std::string c(1, scoreString[i]);
-        drawChar(startX + i, y, CHAR_MAP.at(c));
-    }
+    arcadeText.drawString(scoreString, startX, y, window);
 }
 
-void State::drawLives()
+void GameState::drawLives()
 {
     sf::Vector2i pacmanPos = pacman.PACMAN_TEX_MAP.at(LEFT);
     sf::Sprite pacmanSprite = createSprite(textures[0].texture, pacmanPos, textures[0].scale, 2.f, TILE_SIZE / 2, true);
@@ -599,14 +603,14 @@ void State::drawLives()
     }
 }
 
-void State::drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor)
+void GameState::drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor)
 {
     sf::Sprite fruitSprite = createSprite(textures[0].texture, fruitPos, textures[0].scale, scaleFactor, TILE_SIZE / 2, true);
     fruitSprite.setPosition({x * TILE_SIZE, y * TILE_SIZE});
     window.draw(fruitSprite);
 }
 
-void State::drawRecentFruits()
+void GameState::drawRecentFruits()
 {
     int recentFruitsSize = recentFruits.size();
 
@@ -625,9 +629,10 @@ void State::drawRecentFruits()
     }
 }
 
-void State::resetRound()
+void GameState::resetRound()
 {
-    gameOver = false;
+    startGame = true;
+    startGameTimer = START_GAME_TIME;
     pacman.respawn();
     for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
     {
@@ -641,54 +646,57 @@ void State::resetRound()
         }
     }
 
-    if (lives <= 0)
+    if (lives <= 0 && !gameOver)
     {
         setGameOver();
     }
 }
 
-void State::setGameOver()
+void GameState::setGameOver()
 {
     gameOver = true;
     gameOverTimer = GAME_OVER_TIME;
+
+    std::ofstream highscoreFile;
+    highscoreFile.open("../resources/highscore.txt", std::ios::out);
+    if (!highscoreFile.is_open())
+    {
+        std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
+        return;
+    }
+    if (score > highscore)
+    {
+        // std::cout << "Nuovo highscore: " << score << std::endl;
+        highscoreFile << score;
+    }
+    highscoreFile.close();
 }
 
-void State::drawGameOver()
+void GameState::drawGameOver()
 {
-    std::string str = "GAME  OVER";
-    for (size_t i = 0; i < str.length(); i++)
-    {
-        std::string c(1, str[i]);
-        if (c == " ")
-        {
-            continue;
-        }
-        drawChar(9 + i, 20, CHAR_MAP.at(c) + sf::Vector2i(0, 4));
-    }
+    arcadeText.drawString("GAME OVER", 9, 20, window, sf::Vector2i(0, 4));
 
     if (gameOverTimer <= 0.f)
     {
-        str = "PREMI INVIO PER";
-
-        for (size_t i = 0; i < str.length(); i++)
-        {
-            std::string c(1, str[i]);
-            if (c == " ")
-            {
-                continue;
-            }
-            drawChar(7 + i, 22, CHAR_MAP.at(c) + sf::Vector2i(0, 4));
-        }
-
-        str = "TORNALE AL MENU";
-        for (size_t i = 0; i < str.length(); i++)
-        {
-            std::string c(1, str[i]);
-            if (c == " ")
-            {
-                continue;
-            }
-            drawChar(7 + i, 23, CHAR_MAP.at(c) + sf::Vector2i(0, 4));
-        }
+        arcadeText.drawString("PRESS ENTER TO", 7, 22, window, sf::Vector2i(0, 4));
+        arcadeText.drawString("RETURN TO THE MENU", 5, 23, window, sf::Vector2i(0, 4));
     }
+}
+
+void GameState::nextLevel()
+{
+    if (level == 255)
+    {
+        // vittoria
+        pause = true;
+        return;
+    }
+
+    resetRound();
+    level++;
+    pacman.dotEaten = 0;
+    map.clear();
+    fruitPositions.clear();
+    fruits.clear();
+    getMap();
 }

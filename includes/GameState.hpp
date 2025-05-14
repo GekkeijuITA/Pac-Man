@@ -23,9 +23,10 @@
 #include "../includes/fruits/Key.hpp"
 #include "../includes/fruits/Galaxian.hpp"
 
-#include "../includes/PauseMenu.hpp"
+#include "../includes/GameMenu.hpp"
 
 #define GAME_OVER_TIME 3.f
+#define START_GAME_TIME 3.f
 
 struct TextureData
 {
@@ -33,7 +34,7 @@ struct TextureData
     sf::Vector2f scale;
 };
 
-struct State
+struct GameState
 {
     sf::RenderWindow window;
     // Textures for the map
@@ -42,31 +43,32 @@ struct State
     std::map<int, TextureData> textures;
     PacMan pacman;
     std::vector<std::vector<char>> map;
+    std::string mapPath;
 
     Blinky blinky;
     Pinky pinky;
     Inky inky;
     Clyde clyde;
 
-    int lives, score, highscore, level, fruitCount;
-    bool gameOver, pause;
+    int lives, score, highscore, level, fruitCount, eatableTiles;
+    bool gameOver, pause, startGame;
 
     size_t maxFruits;
     std::deque<sf::Vector2i> recentFruits;
     std::vector<std::unique_ptr<Fruit>> fruits;
     std::vector<sf::Vector2i> fruitPositions;
 
-    PauseMenu pauseMenu;
-    float gameOverTimer;
+    GameMenu pauseMenu;
+    float gameOverTimer, startGameTimer;
+    ArcadeText arcadeText;
 
-    State(unsigned w, unsigned h, std::string title);
-    bool getMap(std::string mapPath);
+    GameState(unsigned w, unsigned h, std::string title, std::string mapPath);
+    bool getMap();
     void update(float elapsed);
     void bounds();
     void collisions(float elapsed);
     void doGraphics();
     void doUI();
-    void drawChar(int x, int y, sf::Vector2i charPos);
     void drawScore(int x, int y, int score);
     void drawLives();
     void drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor);
@@ -74,4 +76,5 @@ struct State
     void resetRound();
     void setGameOver();
     void drawGameOver();
+    void nextLevel();
 };

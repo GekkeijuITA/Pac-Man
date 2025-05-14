@@ -1,5 +1,5 @@
 #include "../includes/Ghost.hpp"
-#include "../includes/State.hpp"
+#include "../includes/GameState.hpp"
 #include "../includes/textures.hpp"
 #include <iostream>
 #include <climits>
@@ -39,11 +39,11 @@ Ghost::Ghost(
     GhostState state,
     int dotLimit,
     std::string name,
-    State &gameState) : map(nullptr),
-                        state(state),
-                        dotLimit(dotLimit),
-                        name(name),
-                        gameState(gameState)
+    GameState &gameState) : map(nullptr),
+                            state(state),
+                            dotLimit(dotLimit),
+                            name(name),
+                            gameState(gameState)
 {
     speed = 2.5f;
     currentSpeed = speed;
@@ -463,14 +463,19 @@ void Ghost::setState(GhostState newState)
         state = newState;
     }
 
-    if(state == SCARED) {
+    if (state == SCARED)
+    {
         direction = getOppositeDirection(direction);
         lastDirection = direction;
 
         currentSpeed = speed / 1.5f;
-    } else if(state == EATEN) {
+    }
+    else if (state == EATEN)
+    {
         currentSpeed = speed * 2.f;
-    } else {
+    }
+    else
+    {
         currentSpeed = speed;
     }
 }
@@ -503,7 +508,7 @@ void Ghost::getExitTile()
 
 void Ghost::eat(int x, int y)
 {
-    if (distance(getPacmanPosition()) < COLLIDE_BOX)
+    if (position == gameState.pacman.getPosition())
     {
         if (state == SCARED)
         {

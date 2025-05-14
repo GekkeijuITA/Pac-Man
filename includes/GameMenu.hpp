@@ -10,21 +10,20 @@
 inline const int FIRST_OPTION = 6;
 inline const int LAST_OPTION = 10;
 
-struct PauseMenu
+struct GameMenu
 {
     sf::Texture tex;
     sf::View view;
     sf::Vector2i cursorPosition = {10, FIRST_OPTION};
+    ArcadeText arcadeText;
+    std::string title;
+    std::vector<std::string> options;
 
-    PauseMenu();
-    PauseMenu(sf::View v);
+    GameMenu();
+    GameMenu(sf::View v, std::string title, std::vector<std::string> options);
 
 public:
     void draw(sf::RenderWindow &window);
     void setCursorPosition(int x, int y);
     sf::Vector2i getCursorPosition();
-
-private:
-    void drawChar(int x, int y, sf::Vector2i charPos, sf::RenderWindow &window, float scaleFactor = 1.f, int i = 0);
-    void drawString(std::string str, int x, int y, sf::RenderWindow &window, float scaleFactor = 1.f);
 };

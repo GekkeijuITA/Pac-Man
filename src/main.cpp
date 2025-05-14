@@ -1,21 +1,21 @@
-#include "../includes/State.hpp"
+#include "../includes/GameState.hpp"
 
 ////////////
 // Events //
 ////////////
 
-void handle(const sf::Event::Closed &, State &gs)
+void handle(const sf::Event::Closed &, GameState &gs)
 {
     gs.window.close();
 }
 
 template <typename T>
-void handle(const T &, State &gs)
+void handle(const T &, GameState &gs)
 {
     // eventi non gestiti
 }
 
-void handle(const sf::Event::KeyPressed &key, State &gs)
+void handle(const sf::Event::KeyPressed &key, GameState &gs)
 {
     Direction newDirection = gs.pacman.direction;
 
@@ -46,8 +46,11 @@ void handle(const sf::Event::KeyPressed &key, State &gs)
             newDirection = RIGHT;
         break;
     case sf::Keyboard::Scancode::Escape:
-        gs.pauseMenu.setCursorPosition(10, FIRST_OPTION);
-        gs.pause = !gs.pause;
+        if (!gs.gameOver)
+        {
+            gs.pauseMenu.setCursorPosition(10, FIRST_OPTION);
+            gs.pause = !gs.pause;
+        }
         break;
     case sf::Keyboard::Scancode::Enter:
         if (gs.pause)
@@ -96,13 +99,8 @@ int main()
     unsigned int w = desktop.size.x;
     unsigned int h = desktop.size.y;
 
-    State gs(w, h, "Pac-Man");
+    GameState gs(w, h, "Pac-Man", "../resources/default_map.txt");
     sf::Clock clock;
-
-    if (!gs.getMap("../resources/default_map.txt"))
-    {
-        return 1;
-    }
 
     while (gs.window.isOpen())
     {

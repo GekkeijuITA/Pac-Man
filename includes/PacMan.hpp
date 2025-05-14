@@ -11,7 +11,7 @@ inline const sf::Vector2i UP_PACMAN = {1, 2};
 inline const sf::Vector2i DOWN_PACMAN = {1, 3};
 inline const float POWER_PELLET_DURATION = 5.f;
 
-struct State;
+struct GameState;
 
 struct PacMan
 {
@@ -24,7 +24,7 @@ struct PacMan
     sf::Vector2i position;
     sf::Vector2f fPosition;
     sf::Vector2i spawn;
-    State &gameState;
+    GameState &gameState;
 
     Direction direction;
     Direction nextDirection;
@@ -37,7 +37,7 @@ struct PacMan
         {NONE, RIGHT_PACMAN} // Default
     };
 
-    PacMan(State &gameState);
+    PacMan(GameState &gameState);
     void draw(sf::RenderWindow &window);
     void move(float elapsed);
     void setPosition(int x, int y);

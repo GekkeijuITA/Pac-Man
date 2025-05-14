@@ -7,5 +7,5 @@ inline const sf::Vector2i PINKY_D = {6, 5};
 
 struct Pinky : public Ghost
 {
-    Pinky(State &gameState);
+    Pinky(GameState &gameState);
 };
