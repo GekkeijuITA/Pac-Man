@@ -7,7 +7,7 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
-State::State(unsigned w, unsigned h, std::string title) : lives(3),
+State::State(unsigned w, unsigned h, std::string title) : lives(1),
                                                           score(0),
                                                           highscore(0),
                                                           pacman(*this),
@@ -95,8 +95,21 @@ State::State(unsigned w, unsigned h, std::string title) : lives(3),
 
 void State::update(float elapsed)
 {
-    if (gameOver || pause)
+    if (pause)
         return;
+
+    if (gameOver)
+    {
+        if (gameOverTimer > 0.f)
+        {
+            std::cout << gameOverTimer << std::endl;
+            gameOverTimer -= elapsed;
+        }
+        else
+        {
+            // Torna al menu principale magari premendo enter(?)
+        }
+    }
 
     if (pacman.powerPellet)
     {
@@ -453,31 +466,34 @@ void State::doGraphics()
             }
         }
 
-        pacman.draw(window);
-
-        for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+        if (!gameOver)
         {
-            ghost->draw(window);
+            pacman.draw(window);
 
-            if (ghost->scoreDisplayTimer > 0.f)
+            for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
             {
-                ghost->drawScore();
-            }
-            else
-            {
-                ghost->stoppedForScore = false;
-            }
-        }
+                ghost->draw(window);
 
-        for (const auto &fruit : fruits)
-        {
-            if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
-            {
-                fruit->draw(window);
+                if (ghost->scoreDisplayTimer > 0.f)
+                {
+                    ghost->drawScore();
+                }
+                else
+                {
+                    ghost->stoppedForScore = false;
+                }
             }
-            else if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
+
+            for (const auto &fruit : fruits)
             {
-                fruit->drawScore(window);
+                if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
+                {
+                    fruit->draw(window);
+                }
+                else if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
+                {
+                    fruit->drawScore(window);
+                }
             }
         }
 
@@ -531,8 +547,14 @@ void State::doUI()
     drawScore(16, 1, highscore);
     drawRecentFruits();
 
-    if(pause) {
+    if (pause)
+    {
         pauseMenu.draw(window);
+    }
+
+    if (gameOver)
+    {
+        drawGameOver();
     }
 }
 
@@ -605,6 +627,7 @@ void State::drawRecentFruits()
 
 void State::resetRound()
 {
+    gameOver = false;
     pacman.respawn();
     for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
     {
@@ -626,7 +649,46 @@ void State::resetRound()
 
 void State::setGameOver()
 {
-    std::cout << "Game Over" << std::endl;
     gameOver = true;
-    pause = true;
+    gameOverTimer = GAME_OVER_TIME;
+}
+
+void State::drawGameOver()
+{
+    std::string str = "GAME  OVER";
+    for (size_t i = 0; i < str.length(); i++)
+    {
+        std::string c(1, str[i]);
+        if (c == " ")
+        {
+            continue;
+        }
+        drawChar(9 + i, 20, CHAR_MAP.at(c) + sf::Vector2i(0, 4));
+    }
+
+    if (gameOverTimer <= 0.f)
+    {
+        str = "PREMI INVIO PER";
+
+        for (size_t i = 0; i < str.length(); i++)
+        {
+            std::string c(1, str[i]);
+            if (c == " ")
+            {
+                continue;
+            }
+            drawChar(7 + i, 22, CHAR_MAP.at(c) + sf::Vector2i(0, 4));
+        }
+
+        str = "TORNALE AL MENU";
+        for (size_t i = 0; i < str.length(); i++)
+        {
+            std::string c(1, str[i]);
+            if (c == " ")
+            {
+                continue;
+            }
+            drawChar(7 + i, 23, CHAR_MAP.at(c) + sf::Vector2i(0, 4));
+        }
+    }
 }

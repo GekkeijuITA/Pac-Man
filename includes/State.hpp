@@ -25,6 +25,8 @@
 
 #include "../includes/PauseMenu.hpp"
 
+#define GAME_OVER_TIME 3.f
+
 struct TextureData
 {
     sf::Texture texture;
@@ -55,6 +57,7 @@ struct State
     std::vector<sf::Vector2i> fruitPositions;
 
     PauseMenu pauseMenu;
+    float gameOverTimer;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);
@@ -70,4 +73,5 @@ struct State
     void drawRecentFruits();
     void resetRound();
     void setGameOver();
+    void drawGameOver();
 };

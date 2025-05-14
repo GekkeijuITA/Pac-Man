@@ -50,7 +50,8 @@ void handle(const sf::Event::KeyPressed &key, State &gs)
         gs.pause = !gs.pause;
         break;
     case sf::Keyboard::Scancode::Enter:
-        if(gs.pause) {
+        if (gs.pause)
+        {
             switch (gs.pauseMenu.getCursorPosition().y)
             {
             case FIRST_OPTION:
@@ -66,6 +67,10 @@ void handle(const sf::Event::KeyPressed &key, State &gs)
             default:
                 break;
             }
+        }
+        else if (gs.gameOver)
+        {
+            std::cout << "Going to menu..." << std::endl;
         }
     default:
         return;
