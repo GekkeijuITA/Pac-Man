@@ -48,6 +48,8 @@ State::State(unsigned w, unsigned h, std::string title) : lives(3),
     view.setCenter({view.getSize().x / 2.f, view.getSize().y / 2.f});
     window.setView(view);
 
+    pauseMenu = PauseMenu(view);
+
     sf::Texture temp;
     sf::Vector2u texSize;
 
@@ -528,6 +530,10 @@ void State::doUI()
 
     drawScore(16, 1, highscore);
     drawRecentFruits();
+
+    if(pause) {
+        pauseMenu.draw(window);
+    }
 }
 
 void State::drawChar(int x, int y, sf::Vector2i charPos)
@@ -552,7 +558,7 @@ void State::drawScore(int x, int y, int score)
 
     for (size_t i = 0; i < scoreString.length(); i++)
     {
-        char c = scoreString[i];
+        std::string c(1, scoreString[i]);
         drawChar(startX + i, y, CHAR_MAP.at(c));
     }
 }

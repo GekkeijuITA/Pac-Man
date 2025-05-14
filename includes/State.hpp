@@ -23,6 +23,8 @@
 #include "../includes/fruits/Key.hpp"
 #include "../includes/fruits/Galaxian.hpp"
 
+#include "../includes/PauseMenu.hpp"
+
 struct TextureData
 {
     sf::Texture texture;
@@ -51,6 +53,8 @@ struct State
     std::deque<sf::Vector2i> recentFruits;
     std::vector<std::unique_ptr<Fruit>> fruits;
     std::vector<sf::Vector2i> fruitPositions;
+
+    PauseMenu pauseMenu;
 
     State(unsigned w, unsigned h, std::string title);
     bool getMap(std::string mapPath);

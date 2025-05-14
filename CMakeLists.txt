@@ -31,6 +31,7 @@ add_executable(main
     src/fruits/Galaxian.cpp
     src/fruits/Key.cpp
     src/fruits/Bell.cpp
+    src/PauseMenu.cpp
 )
 
 target_compile_features(main PRIVATE cxx_std_17)
