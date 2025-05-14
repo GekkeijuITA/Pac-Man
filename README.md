@@ -44,7 +44,7 @@
 - [x] Sistema layout mappa (mappa di default) con file di testo
 - [x] Aggiungere pac-man con il movimento classico
 - [x] Aggiungere sistema di punteggio
-- [ ] Aggiungere frutti
+- [x] Aggiungere frutti
 - [x] Aggiungere fantasmi con movimento classico
 - [x] Aggiungere collisioni con i fantasmi
 - [x] Aggiungere reazione fantasmi al power pellet
