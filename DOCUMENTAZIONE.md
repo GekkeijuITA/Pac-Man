@@ -1,14 +1,8 @@
-# Tappa n.8
+# Tappa n.9
 ## Obiettivo
-L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare il sistema di istanziamento dei frutti in una posizione specifica della mappa che indicheremo con il carattere "F".
-
-Il despawn, scelto casualmente tra 9 e 10 secondi, si congela se PacMan ha il powerpellet attivo. 
-
-Il tipo di frutta dipende dal livello in cui siamo (es. al livello 1 sarà sempre la Cherry) e compaiono sempre due volte per livello: una volta a 70 e un'altra 170 pallini mangiati (solo se la prima non è più sullo schermo).
-
-(https://pacman.fandom.com/wiki/Fruits)
+L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare le varie schermate del gioco (game over, pausa, menu principale e schermata di vittoria).
 ## Ostacoli
-Nessun ostacolo particolare
+
 ## Soluzione
 
 ![demo](demo.png)
