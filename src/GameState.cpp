@@ -8,23 +8,25 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
-GameState::GameState(unsigned w, unsigned h, std::string title, std::string mapPath) : lives(LIVES),
-                                                                                       score(0),
-                                                                                       highscore(0),
-                                                                                       pacman(*this),
-                                                                                       blinky(*this),
-                                                                                       pinky(*this),
-                                                                                       inky(*this),
-                                                                                       clyde(*this),
-                                                                                       eatableTiles(0),
-                                                                                       gameOver(false),
-                                                                                       pause(false),
-                                                                                       startGame(false),
-                                                                                       level(1),
-                                                                                       fruitCount(0),
-                                                                                       startGameTimer(START_GAME_TIME),
-                                                                                       mapPath(mapPath),
-                                                                                       victory(false)
+GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &stateManager) : lives(LIVES),
+                                                                                                  score(0),
+                                                                                                  highscore(0),
+                                                                                                  pacman(*this),
+                                                                                                  blinky(*this),
+                                                                                                  pinky(*this),
+                                                                                                  inky(*this),
+                                                                                                  clyde(*this),
+                                                                                                  eatableTiles(0),
+                                                                                                  gameOver(false),
+                                                                                                  pause(false),
+                                                                                                  startGame(false),
+                                                                                                  level(1),
+                                                                                                  fruitCount(0),
+                                                                                                  startGameTimer(START_GAME_TIME),
+                                                                                                  mapPath(mapPath),
+                                                                                                  victory(false),
+                                                                                                  window(window),
+                                                                                                  stateManager(stateManager)
 {
     if (!getMap())
     {
@@ -34,35 +36,8 @@ GameState::GameState(unsigned w, unsigned h, std::string title, std::string mapP
 
     recentFruits.clear();
 
-    float mapRatio = (float)(MAP_WIDTH) / (MAP_HEIGHT + 5);
-    float screenRatio = (float)w / h;
-
-    float scaleFactor = 0.7f;
-    unsigned int windowWidth, windowHeight;
-
-    if (mapRatio > screenRatio)
-    {
-        windowWidth = w * scaleFactor;
-        windowHeight = windowWidth / mapRatio;
-    }
-    else
-    {
-        windowHeight = h * scaleFactor;
-        windowWidth = windowHeight * mapRatio;
-    }
-
-    window = sf::RenderWindow(sf::VideoMode({windowWidth, windowHeight}), title);
-    window.setPosition({static_cast<int>((w - windowWidth) / 2),
-                        static_cast<int>((h - windowHeight) / 2)});
-    window.setFramerateLimit(60);
-
-    sf::View view;
-    view.setSize({MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE});
-    view.setCenter({view.getSize().x / 2.f, view.getSize().y / 2.f});
-    window.setView(view);
-
-    pauseMenu = GameMenu(view, "PAUSE", {"CONTINUE", "RESTART LEVEL", "QUIT"}, sf::Vector2i(10, 3));
-    victoryMenu = GameMenu(view, "VICTORY", {"RESTART GAME", "QUIT"}, sf::Vector2i(8, 3));
+    pauseMenu = GameMenu(window.getView(), "PAUSE", {"CONTINUE", "RESTART LEVEL", "QUIT"}, sf::Vector2i(10, 3));
+    victoryMenu = GameMenu(window.getView(), "VICTORY", {"RESTART GAME", "QUIT"}, sf::Vector2i(8, 3));
 
     sf::Texture temp;
     sf::Vector2u texSize;
@@ -531,7 +506,7 @@ void GameState::doGraphics()
         }
     }
 
-    Debug::drawGrid(window);
+    //Debug::drawGrid(window);
 }
 
 void GameState::doUI()

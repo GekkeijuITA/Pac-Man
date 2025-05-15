@@ -24,11 +24,14 @@
 #include "../includes/fruits/Galaxian.hpp"
 
 #include "../includes/GameMenu.hpp"
+#include "../includes/StateManager.hpp"
 
 #define GAME_OVER_TIME 3.f
 #define START_GAME_TIME 3.f
 #define LIVES 3
 #define VICTORY_LEVEL 3
+
+struct StateManager;
 
 struct TextureData
 {
@@ -38,7 +41,7 @@ struct TextureData
 
 struct GameState
 {
-    sf::RenderWindow window;
+    sf::RenderWindow &window;
     // Textures for the map
     std::map<int, TextureData> mapTextures;
     // Textures for the game
@@ -64,7 +67,9 @@ struct GameState
     float gameOverTimer, startGameTimer;
     ArcadeText arcadeText;
 
-    GameState(unsigned w, unsigned h, std::string title, std::string mapPath);
+    StateManager &stateManager;
+
+    GameState(sf::RenderWindow &window, std::string mapPath, StateManager &stateManager);
     bool getMap();
     void update(float elapsed);
     void bounds();
