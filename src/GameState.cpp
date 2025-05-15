@@ -8,7 +8,7 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
-GameState::GameState(unsigned w, unsigned h, std::string title, std::string mapPath) : lives(1),
+GameState::GameState(unsigned w, unsigned h, std::string title, std::string mapPath) : lives(LIVES),
                                                                                        score(0),
                                                                                        highscore(0),
                                                                                        pacman(*this),
@@ -23,7 +23,8 @@ GameState::GameState(unsigned w, unsigned h, std::string title, std::string mapP
                                                                                        level(1),
                                                                                        fruitCount(0),
                                                                                        startGameTimer(START_GAME_TIME),
-                                                                                       mapPath(mapPath)
+                                                                                       mapPath(mapPath),
+                                                                                       victory(false)
 {
     if (!getMap())
     {
@@ -60,7 +61,8 @@ GameState::GameState(unsigned w, unsigned h, std::string title, std::string mapP
     view.setCenter({view.getSize().x / 2.f, view.getSize().y / 2.f});
     window.setView(view);
 
-    pauseMenu = GameMenu(view, "PAUSE", {"CONTINUE", "RESTART", "QUIT"});
+    pauseMenu = GameMenu(view, "PAUSE", {"CONTINUE", "RESTART LEVEL", "QUIT"}, sf::Vector2i(10, 3));
+    victoryMenu = GameMenu(view, "VICTORY", {"RESTART GAME", "QUIT"}, sf::Vector2i(8, 3));
 
     sf::Texture temp;
     sf::Vector2u texSize;
@@ -103,25 +105,14 @@ GameState::GameState(unsigned w, unsigned h, std::string title, std::string mapP
 
     maxFruits = 12 - lives;
     fruitCount = 0;
-
-    std::ifstream highscoreFile;
-    highscoreFile.open("../resources/highscore.txt", std::ios::in);
-    if (!highscoreFile.is_open())
-    {
-        std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
-        return;
-    }
-    std::string highscoreString;
-    std::getline(highscoreFile, highscoreString);
-    highscore = highscoreString.empty() ? 0 : std::stoi(highscoreString);
-    highscoreFile.close();
+    getHighscore();
 
     ArcadeText arcadeText;
 }
 
 void GameState::update(float elapsed)
 {
-    if (pause)
+    if (pause || victory)
         return;
 
     if (startGame)
@@ -540,7 +531,7 @@ void GameState::doGraphics()
         }
     }
 
-    // Debug::drawGrid(window);
+    Debug::drawGrid(window);
 }
 
 void GameState::doUI()
@@ -577,6 +568,11 @@ void GameState::doUI()
     if (gameOver)
     {
         drawGameOver();
+    }
+
+    if (victory)
+    {
+        victoryMenu.draw(window);
     }
 }
 
@@ -652,24 +648,22 @@ void GameState::resetRound()
     }
 }
 
+void GameState::resetGame()
+{
+    victory = false;
+    lives = LIVES;
+    score = 0;
+    level = 1;
+    fruitCount = 0;
+    recentFruits.clear();
+    resetRound();
+}
+
 void GameState::setGameOver()
 {
     gameOver = true;
     gameOverTimer = GAME_OVER_TIME;
-
-    std::ofstream highscoreFile;
-    highscoreFile.open("../resources/highscore.txt", std::ios::out);
-    if (!highscoreFile.is_open())
-    {
-        std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
-        return;
-    }
-    if (score > highscore)
-    {
-        // std::cout << "Nuovo highscore: " << score << std::endl;
-        highscoreFile << score;
-    }
-    highscoreFile.close();
+    saveHighscore();
 }
 
 void GameState::drawGameOver()
@@ -685,10 +679,11 @@ void GameState::drawGameOver()
 
 void GameState::nextLevel()
 {
-    if (level == 255)
+    saveHighscore();
+
+    if (level == VICTORY_LEVEL)
     {
-        // vittoria
-        pause = true;
+        victory = true;
         return;
     }
 
@@ -699,4 +694,37 @@ void GameState::nextLevel()
     fruitPositions.clear();
     fruits.clear();
     getMap();
+    getHighscore();
+}
+
+void GameState::saveHighscore()
+{
+    std::ofstream highscoreFile;
+    highscoreFile.open("../resources/highscore.txt", std::ios::out);
+    if (!highscoreFile.is_open())
+    {
+        std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
+        return;
+    }
+    if (score > highscore)
+    {
+        // std::cout << "Nuovo highscore: " << score << std::endl;
+        highscoreFile << score;
+    }
+    highscoreFile.close();
+}
+
+void GameState::getHighscore()
+{
+    std::ifstream highscoreFile;
+    highscoreFile.open("../resources/highscore.txt", std::ios::in);
+    if (!highscoreFile.is_open())
+    {
+        std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
+        return;
+    }
+    std::string highscoreString;
+    std::getline(highscoreFile, highscoreString);
+    highscore = highscoreString.empty() ? 0 : std::stoi(highscoreString);
+    highscoreFile.close();
 }

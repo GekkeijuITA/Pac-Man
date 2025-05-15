@@ -18,21 +18,50 @@ void handle(const T &, GameState &gs)
 void handle(const sf::Event::KeyPressed &key, GameState &gs)
 {
     Direction newDirection = gs.pacman.direction;
+    sf::Vector2i cursorPos;
+    int LAST_OPTION;
 
     switch (key.scancode)
     {
     case sf::Keyboard::Scancode::Up:
-        if (gs.pause && gs.pauseMenu.getCursorPosition().y > FIRST_OPTION)
+
+        if (gs.pause)
         {
-            gs.pauseMenu.setCursorPosition(gs.pauseMenu.getCursorPosition().x, gs.pauseMenu.getCursorPosition().y - 2);
+            cursorPos = gs.pauseMenu.getCursorPosition();
+            if (cursorPos.y > FIRST_OPTION)
+            {
+                gs.pauseMenu.setCursorPosition(cursorPos.x, cursorPos.y - 2);
+            }
+        }
+        else if (gs.victory)
+        {
+            cursorPos = gs.victoryMenu.getCursorPosition();
+            if (cursorPos.y > FIRST_OPTION)
+            {
+                gs.victoryMenu.setCursorPosition(cursorPos.x, cursorPos.y - 2);
+            }
         }
         else
             newDirection = UP;
         break;
     case sf::Keyboard::Scancode::Down:
-        if (gs.pause && gs.pauseMenu.getCursorPosition().y < LAST_OPTION)
+        if (gs.pause)
         {
-            gs.pauseMenu.setCursorPosition(gs.pauseMenu.getCursorPosition().x, gs.pauseMenu.getCursorPosition().y + 2);
+            cursorPos = gs.pauseMenu.getCursorPosition();
+            LAST_OPTION = FIRST_OPTION + gs.pauseMenu.getOptionsSize();
+            if (cursorPos.y < LAST_OPTION)
+            {
+                gs.pauseMenu.setCursorPosition(cursorPos.x, cursorPos.y + 2);
+            }
+        }
+        else if (gs.victory)
+        {
+            cursorPos = gs.victoryMenu.getCursorPosition();
+            LAST_OPTION = FIRST_OPTION + gs.victoryMenu.getOptionsSize();
+            if (cursorPos.y < LAST_OPTION)
+            {
+                gs.victoryMenu.setCursorPosition(cursorPos.x, cursorPos.y + 2);
+            }
         }
         else
             newDirection = DOWN;
@@ -53,28 +82,43 @@ void handle(const sf::Event::KeyPressed &key, GameState &gs)
         }
         break;
     case sf::Keyboard::Scancode::Enter:
-        if (gs.pause)
+        if (gs.pause && !gs.victory && !gs.gameOver)
         {
-            switch (gs.pauseMenu.getCursorPosition().y)
-            {
-            case FIRST_OPTION:
+            LAST_OPTION = FIRST_OPTION + gs.pauseMenu.getOptionsSize() + 1;
+            cursorPos = gs.pauseMenu.getCursorPosition();
+            if (cursorPos.y == FIRST_OPTION)
+            { // Continue
                 gs.pause = false;
-                break;
-            case FIRST_OPTION + 2:
+            }
+            else if (cursorPos.y == FIRST_OPTION + 2)
+            { // Restart
                 gs.resetRound();
                 gs.pause = false;
-                break;
-            case LAST_OPTION:
+            }
+            else if (cursorPos.y == LAST_OPTION)
+            { // Quit
                 gs.window.close();
-                break;
-            default:
-                break;
             }
         }
         else if (gs.gameOver)
         {
             std::cout << "Going to menu..." << std::endl;
         }
+        else if (gs.victory)
+        {
+            LAST_OPTION = FIRST_OPTION + gs.victoryMenu.getOptionsSize();
+            cursorPos = gs.victoryMenu.getCursorPosition();
+
+            if (cursorPos.y == FIRST_OPTION)
+            { // Restart
+                gs.resetGame();
+            }
+            else if (cursorPos.y == LAST_OPTION)
+            { // Quit
+                gs.window.close();
+            }
+        }
+        break;
     default:
         return;
     }

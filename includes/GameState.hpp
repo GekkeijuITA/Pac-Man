@@ -27,6 +27,8 @@
 
 #define GAME_OVER_TIME 3.f
 #define START_GAME_TIME 3.f
+#define LIVES 3
+#define VICTORY_LEVEL 3
 
 struct TextureData
 {
@@ -51,14 +53,14 @@ struct GameState
     Clyde clyde;
 
     int lives, score, highscore, level, fruitCount, eatableTiles;
-    bool gameOver, pause, startGame;
+    bool gameOver, pause, startGame, victory;
 
     size_t maxFruits;
     std::deque<sf::Vector2i> recentFruits;
     std::vector<std::unique_ptr<Fruit>> fruits;
     std::vector<sf::Vector2i> fruitPositions;
 
-    GameMenu pauseMenu;
+    GameMenu pauseMenu, victoryMenu;
     float gameOverTimer, startGameTimer;
     ArcadeText arcadeText;
 
@@ -74,7 +76,10 @@ struct GameState
     void drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor);
     void drawRecentFruits();
     void resetRound();
+    void resetGame();
     void setGameOver();
     void drawGameOver();
     void nextLevel();
+    void saveHighscore();
+    void getHighscore();
 };
