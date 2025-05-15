@@ -16,7 +16,7 @@ GameMenu::GameMenu(sf::View v, std::string title, std::vector<std::string> optio
     }
 
     ArcadeText arcadeText;
-    setCursorPosition(titlePos.x, FIRST_OPTION);
+    setCursorPosition(titlePos.x, 6);
 }
 
 void GameMenu::draw(sf::RenderWindow &window)
@@ -28,12 +28,12 @@ void GameMenu::draw(sf::RenderWindow &window)
     arcadeText.drawString(title, titlePos.x, titlePos.y, window, 2.f);
     for (auto &option : options)
     {
-        arcadeText.drawString(option, titlePos.x + 1, FIRST_OPTION + (2 * (&option - &options[0])), window);
+        arcadeText.drawString(option, titlePos.x + 1, 6 + (2 * (&option - &options[0])), window);
     }
 
     sf::CircleShape triangle(TILE_SIZE / 2.f, 3);
     triangle.setFillColor(sf::Color::Red);
-    triangle.setPosition({TILE_SIZE * (cursorPosition.x + .5f), TILE_SIZE * (cursorPosition.y + .5f)});
+    triangle.setPosition({TILE_SIZE * (cursorPosition.x + .5f), TILE_SIZE * ((cursorPosition.y + (cursorIndex * 2)) + .5f)});
     triangle.setOrigin({TILE_SIZE / 2.f, TILE_SIZE / 2.f});
     triangle.setRotation(sf::degrees(90));
     window.draw(triangle);

@@ -36,8 +36,8 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
 
     recentFruits.clear();
 
-    pauseMenu = GameMenu(window.getView(), "PAUSE", {"CONTINUE", "RESTART LEVEL", "QUIT"}, sf::Vector2i(10, 3));
-    victoryMenu = GameMenu(window.getView(), "VICTORY", {"RESTART GAME", "QUIT"}, sf::Vector2i(8, 3));
+    pauseMenu = GameMenu(window.getView(), "PAUSE", {"CONTINUE", "RESTART LEVEL", "MAIN MENU"}, sf::Vector2i(10, 3));
+    victoryMenu = GameMenu(window.getView(), "VICTORY", {"RESTART GAME", "MAIN MENU"}, sf::Vector2i(8, 3));
 
     sf::Texture temp;
     sf::Vector2u texSize;
@@ -506,7 +506,7 @@ void GameState::doGraphics()
         }
     }
 
-    //Debug::drawGrid(window);
+    // Debug::drawGrid(window);
 }
 
 void GameState::doUI()
@@ -602,6 +602,7 @@ void GameState::drawRecentFruits()
 
 void GameState::resetRound()
 {
+    pause = false;
     startGame = true;
     startGameTimer = START_GAME_TIME;
     pacman.respawn();

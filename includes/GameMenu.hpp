@@ -7,8 +7,6 @@
 #include "../includes/textures.hpp"
 #include "../includes/global_values.hpp"
 
-inline const int FIRST_OPTION = 6;
-
 struct GameMenu
 {
     sf::Texture tex;
@@ -18,6 +16,7 @@ struct GameMenu
     std::string title;
     std::vector<std::string> options;
     sf::Vector2i titlePos;
+    int cursorIndex = 0;
 
     GameMenu();
     GameMenu(sf::View v, std::string title, std::vector<std::string> options, sf::Vector2i titlePos);

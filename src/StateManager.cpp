@@ -4,10 +4,9 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
 {
     switch (sm.currentMode)
     {
-    case StateManager::NORMAL_GAME: 
+    case StateManager::NORMAL_GAME:
+    {
         Direction newDirection = gs.pacman.direction;
-        sf::Vector2i cursorPos;
-        int LAST_OPTION;
 
         switch (key.scancode)
         {
@@ -15,18 +14,16 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
 
             if (gs.pause)
             {
-                cursorPos = gs.pauseMenu.getCursorPosition();
-                if (cursorPos.y > FIRST_OPTION)
+                if (gs.pauseMenu.cursorIndex > 0)
                 {
-                    gs.pauseMenu.setCursorPosition(cursorPos.x, cursorPos.y - 2);
+                    gs.pauseMenu.cursorIndex--;
                 }
             }
             else if (gs.victory)
             {
-                cursorPos = gs.victoryMenu.getCursorPosition();
-                if (cursorPos.y > FIRST_OPTION)
+                if (gs.victoryMenu.cursorIndex > 0)
                 {
-                    gs.victoryMenu.setCursorPosition(cursorPos.x, cursorPos.y - 2);
+                    gs.victoryMenu.cursorIndex--;
                 }
             }
             else
@@ -35,20 +32,16 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
         case sf::Keyboard::Scancode::Down:
             if (gs.pause)
             {
-                cursorPos = gs.pauseMenu.getCursorPosition();
-                LAST_OPTION = FIRST_OPTION + gs.pauseMenu.getOptionsSize();
-                if (cursorPos.y < LAST_OPTION)
+                if (gs.pauseMenu.cursorIndex < gs.pauseMenu.getOptionsSize() - 1)
                 {
-                    gs.pauseMenu.setCursorPosition(cursorPos.x, cursorPos.y + 2);
+                    gs.pauseMenu.cursorIndex++;
                 }
             }
             else if (gs.victory)
             {
-                cursorPos = gs.victoryMenu.getCursorPosition();
-                LAST_OPTION = FIRST_OPTION + gs.victoryMenu.getOptionsSize();
-                if (cursorPos.y < LAST_OPTION)
+                if (gs.victoryMenu.cursorIndex < gs.victoryMenu.getOptionsSize() - 1)
                 {
-                    gs.victoryMenu.setCursorPosition(cursorPos.x, cursorPos.y + 2);
+                    gs.victoryMenu.cursorIndex++;
                 }
             }
             else
@@ -65,45 +58,47 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
         case sf::Keyboard::Scancode::Escape:
             if (!gs.gameOver)
             {
-                gs.pauseMenu.setCursorPosition(10, FIRST_OPTION);
+                gs.pauseMenu.cursorIndex = 0;
                 gs.pause = !gs.pause;
             }
             break;
         case sf::Keyboard::Scancode::Enter:
             if (gs.pause && !gs.victory && !gs.gameOver)
             {
-                LAST_OPTION = FIRST_OPTION + gs.pauseMenu.getOptionsSize() + 1;
-                cursorPos = gs.pauseMenu.getCursorPosition();
-                if (cursorPos.y == FIRST_OPTION)
-                { // Continue
+                switch (gs.pauseMenu.cursorIndex)
+                {
+                case 0: // Continue
                     gs.pause = false;
-                }
-                else if (cursorPos.y == FIRST_OPTION + 2)
-                { // Restart
+                    break;
+                case 1: // Restart level
                     gs.resetRound();
-                    gs.pause = false;
-                }
-                else if (cursorPos.y == LAST_OPTION)
-                { // Quit
-                    sm.window.close();
+                    break;
+                case 2: // Return to menu
+                    sm.currentMode = StateManager::MAIN_MENU;
+                    sm.mainMenuState->getHighscore();
+                    break;
+                default:
+                    break;
                 }
             }
             else if (gs.gameOver)
             {
-                std::cout << "Going to menu..." << std::endl;
+                sm.currentMode = StateManager::MAIN_MENU;
+                sm.mainMenuState->getHighscore();
             }
             else if (gs.victory)
             {
-                LAST_OPTION = FIRST_OPTION + gs.victoryMenu.getOptionsSize();
-                cursorPos = gs.victoryMenu.getCursorPosition();
-
-                if (cursorPos.y == FIRST_OPTION)
-                { // Restart
+                switch (gs.victoryMenu.cursorIndex)
+                {
+                case 0: // Restart game
                     gs.resetGame();
-                }
-                else if (cursorPos.y == LAST_OPTION)
-                { // Quit
-                    sm.window.close();
+                    break;
+                case 1: // Return to menu
+                    sm.currentMode = StateManager::MAIN_MENU;
+                    sm.mainMenuState->getHighscore();
+                    break;
+                default:
+                    break;
                 }
             }
             break;
@@ -112,6 +107,37 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
         }
 
         gs.pacman.setRotation(newDirection);
+        break;
+    }
+    case StateManager::MAIN_MENU:
+        if (key.scancode == sf::Keyboard::Scancode::Up)
+        {
+            if (sm.mainMenuState->cursorIndex > 0)
+            {
+                sm.mainMenuState->cursorIndex--;
+            }
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Down)
+        {
+            if (sm.mainMenuState->cursorIndex < sm.mainMenuState->options.size() - 1)
+            {
+                sm.mainMenuState->cursorIndex++;
+            }
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Enter)
+        {
+            switch (sm.mainMenuState->cursorIndex)
+            {
+            case 0:
+                sm.initGame("../resources/default_map.txt");
+                break;
+            case 1:
+                sm.window.close();
+                break;
+            default:
+                break;
+            }
+        }
         break;
     }
 }
@@ -155,6 +181,8 @@ StateManager::StateManager(unsigned w, unsigned h, std::string title) : w(w), h(
     view.setSize({MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE});
     view.setCenter({view.getSize().x / 2.f, view.getSize().y / 2.f});
     window.setView(view);
+
+    mainMenuState = std::make_unique<MainMenuState>(window, *this);
 };
 
 void StateManager::update(float elapsed)
@@ -175,7 +203,7 @@ void StateManager::doGraphics()
     switch (currentMode)
     {
     case MAIN_MENU:
-        // Draw main menu state
+        mainMenuState->draw();
         break;
     case NORMAL_GAME:
         gameState->doGraphics();

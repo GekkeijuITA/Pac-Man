@@ -1,7 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "GameState.hpp"
+#include "MainMenuState.hpp"
 #include <memory>
+
+struct GameState;
+struct MainMenuState;
 
 struct StateManager
 {
@@ -13,6 +17,7 @@ struct StateManager
 
     Mode currentMode = MAIN_MENU;
     std::unique_ptr<GameState> gameState;
+    std::unique_ptr<MainMenuState> mainMenuState;
     sf::RenderWindow window;
     unsigned w, h;
     std::string title;
