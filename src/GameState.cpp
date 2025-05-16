@@ -104,7 +104,6 @@ void GameState::update(float elapsed)
     {
         if (gameOverTimer > 0.f)
         {
-            // std::cout << gameOverTimer << std::endl;
             gameOverTimer -= elapsed;
         }
     }
@@ -142,34 +141,74 @@ void GameState::update(float elapsed)
             if (ghost->scoreDisplayTimer > 0.f)
                 ghost->scoreDisplayTimer -= elapsed;
         }
+
+        if (ghost->state == Ghost::SCARED)
+        {
+            if (pacman.powerPelletDuration <= 3.f)
+            {
+                if (ghost->blinkingTime > 0.f)
+                {
+                    ghost->blinkingTime -= elapsed;
+                    if (ghost->isWhite)
+                    {
+                        ghost->backScaredAnim->update(elapsed);
+                    }
+                    else
+                    {
+                        ghost->scaredAnim->update(elapsed);
+                    }
+                }
+                else
+                {
+                    ghost->blinkingTime = 0.2f;
+                    ghost->isWhite = !ghost->isWhite;
+                }
+            }
+            else
+                ghost->scaredAnim->update(elapsed);
+        }
     }
 
     for (auto &fruit : fruits)
     {
         bool isFruitDisplayed = find(fruitPositions.begin(), fruitPositions.end(), fruit->position) != fruitPositions.end();
 
-        if (fruit->fruitDisplayTimer > 0.f)
+        if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
         {
             if (!isFruitDisplayed)
             {
                 fruitPositions.push_back(fruit->position);
             }
 
-            fruit->fruitDisplayTimer -= elapsed;
+            if (!pacman.powerPellet)
+                fruit->fruitDisplayTimer -= elapsed;
+
+            if (fruit->fruitDisplayTimer <= 3.f)
+            {
+                if (fruit->blinkingTime > 0.f)
+                {
+                    fruit->blinkingTime -= elapsed;
+                }
+                else
+                {
+                    fruit->isBlinking = !fruit->isBlinking;
+                    fruit->blinkingTime = FRUIT_BLINKING_TIME;
+                }
+            }
         }
 
         if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
         {
             fruit->scoreDisplayTimer -= elapsed;
-        }
-
-        if (fruit->scoreDisplayTimer <= 0.f && fruit->eaten)
-        {
-            isFruitDisplayed = false;
-            fruitPositions.erase(std::remove(fruitPositions.begin(), fruitPositions.end(), fruit->position), fruitPositions.end());
-            fruit->fruitDisplayTimer = 0.f;
-            fruit->eaten = false;
-            fruit->scoreDisplayTimer = 0.f;
+            
+            if (fruit->scoreDisplayTimer <= 0.f)
+            {
+                isFruitDisplayed = false;
+                fruitPositions.erase(std::remove(fruitPositions.begin(), fruitPositions.end(), fruit->position), fruitPositions.end());
+                fruit->fruitDisplayTimer = 0.f;
+                fruit->eaten = false;
+                fruit->scoreDisplayTimer = 0.f;
+            }
         }
 
         if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !isFruitDisplayed)
@@ -496,7 +535,8 @@ void GameState::doGraphics()
             {
                 if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
                 {
-                    fruit->draw(window);
+                    if (!fruit->isBlinking)
+                        fruit->draw(window);
                 }
                 else if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
                 {

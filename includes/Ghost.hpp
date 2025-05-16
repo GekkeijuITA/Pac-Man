@@ -2,8 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 #include "global_values.hpp"
+#include "Animation.hpp"
 #include <map>
 #include <string>
+#include <memory>
 
 inline const sf::Vector2i GHOST_SCARED = {8, 4};
 inline const sf::Vector2i GHOST_R = {8, 5};
@@ -20,9 +22,11 @@ struct GameState;
 
 struct Ghost
 {
-    float speed, currentSpeed, timeToEnterHouse, scoreDisplayTimer;
+    float speed, currentSpeed, timeToEnterHouse, scoreDisplayTimer, blinkingTime = 0.2f;
     int dotLimit, score;
-    bool isTransitioning, enteredHouse, stoppedForScore;
+    const double frameDuration = 0.2;
+    bool isTransitioning, enteredHouse, stoppedForScore, isWhite = true;
+
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
@@ -47,6 +51,11 @@ struct Ghost
 
     GhostState state, lastState;
 
+    std::unique_ptr<sf::Sprite> sprite;
+    std::map<Direction, Animation> GHOST_ANIM_MAP;
+    std::unique_ptr<Animation> scaredAnim;
+    std::unique_ptr<Animation> backScaredAnim;
+
 protected:
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
     std::map<Direction, sf::Vector2i> GHOST_EYES_TEX_MAP = {
@@ -54,13 +63,14 @@ protected:
         {DOWN, GHOST_D},
         {LEFT, GHOST_L},
         {RIGHT, GHOST_R},
-        {NONE, GHOST_R}};
+        {NONE, GHOST_L}};
 
     Ghost(
         GhostState state,
         int dotLimit,
         std::string name,
-        GameState &gameState);
+        GameState &gameState,
+        std::map<Direction, sf::Vector2i> GHOST_TEX_MAP);
 
 private:
     void setDirection(Direction dir);

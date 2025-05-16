@@ -12,9 +12,32 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-file(GLOB_RECURSE SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
-
-add_executable(main ${SOURCE_FILES})
+add_executable(main 
+    src/Animation.cpp
+    src/Debug.cpp
+    src/Fruit.cpp
+    src/GameMenu.cpp
+    src/GameState.cpp
+    src/Ghost.cpp
+    src/main.cpp
+    src/MainMenuState.cpp
+    src/PacMan.cpp
+    src/StateManager.cpp
+    src/TextUI.cpp
+    src/textures.cpp
+    src/fruits/Apple.cpp
+    src/fruits/Bell.cpp
+    src/fruits/Cherry.cpp
+    src/fruits/Galaxian.cpp
+    src/fruits/Grape.cpp
+    src/fruits/Key.cpp
+    src/fruits/Orange.cpp
+    src/fruits/Strawberry.cpp
+    src/ghosts/Blinky.cpp
+    src/ghosts/Clyde.cpp
+    src/ghosts/Inky.cpp
+    src/ghosts/Pinky.cpp
+)
 
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)

@@ -1,11 +1,6 @@
-# Tappa n.9
+# Tappa n.10
 ## Obiettivo
-L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare le varie schermate del gioco (game over, pausa, menu principale e schermata di vittoria).
+L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare le animazioni.
 ## Ostacoli
 
 ## Soluzione
-
-![demo](mainmenu.png)
-![demo](gameover.png)
-![demo](pausemenu.png)  
-![demo](victorymenu.png)

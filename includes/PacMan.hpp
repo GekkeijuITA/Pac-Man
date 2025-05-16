@@ -2,19 +2,24 @@
 
 #include <SFML/Graphics.hpp>
 #include "global_values.hpp"
+#include "Animation.hpp"
 #include <vector>
 #include <map>
+#include <memory>
 
 inline const sf::Vector2i RIGHT_PACMAN = {1, 0};
 inline const sf::Vector2i LEFT_PACMAN = {1, 1};
 inline const sf::Vector2i UP_PACMAN = {1, 2};
 inline const sf::Vector2i DOWN_PACMAN = {1, 3};
+inline const sf::Vector2i PACMAN_FULL = {2, 0};
 inline const float POWER_PELLET_DURATION = 5.f;
 
 struct GameState;
 
 struct PacMan
 {
+    std::unique_ptr<sf::Sprite> sprite;
+
     float speed, powerPelletDuration;
     int dotEaten, ghostStreak;
     bool powerPellet;
@@ -36,6 +41,8 @@ struct PacMan
         {DOWN, DOWN_PACMAN},
         {NONE, RIGHT_PACMAN} // Default
     };
+
+    std::map<Direction, Animation> PACMAN_ANIM_MAP;
 
     PacMan(GameState &gameState);
     void draw(sf::RenderWindow &window);

@@ -5,6 +5,7 @@
 #include "textures.hpp"
 #include <iostream>
 #include <time.h>
+#include <memory>
 
 inline const sf::Vector2i FRUIT_SCORE_100 = {0, 9};
 inline const sf::Vector2i FRUIT_SCORE_300 = {1, 9};
@@ -16,6 +17,7 @@ inline const sf::Vector2i FRUIT_SCORE_3000 = {4, 11};
 inline const sf::Vector2i FRUIT_SCORE_5000 = {4, 12};
 
 #define SCORE_DISPLAY_TIME 1.5f;
+#define FRUIT_BLINKING_TIME 0.5f;
 
 struct GameState;
 
@@ -25,8 +27,9 @@ struct Fruit
     sf::Vector2i position;
     sf::Vector2i texPosition;
     int score;
-    float fruitDisplayTimer, scoreDisplayTimer;
-    bool eaten;
+    float fruitDisplayTimer, scoreDisplayTimer, blinkingTime = FRUIT_BLINKING_TIME;
+    bool eaten, isBlinking = false;
+    std::unique_ptr<sf::Sprite> sprite;
 
 protected:
     Fruit(

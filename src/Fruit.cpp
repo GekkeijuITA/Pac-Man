@@ -14,6 +14,7 @@ Fruit::Fruit(
     fruitDisplayTimer = 0.f;
     scoreDisplayTimer = SCORE_DISPLAY_TIME;
     eaten = false;
+    sprite = std::make_unique<sf::Sprite>(createSprite(tex, texPosition, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true));
 }
 
 int Fruit::getScore()
@@ -23,12 +24,10 @@ int Fruit::getScore()
 
 void Fruit::draw(sf::RenderWindow &window)
 {
-    sf::Sprite sprite = createSprite(tex, texPosition, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true);
-
     float x = static_cast<float>((position.y + .5f) * TILE_SIZE);
     float y = static_cast<float>((position.x + 3.5f) * TILE_SIZE);
-    sprite.setPosition({x, y});
-    window.draw(sprite);
+    sprite->setPosition({x, y});
+    window.draw(*sprite);
 }
 
 // Imposta il timer casualmente tra 9 e 10 secondi

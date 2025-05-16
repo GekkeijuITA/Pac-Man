@@ -39,11 +39,13 @@ Ghost::Ghost(
     GhostState state,
     int dotLimit,
     std::string name,
-    GameState &gameState) : map(nullptr),
-                            state(state),
-                            dotLimit(dotLimit),
-                            name(name),
-                            gameState(gameState)
+    GameState &gameState,
+    std::map<Direction, sf::Vector2i> GHOST_TEX_MAP) : map(nullptr),
+                                                       state(state),
+                                                       dotLimit(dotLimit),
+                                                       name(name),
+                                                       gameState(gameState),
+                                                       GHOST_TEX_MAP(GHOST_TEX_MAP)
 {
     speed = 2.5f;
     currentSpeed = speed;
@@ -62,6 +64,27 @@ Ghost::Ghost(
         std::cerr << "Errore nel caricamento della texture del fantasma" << std::endl;
         exit(1);
     }
+
+    if (GHOST_TEX_MAP.empty())
+    {
+        std::cerr << "Errore nel caricamento della texture del fantasma" << std::endl;
+        exit(1);
+    }
+
+    sprite = std::make_unique<sf::Sprite>(createSprite(tex, GHOST_TEX_MAP.at(Direction::LEFT), {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true));
+
+    for (Direction dir : {UP, DOWN, LEFT, RIGHT, NONE})
+    {
+        Animation::insertAnimation(dir, GHOST_ANIM_MAP, GHOST_TEX_MAP, *sprite, 1, 0.2f);
+    }
+
+    scaredAnim = std::make_unique<Animation>(*sprite);
+    scaredAnim->addFrame({sf::IntRect({(GHOST_SCARED.x + 1) * (TILE_SIZE / 2), (GHOST_SCARED.y) * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2}), frameDuration});
+    scaredAnim->addFrame({sf::IntRect({(GHOST_SCARED.x) * (TILE_SIZE / 2), (GHOST_SCARED.y) * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2}), frameDuration});
+
+    backScaredAnim = std::make_unique<Animation>(*sprite);
+    backScaredAnim->addFrame({sf::IntRect({(GHOST_SCARED.x + 3) * (TILE_SIZE / 2), (GHOST_SCARED.y) * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2}), frameDuration});
+    backScaredAnim->addFrame({sf::IntRect({(GHOST_SCARED.x + 2) * (TILE_SIZE / 2), (GHOST_SCARED.y) * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2}), frameDuration});
 }
 
 void Ghost::draw(sf::RenderWindow &window)
@@ -71,7 +94,7 @@ void Ghost::draw(sf::RenderWindow &window)
         return;
     }
 
-    sf::Vector2i texPos;
+    /*sf::Vector2i texPos;
     if (state == EATEN)
     {
         texPos = GHOST_EYES_TEX_MAP.at(direction);
@@ -82,16 +105,15 @@ void Ghost::draw(sf::RenderWindow &window)
     }
     else
     {
-        texPos = GHOST_TEX_MAP.at(direction);
-    }
-    sf::Sprite sprite = createSprite(tex, texPos, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true);
+
+    }*/
 
     float y = static_cast<float>((fPosition.x + position.x + 3.5f) * TILE_SIZE);
     float x = static_cast<float>((fPosition.y + position.y + 0.5f) * TILE_SIZE);
 
-    sprite.setPosition({x, y});
+    sprite->setPosition({x, y});
 
-    window.draw(sprite);
+    window.draw(*sprite);
 
     /*sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
     rect.setFillColor(sf::Color::Transparent);
@@ -261,6 +283,17 @@ void Ghost::move(float elapsed)
     if (stoppedForScore)
     {
         return;
+    }
+
+    if (state == EATEN)
+    {
+        sprite->setTextureRect(sf::IntRect({GHOST_EYES_TEX_MAP.at(direction).x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
+    }
+    else
+    {
+        std::map<Direction, Animation>::iterator it = GHOST_ANIM_MAP.find(direction);
+        if (it != GHOST_ANIM_MAP.end())
+            it->second.update(elapsed);
     }
 
     if (state == IN_HOUSE)

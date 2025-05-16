@@ -18,19 +18,32 @@ PacMan::PacMan(GameState &gameState) : map(nullptr), gameState(gameState)
         std::cerr << "Errore nel caricamento della texture di PacMan" << std::endl;
         exit(1);
     }
+
+    sprite = std::make_unique<sf::Sprite>(createSprite(tex, LEFT_PACMAN, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true));
+
+    float frameDuration = 0.07f;
+    for (Direction dir : {UP, DOWN, LEFT, RIGHT, NONE})
+    {
+        Animation::insertAnimation(dir, PACMAN_ANIM_MAP, PACMAN_TEX_MAP, *sprite, -1, frameDuration);
+        std::map<Direction, Animation>::iterator it = PACMAN_ANIM_MAP.find(dir);
+        if (it != PACMAN_ANIM_MAP.end())
+        {
+            it->second.addFrame({sf::IntRect(
+                                     {(PACMAN_FULL.x) * (TILE_SIZE / 2), (PACMAN_FULL.y) * (TILE_SIZE / 2)},
+                                     {(TILE_SIZE / 2), (TILE_SIZE / 2)}),
+                                 frameDuration});
+        }
+    }
 }
 
 void PacMan::draw(sf::RenderWindow &window)
 {
-    sf::Vector2i pacmanPos = PACMAN_TEX_MAP.at(direction);
-    sf::Sprite sprite = createSprite(tex, pacmanPos, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true);
-
     float y = static_cast<float>((fPosition.x + position.x + 3 + 0.5f) * TILE_SIZE);
     float x = static_cast<float>((fPosition.y + position.y + 0.5f) * TILE_SIZE);
 
-    sprite.setPosition({x, y});
+    sprite->setPosition({x, y});
 
-    window.draw(sprite);
+    window.draw(*sprite);
 }
 
 void PacMan::setPosition(int x, int y)
@@ -96,6 +109,9 @@ void PacMan::updateDirection()
 
 void PacMan::move(float elapsed)
 {
+    std::map<Direction, Animation>::iterator it = PACMAN_ANIM_MAP.find(direction);
+    it->second.update(elapsed);
+
     sf::Vector2f new_fPosition = fPosition;
 
     switch (direction)
