@@ -5,4 +5,7 @@ L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare le 
 
 ## Soluzione
 
-![demo](demo.png)
+![demo](mainmenu.png)
+![demo](gameover.png)
+![demo](pausemenu.png)  
+![demo](victorymenu.png)
