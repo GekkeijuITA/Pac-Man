@@ -129,7 +129,8 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
             switch (sm.mainMenuState->cursorIndex)
             {
             case 0:
-                sm.initGame("../resources/default_map.txt");
+                //sm.initGame("../resources/maps/default_map.txt");
+                sm.currentMode = StateManager::LEVEL_SELECTOR;
                 break;
             case 1:
                 sm.window.close();
@@ -183,6 +184,7 @@ StateManager::StateManager(unsigned w, unsigned h, std::string title) : w(w), h(
     window.setView(view);
 
     mainMenuState = std::make_unique<MainMenuState>(window, *this);
+    levelSelectorState = std::make_unique<LevelSelectorState>(window);
 };
 
 void StateManager::update(float elapsed)
@@ -208,6 +210,9 @@ void StateManager::doGraphics()
     case NORMAL_GAME:
         gameState->doGraphics();
         gameState->doUI();
+        break;
+    case LEVEL_SELECTOR:
+        levelSelectorState->draw();
         break;
     }
 }

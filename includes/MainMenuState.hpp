@@ -1,8 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "../includes/GameMenu.hpp"
-#include "../includes/StateManager.hpp"
+#include "GameMenu.hpp"
+#include "StateManager.hpp"
 
 struct StateManager;
 
