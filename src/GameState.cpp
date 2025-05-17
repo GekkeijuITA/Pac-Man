@@ -200,7 +200,7 @@ void GameState::update(float elapsed)
         if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
         {
             fruit->scoreDisplayTimer -= elapsed;
-            
+
             if (fruit->scoreDisplayTimer <= 0.f)
             {
                 isFruitDisplayed = false;
@@ -297,6 +297,7 @@ void GameState::collisions(float elapsed)
 
 bool GameState::getMap()
 {
+    eatableTiles = 0;
     std::fstream mapFile;
     mapFile.open(mapPath, std::ios::in);
     if (!mapFile.is_open())
@@ -646,6 +647,9 @@ void GameState::resetRound()
     startGame = true;
     startGameTimer = START_GAME_TIME;
     pacman.respawn();
+    map.clear();
+    fruitPositions.clear();
+    fruits.clear();
     for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
     {
         if (ghost == &blinky)
@@ -662,6 +666,8 @@ void GameState::resetRound()
     {
         setGameOver();
     }
+
+    getMap();
 }
 
 void GameState::resetGame()
@@ -705,11 +711,6 @@ void GameState::nextLevel()
 
     resetRound();
     level++;
-    pacman.dotEaten = 0;
-    map.clear();
-    fruitPositions.clear();
-    fruits.clear();
-    getMap();
     getHighscore();
 }
 

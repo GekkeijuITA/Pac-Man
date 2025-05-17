@@ -200,6 +200,7 @@ void PacMan::respawn()
     direction = LEFT;
     powerPellet = false;
     powerPelletDuration = POWER_PELLET_DURATION;
+    dotEaten = 0;
 }
 
 sf::Vector2i PacMan::getPosition()
