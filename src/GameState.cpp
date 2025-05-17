@@ -6,7 +6,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <bits/stdc++.h>
 
 GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &stateManager) : lives(LIVES),
                                                                                                   score(0),

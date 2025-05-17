@@ -34,7 +34,7 @@ void Animation::insertAnimation(Direction dir, std::map<Direction, Animation> &a
     if (it != animMap.end())
     {
         it->second.addFrame({sf::IntRect(
-                                 {(texMap.at(dir).x + offset) * (TILE_SIZE / 2), (texMap.at(dir).y) * (TILE_SIZE / 2)},
+                                 {static_cast<int>(texMap.at(dir).x + offset) * (TILE_SIZE / 2), (texMap.at(dir).y) * (TILE_SIZE / 2)},
                                  {(TILE_SIZE / 2), (TILE_SIZE / 2)}),
                              frameDuration});
         it->second.addFrame({sf::IntRect(

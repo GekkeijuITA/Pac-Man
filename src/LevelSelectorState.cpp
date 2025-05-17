@@ -4,9 +4,18 @@
 LevelSelectorState::LevelSelectorState(sf::RenderWindow &window) : window(window)
 {
     r = std::regex("[^a-zA-Z0-9!,\",-,/]");
+
+    if (!straightLine.loadFromFile(STRAIGHT_LINE_H))
+    {
+        std::cerr << "Errore nel caricamento di STRAIGHT_LINE_H\n";
+    }
+
+    if (!cornerTile.loadFromFile(ANGLE_0))
+    {
+        std::cerr << "Errore nel caricamento di ANGLE_0\n";
+    }
+
     loadMaps();
-    straightLine.loadFromFile(STRAIGHT_LINE_H);
-    cornerTile.loadFromFile(ANGLE_0);
 };
 
 void LevelSelectorState::loadMaps()
@@ -18,10 +27,11 @@ void LevelSelectorState::loadMaps()
     for (const auto &entry : std::filesystem::directory_iterator(path))
     {
         std::string path = entry.path();
+        sf::Texture texture = generateMapPreview(path);
 
         maps.push_back({prettify(path),
                         path,
-                        generateMapPreview(path),
+                        texture,
                         sf::Vector2f(0.f, 0.f)});
     }
 }
@@ -51,44 +61,65 @@ std::string LevelSelectorState::prettify(std::string name)
 void LevelSelectorState::draw()
 {
     sf::Vector2f gridSize;
-    gridSize.x = cols * spacing;
-    gridSize.y = (maps.size() / cols + 1) * spacing;
+    float maxSpacingX = 0.f, maxSpacingY = 0.f;
+    for (const auto &map : maps)
+    {
+        float spacingX = map.texture.getSize().x + margin;
+        float spacingY = map.texture.getSize().y + margin;
+        maxSpacingX = std::max(maxSpacingX, spacingX);
+        maxSpacingY = std::max(maxSpacingY, spacingY);
+    }
+
+    gridSize.x = cols * maxSpacingX;
+    gridSize.y = ((maps.size() + cols - 1) / cols) * maxSpacingY;
 
     sf::Vector2f viewCenter = window.getView().getCenter();
     sf::Vector2f viewSize = window.getView().getSize();
 
-    sf::Vector2f offset;
-    offset.x = viewCenter.x - (gridSize.x / 2.f);
-    offset.y = viewCenter.y - (gridSize.y / 2.f);
+    sf::Vector2f offset(margin / 2, margin / 2);
+    // offset.x = viewCenter.x - (gridSize.x / 2.f);
+    // offset.y = viewCenter.y - (gridSize.y / 2.f);
 
     for (size_t i = 0; i < maps.size(); ++i)
     {
         int row = i / cols;
         int col = i % cols;
 
-        sf::Vector2f position;
-        position.x = col * spacing + offset.x;
-        position.y = row * spacing + offset.y;
+        float previewWidth = maps[i].texture.getSize().x;
+        float previewHeight = maps[i].texture.getSize().y;
+        float spacingX = previewWidth + margin;
+        float spacingY = previewHeight + margin;
 
+        sf::Vector2f position(col * spacingX + offset.x, row * spacingY + offset.y);
         maps[i].position = position;
     }
 
     for (const auto &map : maps)
     {
-        window.draw(map.sprite);
+        sf::Sprite mapPreview(map.texture);
+        mapPreview.setPosition(map.position);
+        window.draw(mapPreview);
+
+        int textX = static_cast<int>(
+            (map.position.x + (map.texture.getSize().x / 2.f) - (map.name.length() * TILE_SIZE / 2.f)) / TILE_SIZE);
+
+        int textY = static_cast<int>(
+            (map.position.y + map.texture.getSize().y + 5.f) / TILE_SIZE);
+        
+        // PROBLEMA QUI CON IL DISEGNO DEL TESTO
+        arcadeText.drawString(map.name, 0.f, 0.f, window);
     }
 }
 
-sf::Sprite LevelSelectorState::generateMapPreview(const std::string path)
+sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
 {
-    // Carica la mappa da file
     std::vector<std::vector<char>> map;
     std::fstream mapFile;
     mapFile.open(path, std::ios::in);
     if (!mapFile.is_open())
     {
         std::cerr << "Errore nell'apertura del file contenente la mappa" << std::endl;
-        return sf::Sprite();
+        return sf::Texture();
     }
 
     std::string line;
@@ -99,138 +130,126 @@ sf::Sprite LevelSelectorState::generateMapPreview(const std::string path)
         map.push_back(row);
     }
 
-    const int TILE_SIZE_PREVIEW = 4;
     int mapHeight = map.size();
     int mapWidth = (mapHeight > 0) ? map[0].size() : 0;
 
-    sf::RenderTexture renderTexture({mapWidth * TILE_SIZE_PREVIEW, mapHeight * TILE_SIZE_PREVIEW});
-
+    float TILE_SIZE_PREVIEW = TILE_SIZE / cols;
+    sf::RenderTexture renderTexture({static_cast<unsigned int>(mapWidth * TILE_SIZE_PREVIEW),
+                                     static_cast<unsigned int>(mapHeight * TILE_SIZE_PREVIEW)});
     renderTexture.clear(sf::Color::Black);
 
-    sf::RectangleShape tileShape(sf::Vector2f(TILE_SIZE_PREVIEW, TILE_SIZE_PREVIEW));
-    float scale = static_cast<float>(TILE_SIZE_PREVIEW) / TILE_SIZE;
-    sf::Vector2f scaleFactor(scale, scale);
-
-    for (int i = 0; i < mapHeight; ++i)
+    for (int r = 0; r < mapHeight; r++)
     {
-        for (int j = 0; j < mapWidth; ++j)
+        float y = r * TILE_SIZE_PREVIEW;
+        for (int c = 0; c < mapWidth; c++)
         {
-            char tile = map[i][j];
-            float x = j * TILE_SIZE_PREVIEW;
-            float y = i * TILE_SIZE_PREVIEW;
-
-            switch (tile)
+            float x = c * TILE_SIZE_PREVIEW;
+            switch (map[r][c])
             {
             case PACDOT:
             {
-                sf::CircleShape pacdot(TILE_SIZE / 10.f);
-                pacdot.setPosition({x + (TILE_SIZE / 2) - 4, y + (TILE_SIZE / 2) - 4});
+                sf::CircleShape pacdot(TILE_SIZE_PREVIEW / 10.f);
+                pacdot.setPosition({x + (TILE_SIZE_PREVIEW / 2) - 4, y + (TILE_SIZE_PREVIEW / 2) - 4});
                 pacdot.setFillColor(sf::Color(255, 185, 176));
-                window.draw(pacdot);
+                renderTexture.draw(pacdot);
                 break;
             }
             case LINE_V:
             {
                 sf::Sprite wall(straightLine);
-                wall.setScale(scaleFactor);
+                wall.setScale({(float)TILE_SIZE_PREVIEW / straightLine.getSize().x, (float)TILE_SIZE_PREVIEW / straightLine.getSize().y});
                 wall.setPosition({x, y});
-                window.draw(wall);
+                renderTexture.draw(wall);
                 break;
             }
             case LINE_H:
             {
                 sf::Sprite wall(straightLine);
-                wall.setScale(scaleFactor);
+                wall.setScale({(float)TILE_SIZE_PREVIEW / straightLine.getSize().x, (float)TILE_SIZE_PREVIEW / straightLine.getSize().y});
                 wall.setOrigin({straightLine.getSize().x / 2.f,
                                 straightLine.getSize().y / 2.f});
-                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setPosition({x + TILE_SIZE_PREVIEW / 2.f, y + TILE_SIZE_PREVIEW / 2.f});
                 wall.setRotation(sf::degrees(-90));
-                window.draw(wall);
+                renderTexture.draw(wall);
                 break;
             }
             case CORNER_0:
             {
                 sf::Sprite wall(cornerTile);
-                wall.setScale(scaleFactor);
+                wall.setScale({(float)TILE_SIZE_PREVIEW / cornerTile.getSize().x, (float)TILE_SIZE_PREVIEW / cornerTile.getSize().y});
                 wall.setPosition({x, y});
-                window.draw(wall);
+                renderTexture.draw(wall);
                 break;
             }
             case CORNER_90:
             {
                 sf::Sprite wall(cornerTile);
-                wall.setScale(scaleFactor);
+                wall.setScale({(float)TILE_SIZE_PREVIEW / cornerTile.getSize().x, (float)TILE_SIZE_PREVIEW / cornerTile.getSize().y});
                 wall.setOrigin({cornerTile.getSize().x / 2.f,
                                 cornerTile.getSize().y / 2.f});
 
-                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setPosition({x + TILE_SIZE_PREVIEW / 2.f, y + TILE_SIZE_PREVIEW / 2.f});
                 wall.setRotation(sf::degrees(-90));
-                window.draw(wall);
+                renderTexture.draw(wall);
                 break;
             }
             case CORNER_180:
             {
                 sf::Sprite wall(cornerTile);
-                wall.setScale(scaleFactor);
+                wall.setScale({(float)TILE_SIZE_PREVIEW / cornerTile.getSize().x, (float)TILE_SIZE_PREVIEW / cornerTile.getSize().y});
                 wall.setOrigin({cornerTile.getSize().x / 2.f,
                                 cornerTile.getSize().y / 2.f});
 
-                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setPosition({x + TILE_SIZE_PREVIEW / 2.f, y + TILE_SIZE_PREVIEW / 2.f});
                 wall.setRotation(sf::degrees(-180));
-                window.draw(wall);
+                renderTexture.draw(wall);
                 break;
             }
             case CORNER_270:
             {
                 sf::Sprite wall(cornerTile);
-                wall.setScale(scaleFactor);
+                wall.setScale({(float)TILE_SIZE_PREVIEW / cornerTile.getSize().x, (float)TILE_SIZE_PREVIEW / cornerTile.getSize().y});
                 wall.setOrigin({cornerTile.getSize().x / 2.f,
                                 cornerTile.getSize().y / 2.f});
 
-                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
+                wall.setPosition({x + TILE_SIZE_PREVIEW / 2.f, y + TILE_SIZE_PREVIEW / 2.f});
                 wall.setRotation(sf::degrees(-270));
-                window.draw(wall);
+                renderTexture.draw(wall);
                 break;
             }
             case POWERPELLET:
             {
                 float scale = 3.f;
-                sf::CircleShape powerpellet(TILE_SIZE / scale);
-                powerpellet.setOrigin({TILE_SIZE / scale, TILE_SIZE / scale});
-                powerpellet.setPosition({x + (TILE_SIZE / 2), y + (TILE_SIZE / 2)});
+                sf::CircleShape powerpellet(TILE_SIZE_PREVIEW / scale);
+                powerpellet.setOrigin({TILE_SIZE_PREVIEW / scale, TILE_SIZE_PREVIEW / scale});
+                powerpellet.setPosition({x + (TILE_SIZE_PREVIEW / 2), y + (TILE_SIZE_PREVIEW / 2)});
                 powerpellet.setFillColor(sf::Color(255, 185, 176));
-                window.draw(powerpellet);
+                renderTexture.draw(powerpellet);
                 break;
             }
             case GHOST_DOOR:
             {
-                sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
-                ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
+                sf::RectangleShape ghostDoor({TILE_SIZE_PREVIEW, TILE_SIZE_PREVIEW / 4});
+                ghostDoor.setPosition({x, y + TILE_SIZE_PREVIEW / 1.8f});
                 ghostDoor.setFillColor(sf::Color(255, 203, 255));
-                window.draw(ghostDoor);
+                renderTexture.draw(ghostDoor);
                 break;
             }
             case EMPTY_BLOCK:
             {
-                sf::RectangleShape emptyBlock({TILE_SIZE, TILE_SIZE});
+                sf::RectangleShape emptyBlock({TILE_SIZE_PREVIEW, TILE_SIZE_PREVIEW});
                 emptyBlock.setPosition({x, y});
                 emptyBlock.setFillColor(sf::Color::Black);
-                window.draw(emptyBlock);
+                renderTexture.draw(emptyBlock);
                 break;
             }
             default:
                 break;
             }
-
-            tileShape.setPosition({j * TILE_SIZE_PREVIEW, i * TILE_SIZE_PREVIEW});
-            renderTexture.draw(tileShape);
         }
     }
-
     renderTexture.display();
 
-    sf::Sprite previewSprite(renderTexture.getTexture());
-    previewSprite.setScale({2.f, 2.f});
-
-    return previewSprite;
+    sf::Texture texture = renderTexture.getTexture();
+    return texture;
 }

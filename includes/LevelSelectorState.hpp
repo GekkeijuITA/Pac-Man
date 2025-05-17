@@ -5,6 +5,7 @@
 #include <string>
 #include <regex>
 #include <fstream>
+#include <sstream>
 
 #include "StateManager.hpp"
 
@@ -12,7 +13,7 @@ struct MapPreview
 {
     std::string name;
     std::string path;
-    sf::Sprite sprite;
+    sf::Texture texture;
     sf::Vector2f position;
 };
 
@@ -23,8 +24,8 @@ struct LevelSelectorState
     sf::Vector2i cursorPosition = {0, 0};
     std::vector<MapPreview> maps;
     std::regex r;
-    int page = 0, cols = 2, rows = 2;
-    float spacing = 64.f;
+    int page = 0, cols = 3, rows = 2;
+    float margin = 20.f;
     sf::Texture straightLine;
     sf::Texture cornerTile;
 
@@ -34,7 +35,7 @@ public:
     void loadMaps();
 
 private:
-    sf::Sprite generateMapPreview(const std::string path);
+    sf::Texture generateMapPreview(const std::string path);
     void drawMapPreview(const MapPreview &map);
     void drawCursor();
     std::string prettify(std::string name);
