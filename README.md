@@ -48,7 +48,7 @@
 - [x] Aggiungere fantasmi con movimento classico
 - [x] Aggiungere collisioni con i fantasmi
 - [x] Aggiungere reazione fantasmi al power pellet
-- [ ] Aggiungere schermate varie (game over, pausa, ecc.)
-- [ ] Aggiungere schermata titolo
+- [x] Aggiungere schermate varie (game over, pausa, ecc.)
+- [x] Aggiungere schermata titolo
 - [ ] Aggiungere editor livelli
 - [ ] Aggiungere schermata di selezione livello
