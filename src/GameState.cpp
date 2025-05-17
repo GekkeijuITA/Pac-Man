@@ -19,7 +19,7 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
                                                                                                   eatableTiles(0),
                                                                                                   gameOver(false),
                                                                                                   pause(false),
-                                                                                                  startGame(false),
+                                                                                                  startGame(true),
                                                                                                   level(1),
                                                                                                   fruitCount(0),
                                                                                                   startGameTimer(START_GAME_TIME),
