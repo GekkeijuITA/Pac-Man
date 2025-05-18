@@ -61,6 +61,9 @@ std::string LevelSelectorState::prettify(std::string name)
 
 void LevelSelectorState::draw()
 {
+    std::string title = "Map Selector";
+    arcadeText.drawString(title, 0, 0, window, 1.f);
+
     sf::Vector2f gridSize;
     float maxSpacingX = 0.f, maxSpacingY = 0.f;
     for (const auto &map : maps)
@@ -89,7 +92,7 @@ void LevelSelectorState::draw()
         float spacingX = previewWidth + margin;
         float spacingY = previewHeight + margin;
 
-        sf::Vector2f position(col * spacingX + offset.x, row * spacingY + offset.y);
+        sf::Vector2f position(col * spacingX + offset.x, row * spacingY + offset.y + TILE_SIZE);
         maps[i].position = position;
     }
 
