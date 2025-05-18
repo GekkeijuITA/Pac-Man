@@ -16,6 +16,8 @@ LevelSelectorState::LevelSelectorState(sf::RenderWindow &window) : window(window
         std::cerr << "Errore nel caricamento di ANGLE_0\n";
     }
 
+    TILE_SIZE_PREVIEW = TILE_SIZE / maxCols;
+
     loadMaps();
 };
 
@@ -24,16 +26,36 @@ void LevelSelectorState::loadMaps()
     std::string path = "../resources/maps";
 
     sf::View view = window.getView();
+    maps.clear();
+    maps.push_back({});
+
+    int r = 0;
+    int c = 0;
+
+    float spacingX = (TILE_SIZE_PREVIEW * MAP_WIDTH) + margin;
+    float spacingY = (TILE_SIZE_PREVIEW * MAP_HEIGHT) + margin;
+    sf::Vector2f offset(margin / 2, margin / 2);
 
     for (const auto &entry : std::filesystem::directory_iterator(path))
     {
         std::string path = entry.path();
         sf::Texture texture = generateMapPreview(path);
 
-        maps.push_back({prettify(path),
-                        path,
-                        texture,
-                        sf::Vector2f(0.f, 0.f)});
+        if (c == maxCols)
+        {
+            c = 0;
+            r++;
+            maps.push_back({});
+        }
+
+        sf::Vector2f position(c * spacingX + offset.x,
+                              r * spacingY + offset.y + TILE_SIZE);
+
+        maps[r].push_back({prettify(path),
+                           path,
+                           texture,
+                           position});
+        c++;
     }
 }
 
@@ -61,61 +83,36 @@ std::string LevelSelectorState::prettify(std::string name)
 
 void LevelSelectorState::draw()
 {
+    sf::View view = window.getView();
+
     std::string title = "Map Selector";
-    arcadeText.drawString(title, 0, 0, window, 1.f);
+    arcadeText.drawString(title, 0, 0.2f, window, 1.f);
 
-    sf::Vector2f gridSize;
-    float maxSpacingX = 0.f, maxSpacingY = 0.f;
-    for (const auto &map : maps)
+    for (size_t r = 0; r < maps.size(); ++r)
     {
-        float spacingX = map.texture.getSize().x + margin;
-        float spacingY = map.texture.getSize().y + margin;
-        maxSpacingX = std::max(maxSpacingX, spacingX);
-        maxSpacingY = std::max(maxSpacingY, spacingY);
+        for (size_t c = 0; c < maps[r].size(); ++c)
+        {
+            MapPreview &map = maps[r][c];
+
+            sf::Sprite mapPreview(map.texture);
+            mapPreview.setPosition(map.position);
+            window.draw(mapPreview);
+
+            float mapCenterX = map.position.x + ((TILE_SIZE_PREVIEW * MAP_WIDTH) / 2.f);
+            float nameX = (mapCenterX - (map.name.length() * TILE_SIZE * 0.25f)) / TILE_SIZE;
+            float nameY = (map.position.y + (MAP_HEIGHT * TILE_SIZE_PREVIEW)) / TILE_SIZE;
+
+            arcadeText.drawString(map.name, nameX, nameY, window, 0.5f);
+        }
     }
 
-    gridSize.x = cols * maxSpacingX;
-    gridSize.y = ((maps.size() + cols - 1) / cols) * maxSpacingY;
+    float windowHeight = view.getSize().y;
+    int textY = static_cast<int>((windowHeight - TILE_SIZE * 2) / TILE_SIZE);
 
-    sf::Vector2f viewCenter = window.getView().getCenter();
-    sf::Vector2f viewSize = window.getView().getSize();
+    arcadeText.drawString("Press Enter to play", 0, textY, window);
+    arcadeText.drawString("Press ESC to go back", 0, textY + 1, window);
 
-    sf::Vector2f offset(margin / 2, margin / 2);
-
-    for (size_t i = 0; i < maps.size(); ++i)
-    {
-        int row = i / cols;
-        int col = i % cols;
-
-        float previewWidth = maps[i].texture.getSize().x;
-        float previewHeight = maps[i].texture.getSize().y;
-        float spacingX = previewWidth + margin;
-        float spacingY = previewHeight + margin;
-
-        sf::Vector2f position(col * spacingX + offset.x, row * spacingY + offset.y + TILE_SIZE);
-        maps[i].position = position;
-    }
-
-    for (const auto &map : maps)
-    {
-        sf::Sprite mapPreview(map.texture);
-        mapPreview.setPosition(map.position);
-        window.draw(mapPreview);
-    }
-
-    for (const auto &map : maps)
-    {
-        float mapCenterX = map.position.x + (map.texture.getSize().x / 2.f);
-        float textWidth = map.name.length() * TILE_SIZE * 0.5f;
-        float textWorldX = mapCenterX - textWidth / 2.f;
-
-        int textX = static_cast<int>(textWorldX / TILE_SIZE);
-
-        int textY = static_cast<int>(
-            (map.position.y + map.texture.getSize().y + 5.f) / TILE_SIZE);
-
-        arcadeText.drawString(map.name, textX, textY, window, 0.5f);
-    }
+    drawCursor();
 }
 
 sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
@@ -140,7 +137,7 @@ sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
     int mapHeight = map.size();
     int mapWidth = (mapHeight > 0) ? map[0].size() : 0;
 
-    float TILE_SIZE_PREVIEW = TILE_SIZE / cols;
+    float TILE_SIZE_PREVIEW = TILE_SIZE / maxCols;
     sf::RenderTexture renderTexture({static_cast<unsigned int>(mapWidth * TILE_SIZE_PREVIEW),
                                      static_cast<unsigned int>(mapHeight * TILE_SIZE_PREVIEW)});
     renderTexture.clear(sf::Color::Black);
@@ -259,4 +256,20 @@ sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
 
     sf::Texture texture = renderTexture.getTexture();
     return texture;
+}
+
+void LevelSelectorState::drawCursor()
+{
+    sf::Vector2f offset(margin / 2, margin / 2);
+    sf::RectangleShape cursor(sf::Vector2f(TILE_SIZE_PREVIEW * MAP_WIDTH, (TILE_SIZE_PREVIEW * MAP_HEIGHT) + (TILE_SIZE / 2)));
+    cursor.setFillColor(sf::Color::Transparent);
+    cursor.setOutlineColor(sf::Color::Red);
+    cursor.setOutlineThickness(2.f);
+
+    sf::Vector2f pos(
+        cursorPosition.x * (TILE_SIZE_PREVIEW * MAP_WIDTH + margin) + offset.x,
+        cursorPosition.y * (TILE_SIZE_PREVIEW * MAP_HEIGHT + margin) + offset.y + TILE_SIZE);
+
+    cursor.setPosition(pos);
+    window.draw(cursor);
 }

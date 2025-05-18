@@ -11,7 +11,7 @@ ArcadeText::ArcadeText()
 }
 
 // Disegna un carattere in una posizione specifica
-void ArcadeText::drawChar(int x, int y, sf::Vector2i charPos, sf::RenderWindow &window, float scaleFactor, int i)
+void ArcadeText::drawChar(float x, float y, sf::Vector2i charPos, sf::RenderWindow &window, float scaleFactor, float i)
 {
     sf::Sprite textSprite = createSprite(
         tex,
@@ -26,7 +26,7 @@ void ArcadeText::drawChar(int x, int y, sf::Vector2i charPos, sf::RenderWindow &
 }
 
 // Disegna la stringa con un fattore di scala e un offset per lo sprite sheet
-void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &window, float scaleFactor, sf::Vector2i offset)
+void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow &window, float scaleFactor, sf::Vector2i offset)
 {
     for (size_t i = 0; i < str.length(); i++)
     {
@@ -38,7 +38,7 @@ void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &win
 }
 
 // Disegna la stringa con un offset per lo sprite sheet
-void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &window, sf::Vector2i offset)
+void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow &window, sf::Vector2i offset)
 {
     for (size_t i = 0; i < str.length(); i++)
     {
@@ -51,7 +51,7 @@ void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &win
 }
 
 // Disegna la stringa con un fattore di scala
-void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &window, float scaleFactor)
+void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow &window, float scaleFactor)
 {
     for (size_t i = 0; i < str.length(); i++)
     {
@@ -63,7 +63,7 @@ void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &win
 }
 
 // Disegna la stringa senza fattore di scala e offset
-void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &window)
+void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow &window)
 {
     for (size_t i = 0; i < str.length(); i++)
     {

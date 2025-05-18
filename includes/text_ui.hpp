@@ -101,10 +101,10 @@ struct ArcadeText
     ArcadeText();
 
 public:
-    void drawChar(int x, int y, sf::Vector2i charPos, sf::RenderWindow &window, float scaleFactor = 1.f, int i = 0);
+    void drawChar(float x, float y, sf::Vector2i charPos, sf::RenderWindow &window, float scaleFactor = 1.f, float i = 0);
     
-    void drawString(std::string str, int x, int y, sf::RenderWindow &window);
-    void drawString(std::string str, int x, int y, sf::RenderWindow &window, sf::Vector2i offset);
-    void drawString(std::string str, int x, int y, sf::RenderWindow &window, float scaleFactor);
-    void drawString(std::string str, int x, int y, sf::RenderWindow &window, float scaleFactor, sf::Vector2i offset);
+    void drawString(std::string str, float x, float y, sf::RenderWindow &window);
+    void drawString(std::string str, float x, float y, sf::RenderWindow &window, sf::Vector2i offset);
+    void drawString(std::string str, float x, float y, sf::RenderWindow &window, float scaleFactor);
+    void drawString(std::string str, float x, float y, sf::RenderWindow &window, float scaleFactor, sf::Vector2i offset);
 };

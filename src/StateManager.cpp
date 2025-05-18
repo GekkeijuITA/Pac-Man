@@ -67,13 +67,14 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
             {
                 switch (gs.pauseMenu.cursorIndex)
                 {
-                case 0: // Continue
+                case 0:
                     gs.pause = false;
                     break;
-                case 1: // Restart level
+                case 1:
                     gs.resetRound();
                     break;
-                case 2: // Return to menu
+                case 2:
+                    gs.saveHighscore();
                     sm.currentMode = StateManager::MAIN_MENU;
                     sm.mainMenuState->getHighscore();
                     break;
@@ -129,15 +130,62 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
             switch (sm.mainMenuState->cursorIndex)
             {
             case 0:
-                // sm.initGame("../resources/maps/default_map.txt");
                 sm.currentMode = StateManager::LEVEL_SELECTOR;
                 break;
             case 1:
+                // sm.currentMode = StateManager::MAP_EDITOR;
+                std::cout << "MAP EDITOR" << std::endl;
+                break;
+            case 2:
                 sm.window.close();
                 break;
             default:
                 break;
             }
+        }
+        break;
+    case StateManager::LEVEL_SELECTOR:
+        if (key.scancode == sf::Keyboard::Scancode::Up)
+        {
+            if (sm.levelSelectorState->cursorPosition.y > 0)
+            {
+                sm.levelSelectorState->cursorPosition.y--;
+            }
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Down)
+        {
+            int rows = sm.levelSelectorState->maxRows = std::min(
+                sm.levelSelectorState->maxRows,
+                static_cast<int>(sm.levelSelectorState->maps.size()));
+
+            if (sm.levelSelectorState->cursorPosition.y < rows - 1)
+            {
+                sm.levelSelectorState->cursorPosition.y++;
+            }
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Left)
+        {
+            if (sm.levelSelectorState->cursorPosition.x > 0)
+            {
+                sm.levelSelectorState->cursorPosition.x--;
+            }
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Right)
+        {
+            if (sm.levelSelectorState->cursorPosition.x < sm.levelSelectorState->maps[sm.levelSelectorState->cursorPosition.y].size() - 1)
+            {
+                sm.levelSelectorState->cursorPosition.x++;
+            }
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Escape)
+        {
+            sm.currentMode = StateManager::MAIN_MENU;
+            sm.mainMenuState->getHighscore();
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Enter)
+        {
+            std::string mapPath = sm.levelSelectorState->maps[sm.levelSelectorState->cursorPosition.y][sm.levelSelectorState->cursorPosition.x].path;
+            sm.initGame(mapPath);
         }
         break;
     }
@@ -191,11 +239,10 @@ void StateManager::update(float elapsed)
 {
     switch (currentMode)
     {
-    case MAIN_MENU:
-        // Update main menu state
-        break;
     case NORMAL_GAME:
         gameState->update(elapsed);
+        break;
+    default:
         break;
     }
 }

@@ -15,7 +15,7 @@ struct MainMenuState
     int highscore;
     sf::Vector2i cursorPosition = {10, 9};
     int cursorIndex = 0;
-    std::vector<std::string> options = {"PLAY", "QUIT"};
+    std::vector<std::string> options = {"PLAY", "MAP EDITOR" , "QUIT"};
 
     MainMenuState(sf::RenderWindow &window, StateManager &stateManager);
 

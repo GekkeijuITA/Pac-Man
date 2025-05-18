@@ -22,12 +22,12 @@ struct LevelSelectorState
     sf::RenderWindow &window;
     ArcadeText arcadeText;
     sf::Vector2i cursorPosition = {0, 0};
-    std::vector<MapPreview> maps;
     std::regex r;
-    int page = 0, cols = 3, rows = 2;
-    float margin = 20.f;
+    int page = 0, maxCols = 3, maxRows = 3;
+    float margin = 20.f, TILE_SIZE_PREVIEW;
     sf::Texture straightLine;
     sf::Texture cornerTile;
+    std::vector<std::vector<MapPreview>> maps;
 
 public:
     LevelSelectorState(sf::RenderWindow &window);

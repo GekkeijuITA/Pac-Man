@@ -724,7 +724,6 @@ void GameState::saveHighscore()
     }
     if (score > highscore)
     {
-        // std::cout << "Nuovo highscore: " << score << std::endl;
         highscoreFile << score;
     }
     highscoreFile.close();
