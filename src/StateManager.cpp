@@ -129,7 +129,7 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
             switch (sm.mainMenuState->cursorIndex)
             {
             case 0:
-                //sm.initGame("../resources/maps/default_map.txt");
+                // sm.initGame("../resources/maps/default_map.txt");
                 sm.currentMode = StateManager::LEVEL_SELECTOR;
                 break;
             case 1:
@@ -173,7 +173,7 @@ StateManager::StateManager(unsigned w, unsigned h, std::string title) : w(w), h(
         windowWidth = windowHeight * mapRatio;
     }
 
-    window = sf::RenderWindow(sf::VideoMode({windowWidth, windowHeight}), title);
+    window = sf::RenderWindow(sf::VideoMode({windowWidth, windowHeight}), title, sf::Style::Close | sf::Style::Titlebar);
     window.setPosition({static_cast<int>((w - windowWidth) / 2),
                         static_cast<int>((h - windowHeight) / 2)});
     window.setFramerateLimit(60);
