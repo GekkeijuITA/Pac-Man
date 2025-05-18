@@ -1,5 +1,6 @@
 #include "../includes/LevelSelectorState.hpp"
 #include "../includes/textures.hpp"
+#include "../includes/Debug.hpp"
 
 LevelSelectorState::LevelSelectorState(sf::RenderWindow &window) : window(window)
 {
@@ -77,8 +78,6 @@ void LevelSelectorState::draw()
     sf::Vector2f viewSize = window.getView().getSize();
 
     sf::Vector2f offset(margin / 2, margin / 2);
-    // offset.x = viewCenter.x - (gridSize.x / 2.f);
-    // offset.y = viewCenter.y - (gridSize.y / 2.f);
 
     for (size_t i = 0; i < maps.size(); ++i)
     {
@@ -99,15 +98,20 @@ void LevelSelectorState::draw()
         sf::Sprite mapPreview(map.texture);
         mapPreview.setPosition(map.position);
         window.draw(mapPreview);
+    }
 
-        int textX = static_cast<int>(
-            (map.position.x + (map.texture.getSize().x / 2.f) - (map.name.length() * TILE_SIZE / 2.f)) / TILE_SIZE);
+    for (const auto &map : maps)
+    {
+        float mapCenterX = map.position.x + (map.texture.getSize().x / 2.f);
+        float textWidth = map.name.length() * TILE_SIZE * 0.5f;
+        float textWorldX = mapCenterX - textWidth / 2.f;
+
+        int textX = static_cast<int>(textWorldX / TILE_SIZE);
 
         int textY = static_cast<int>(
             (map.position.y + map.texture.getSize().y + 5.f) / TILE_SIZE);
-        
-        // PROBLEMA QUI CON IL DISEGNO DEL TESTO
-        arcadeText.drawString(map.name, 0.f, 0.f, window);
+
+        arcadeText.drawString(map.name, textX, textY, window, 0.5f);
     }
 }
 

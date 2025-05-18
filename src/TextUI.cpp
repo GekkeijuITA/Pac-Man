@@ -30,7 +30,7 @@ void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &win
 {
     for (size_t i = 0; i < str.length(); i++)
     {
-        std::string c(1, str[i]);
+        std::string c(1, std::toupper(str[i]));
         if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
             continue;
         drawChar(x, y, CHAR_MAP.at(c) + offset, window, scaleFactor, i);
@@ -42,7 +42,7 @@ void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &win
 {
     for (size_t i = 0; i < str.length(); i++)
     {
-        std::string c(1, str[i]);
+        std::string c(1, std::toupper(str[i]));
         if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
             continue;
 
@@ -55,7 +55,7 @@ void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &win
 {
     for (size_t i = 0; i < str.length(); i++)
     {
-        std::string c(1, str[i]);
+        std::string c(1, std::toupper(str[i]));
         if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
             continue;
         drawChar(x, y, CHAR_MAP.at(c), window, scaleFactor, i);
@@ -67,7 +67,7 @@ void ArcadeText::drawString(std::string str, int x, int y, sf::RenderWindow &win
 {
     for (size_t i = 0; i < str.length(); i++)
     {
-        std::string c(1, str[i]);
+        std::string c(1, std::toupper(str[i]));
         if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
             continue;
         drawChar(x, y, CHAR_MAP.at(c), window, 1.f, i);

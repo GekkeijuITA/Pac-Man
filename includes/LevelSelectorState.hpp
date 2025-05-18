@@ -36,7 +36,6 @@ public:
 
 private:
     sf::Texture generateMapPreview(const std::string path);
-    void drawMapPreview(const MapPreview &map);
     void drawCursor();
     std::string prettify(std::string name);
 };
