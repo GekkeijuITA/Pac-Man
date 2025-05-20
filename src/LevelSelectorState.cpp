@@ -121,7 +121,11 @@ void LevelSelectorState::draw()
             float nameX = (mapCenterX - (map.name.length() * TILE_SIZE * 0.25f)) / TILE_SIZE;
             float nameY = (map.position.y + (MAP_HEIGHT * TILE_SIZE_PREVIEW)) / TILE_SIZE;
 
-            arcadeText.drawString(map.name, nameX, nameY, window, 0.5f);
+            float scaleFactor = std::min(
+                (TILE_SIZE_PREVIEW * MAP_WIDTH) / (map.name.length() * TILE_SIZE),
+                .5f);
+
+            arcadeText.drawString(map.name, nameX, nameY, window, scaleFactor);
         }
     }
 
