@@ -36,6 +36,9 @@ void LevelSelectorState::loadMaps()
     float spacingY = (TILE_SIZE_PREVIEW * MAP_HEIGHT) + margin;
     sf::Vector2f offset(margin / 2, margin / 2);
 
+    int mapsLoaded = 0;
+    int currentPage = 0;
+
     for (const auto &entry : std::filesystem::directory_iterator(path))
     {
         std::string path = entry.path();
@@ -48,15 +51,28 @@ void LevelSelectorState::loadMaps()
             maps.push_back({});
         }
 
+        if (r >= maxRows)
+        {
+            currentPage++;
+            c = 0;
+        }
+
         sf::Vector2f position(c * spacingX + offset.x,
-                              r * spacingY + offset.y + TILE_SIZE);
+                              (r * spacingY + offset.y + TILE_SIZE) - (currentPage * maxRows * spacingY));
 
         maps[r].push_back({prettify(path),
                            path,
                            texture,
                            position});
+
+        mapsLoaded++;
         c++;
     }
+
+    double mapsPerPage = maxRows * maxCols;
+
+    page = 0;
+    totalPages = std::ceil(mapsLoaded / mapsPerPage);
 }
 
 // https://stackoverflow.com/questions/6417817/easy-way-to-remove-extension-from-a-filename
@@ -88,7 +104,10 @@ void LevelSelectorState::draw()
     std::string title = "Map Selector";
     arcadeText.drawString(title, 0, 0.2f, window, 1.f);
 
-    for (size_t r = 0; r < maps.size(); ++r)
+    size_t startRow = page * maxRows;
+    size_t endRow = std::min(startRow + maxRows, maps.size());
+
+    for (size_t r = startRow; r < endRow; ++r)
     {
         for (size_t c = 0; c < maps[r].size(); ++c)
         {
@@ -109,8 +128,12 @@ void LevelSelectorState::draw()
     float windowHeight = view.getSize().y;
     int textY = static_cast<int>((windowHeight - TILE_SIZE * 2) / TILE_SIZE);
 
-    arcadeText.drawString("Press Enter to play", 0, textY, window);
-    arcadeText.drawString("Press ESC to go back", 0, textY + 1, window);
+    std::string pageString = "Page " + std::to_string(page + 1) + " of " + std::to_string(totalPages);
+    float centerX = (view.getSize().x - pageString.length() * (TILE_SIZE / 2.f)) / (TILE_SIZE * 2.f);
+    arcadeText.drawString(pageString, centerX, textY - 1.5f, window);
+
+    arcadeText.drawString("Press Enter to play", 0, textY, window, 0.7f);
+    arcadeText.drawString("Press ESC to go back", 0, textY + 1, window, 0.7f);
 
     drawCursor();
 }
@@ -272,4 +295,87 @@ void LevelSelectorState::drawCursor()
 
     cursor.setPosition(pos);
     window.draw(cursor);
+}
+
+void LevelSelectorState::moveCursorLeft()
+{
+    if (cursorPosition.x > 0)
+    {
+        cursorPosition.x--;
+    }
+    else if (cursorPosition.y != 0)
+    {
+        cursorPosition.x = maps[cursorPosition.y].size() - 1;
+        moveCursorUp();
+    }
+    else
+    {
+        previousPage();
+    }
+}
+
+void LevelSelectorState::moveCursorRight()
+{
+    int currentRow = page * maxRows + cursorPosition.y;
+    if (cursorPosition.x < static_cast<int>(maps[currentRow].size()) - 1)
+    {
+        cursorPosition.x++;
+    }
+    else if (currentRow != maxRows - 1 && currentRow < static_cast<int>(maps.size()) - 1)
+    {
+        cursorPosition.x = 0;
+        moveCursorDown();
+    }
+    else
+    {
+        nextPage();
+    }
+}
+
+void LevelSelectorState::moveCursorUp()
+{
+    if (cursorPosition.y > 0)
+    {
+        cursorPosition.y--;
+    }
+    else if (cursorPosition.y == 0)
+    {
+        previousPage();
+    }
+}
+
+void LevelSelectorState::moveCursorDown()
+{
+    int rows = std::min(
+        maxRows,
+        static_cast<int>(maps.size() - page * maxRows));
+
+    if (cursorPosition.y < rows - 1)
+    {
+        cursorPosition.y++;
+    }
+    else if (cursorPosition.y == rows - 1)
+    {
+        nextPage();
+    }
+}
+
+void LevelSelectorState::nextPage()
+{
+    if (page < totalPages - 1)
+    {
+        page++;
+        cursorPosition.x = 0;
+        cursorPosition.y = 0;
+    }
+}
+
+void LevelSelectorState::previousPage()
+{
+    if (page > 0)
+    {
+        page--;
+        cursorPosition.x = maps[cursorPosition.y].size() - 1;
+        cursorPosition.y = maps[cursorPosition.y].size() - 1;
+    }
 }

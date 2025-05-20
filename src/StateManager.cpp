@@ -147,35 +147,19 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
     case StateManager::LEVEL_SELECTOR:
         if (key.scancode == sf::Keyboard::Scancode::Up)
         {
-            if (sm.levelSelectorState->cursorPosition.y > 0)
-            {
-                sm.levelSelectorState->cursorPosition.y--;
-            }
+            sm.levelSelectorState->moveCursorUp();
         }
         else if (key.scancode == sf::Keyboard::Scancode::Down)
         {
-            int rows = sm.levelSelectorState->maxRows = std::min(
-                sm.levelSelectorState->maxRows,
-                static_cast<int>(sm.levelSelectorState->maps.size()));
-
-            if (sm.levelSelectorState->cursorPosition.y < rows - 1)
-            {
-                sm.levelSelectorState->cursorPosition.y++;
-            }
+            sm.levelSelectorState->moveCursorDown();
         }
         else if (key.scancode == sf::Keyboard::Scancode::Left)
         {
-            if (sm.levelSelectorState->cursorPosition.x > 0)
-            {
-                sm.levelSelectorState->cursorPosition.x--;
-            }
+            sm.levelSelectorState->moveCursorLeft();
         }
         else if (key.scancode == sf::Keyboard::Scancode::Right)
         {
-            if (sm.levelSelectorState->cursorPosition.x < sm.levelSelectorState->maps[sm.levelSelectorState->cursorPosition.y].size() - 1)
-            {
-                sm.levelSelectorState->cursorPosition.x++;
-            }
+            sm.levelSelectorState->moveCursorRight();
         }
         else if (key.scancode == sf::Keyboard::Scancode::Escape)
         {
