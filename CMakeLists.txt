@@ -26,6 +26,7 @@ add_executable(main
     src/TextUI.cpp
     src/textures.cpp
     src/LevelSelectorState.cpp
+    src/MapEditorState.cpp
     src/fruits/Apple.cpp
     src/fruits/Bell.cpp
     src/fruits/Cherry.cpp

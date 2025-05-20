@@ -133,8 +133,7 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
                 sm.currentMode = StateManager::LEVEL_SELECTOR;
                 break;
             case 1:
-                // sm.currentMode = StateManager::MAP_EDITOR;
-                std::cout << "MAP EDITOR" << std::endl;
+                sm.currentMode = StateManager::MAP_EDITOR;
                 break;
             case 2:
                 sm.window.close();
@@ -172,6 +171,14 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
             sm.initGame(mapPath);
         }
         break;
+    case StateManager::MAP_EDITOR:
+        if (key.scancode == sf::Keyboard::Scancode::Up)
+        {
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Down)
+        {
+
+        }
     }
 }
 
@@ -217,6 +224,7 @@ StateManager::StateManager(unsigned w, unsigned h, std::string title) : w(w), h(
 
     mainMenuState = std::make_unique<MainMenuState>(window, *this);
     levelSelectorState = std::make_unique<LevelSelectorState>(window);
+    mapEditorState = std::make_unique<MapEditorState>(window);
 };
 
 void StateManager::update(float elapsed)
@@ -244,6 +252,9 @@ void StateManager::doGraphics()
         break;
     case LEVEL_SELECTOR:
         levelSelectorState->draw();
+        break;
+    case MAP_EDITOR:
+        mapEditorState->doGraphics();
         break;
     }
 }
