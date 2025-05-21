@@ -7,7 +7,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "StateManager.hpp"
+#include "core/StateManager.hpp"
 
 struct MapPreview
 {

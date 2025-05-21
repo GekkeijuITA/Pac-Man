@@ -1,6 +1,6 @@
 #include "../includes/LevelSelectorState.hpp"
-#include "../includes/textures.hpp"
-#include "../includes/Debug.hpp"
+#include "../includes/lib/textures.hpp"
+#include "../includes/core/Debug.hpp"
 
 LevelSelectorState::LevelSelectorState(sf::RenderWindow &window) : window(window)
 {
@@ -102,7 +102,7 @@ void LevelSelectorState::draw()
     sf::View view = window.getView();
 
     std::string title = "Map Selector";
-    arcadeText.drawString(title, 0, 0.2f, window, 1.f);
+    arcadeText.drawString(title, 0, 0.2f, window, 1.f, TextColor::WHITE);
 
     size_t startRow = page * maxRows;
     size_t endRow = std::min(startRow + maxRows, maps.size());
@@ -125,7 +125,7 @@ void LevelSelectorState::draw()
                 (TILE_SIZE_PREVIEW * MAP_WIDTH) / (map.name.length() * TILE_SIZE),
                 .5f);
 
-            arcadeText.drawString(map.name, nameX, nameY, window, scaleFactor);
+            arcadeText.drawString(map.name, nameX, nameY, window, scaleFactor, TextColor::WHITE);
         }
     }
 
@@ -134,10 +134,10 @@ void LevelSelectorState::draw()
 
     std::string pageString = "Page " + std::to_string(page + 1) + " of " + std::to_string(totalPages);
     float centerX = (view.getSize().x - pageString.length() * (TILE_SIZE / 2.f)) / (TILE_SIZE * 2.f);
-    arcadeText.drawString(pageString, centerX, textY - 1.5f, window);
+    arcadeText.drawString(pageString, centerX, textY - 1.5f, window, TextColor::WHITE);
 
-    arcadeText.drawString("Press Enter to play", 0, textY, window, 0.7f);
-    arcadeText.drawString("Press ESC to go back", 0, textY + 1, window, 0.7f);
+    arcadeText.drawString("Press Enter to play", 0, textY, window, 0.7f, TextColor::WHITE);
+    arcadeText.drawString("Press ESC to go back", 0, textY + 1, window, 0.7f, TextColor::WHITE);
 
     drawCursor();
 }

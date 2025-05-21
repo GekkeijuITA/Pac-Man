@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "GameMenu.hpp"
-#include "StateManager.hpp"
+#include "core/StateManager.hpp"
 
 struct StateManager;
 
@@ -15,7 +15,7 @@ struct MainMenuState
     int highscore;
     sf::Vector2i cursorPosition = {10, 9};
     int cursorIndex = 0;
-    std::vector<std::string> options = {"PLAY", "MAP EDITOR" , "QUIT"};
+    std::vector<MenuOption> options;
 
     MainMenuState(sf::RenderWindow &window, StateManager &stateManager);
 

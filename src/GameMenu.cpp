@@ -4,10 +4,12 @@
 
 GameMenu::GameMenu() {}
 
-GameMenu::GameMenu(sf::View v, std::string title, std::vector<std::string> options, sf::Vector2i titlePos) : view(v),
-                                                                                                             title(title),
-                                                                                                             options(options),
-                                                                                                             titlePos(titlePos)
+GameMenu::GameMenu(sf::View v, std::string title, sf::Vector2i titlePos, TextColor textColor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos) : view(v),
+                                                                                                                                                               title(title),
+                                                                                                                                                               options(options),
+                                                                                                                                                               titlePos(titlePos),
+                                                                                                                                                               startOptionsPos(startOptionsPos),
+                                                                                                                                                               textColor(textColor)
 {
     if (!tex.loadFromFile(TEXT))
     {
@@ -16,7 +18,25 @@ GameMenu::GameMenu(sf::View v, std::string title, std::vector<std::string> optio
     }
 
     ArcadeText arcadeText;
-    setCursorPosition(titlePos.x, 6);
+    setCursorPosition(startOptionsPos.x - 1, startOptionsPos.y);
+}
+
+GameMenu::GameMenu(sf::View v, std::string title, sf::Vector2i titlePos, TextColor textColor, float scaleFactor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos) : view(v),
+                                                                                                                                                                                  title(title),
+                                                                                                                                                                                  options(options),
+                                                                                                                                                                                  titlePos(titlePos),
+                                                                                                                                                                                  startOptionsPos(startOptionsPos),
+                                                                                                                                                                                  textColor(textColor),
+                                                                                                                                                                                  scaleFactor(scaleFactor)
+{
+    if (!tex.loadFromFile(TEXT))
+    {
+        std::cerr << "Error loading texture" << std::endl;
+        exit(1);
+    }
+
+    ArcadeText arcadeText;
+    setCursorPosition(startOptionsPos.x - 1, startOptionsPos.y);
 }
 
 void GameMenu::draw(sf::RenderWindow &window)
@@ -25,15 +45,15 @@ void GameMenu::draw(sf::RenderWindow &window)
     background.setFillColor(sf::Color(0, 0, 0, 200));
     window.draw(background);
 
-    arcadeText.drawString(title, titlePos.x, titlePos.y, window, 2.f);
+    arcadeText.drawString(title, titlePos.x, titlePos.y, window, scaleFactor, textColor);
     for (auto &option : options)
     {
-        arcadeText.drawString(option, titlePos.x + 1, 6 + (2 * (&option - &options[0])), window);
+        arcadeText.drawString(option.name, startOptionsPos.x, startOptionsPos.y + (2 * (&option - &options[0])), window, TextColor::WHITE);
     }
 
     sf::CircleShape triangle(TILE_SIZE / 2.f, 3);
     triangle.setFillColor(sf::Color::Red);
-    triangle.setPosition({TILE_SIZE * (cursorPosition.x + .5f), TILE_SIZE * ((cursorPosition.y + (cursorIndex * 2)) + .5f)});
+    triangle.setPosition({TILE_SIZE * (cursorPosition.x + .5f), TILE_SIZE * ((cursorPosition.y + .5f))});
     triangle.setOrigin({TILE_SIZE / 2.f, TILE_SIZE / 2.f});
     triangle.setRotation(sf::degrees(90));
     window.draw(triangle);
@@ -52,4 +72,40 @@ sf::Vector2i GameMenu::getCursorPosition()
 int GameMenu::getOptionsSize()
 {
     return options.size();
+}
+
+// Muove il cursore verso l'alto
+void GameMenu::moveCursorUp()
+{
+    if (cursorIndex > 0)
+    {
+        cursorIndex--;
+    }
+    else
+    {
+        cursorIndex = getOptionsSize() - 1;
+    }
+
+    setCursorPosition(cursorPosition.x, startOptionsPos.y + 2 * cursorIndex);
+}
+
+// Muove il cursore verso il basso
+void GameMenu::moveCursorDown()
+{
+    if (cursorIndex < getOptionsSize() - 1)
+    {
+        cursorIndex++;
+    }
+    else
+    {
+        cursorIndex = 0;
+    }
+
+    setCursorPosition(cursorPosition.x, startOptionsPos.y + 2 * cursorIndex);
+}
+
+// Esegue l'azione associata all'opzione selezionata
+void GameMenu::executeOption()
+{
+    options[cursorIndex].action();
 }

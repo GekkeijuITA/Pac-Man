@@ -13,32 +13,36 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 add_executable(main 
-    src/Animation.cpp
-    src/Debug.cpp
-    src/Fruit.cpp
-    src/GameMenu.cpp
-    src/GameState.cpp
-    src/Ghost.cpp
+    src/core/Animation.cpp
+    src/core/Debug.cpp
+    src/core/StateManager.cpp
+
+    src/lib/TextUI.cpp
+    src/lib/textures.cpp
+
+    src/game_elements/Fruit.cpp
+    src/game_elements/GameState.cpp
+    src/game_elements/Ghost.cpp
+    src/game_elements/PacMan.cpp
+    src/game_elements/fruits/Apple.cpp
+    src/game_elements/fruits/Bell.cpp
+    src/game_elements/fruits/Cherry.cpp
+    src/game_elements/fruits/Galaxian.cpp
+    src/game_elements/fruits/Grape.cpp
+    src/game_elements/fruits/Key.cpp
+    src/game_elements/fruits/Orange.cpp
+    src/game_elements/fruits/Strawberry.cpp
+    src/game_elements/ghosts/Blinky.cpp
+    src/game_elements/ghosts/Clyde.cpp
+    src/game_elements/ghosts/Inky.cpp
+    src/game_elements/ghosts/Pinky.cpp
+
+    src/map_editor/MapEditor.cpp
+
     src/main.cpp
-    src/MainMenuState.cpp
-    src/PacMan.cpp
-    src/StateManager.cpp
-    src/TextUI.cpp
-    src/textures.cpp
+    src/GameMenu.cpp
     src/LevelSelectorState.cpp
-    src/MapEditorState.cpp
-    src/fruits/Apple.cpp
-    src/fruits/Bell.cpp
-    src/fruits/Cherry.cpp
-    src/fruits/Galaxian.cpp
-    src/fruits/Grape.cpp
-    src/fruits/Key.cpp
-    src/fruits/Orange.cpp
-    src/fruits/Strawberry.cpp
-    src/ghosts/Blinky.cpp
-    src/ghosts/Clyde.cpp
-    src/ghosts/Inky.cpp
-    src/ghosts/Pinky.cpp
+    src/MainMenuState.cpp
 )
 
 target_compile_features(main PRIVATE cxx_std_17)

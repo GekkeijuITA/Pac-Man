@@ -1,6 +1,6 @@
-# Tappa n.11
+# Tappa n.12
 ## Obiettivo
-L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare un menu per scegliere il layout della mappa da giocare (in previsione dell'editor di livelli).
+L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare un editor di mappe con cui si possono creare nuove mappe e modificare quelle esistenti.
 ## Ostacoli
 
 ## Soluzione

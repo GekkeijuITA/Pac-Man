@@ -1,33 +1,29 @@
 #include "../includes/MainMenuState.hpp"
-#include "../includes/Debug.hpp"
+#include "../includes/core/Debug.hpp"
 #include <fstream>
 
-MainMenuState::MainMenuState(sf::RenderWindow &window, StateManager &stateManager)
-    : window(window), stateManager(stateManager)
+MainMenuState::MainMenuState(sf::RenderWindow &window, StateManager &sm)
+    : window(window), stateManager(sm)
 {
     getHighscore();
+
+    options = {{"PLAY", [this]()
+                { stateManager.currentMode = StateManager::LEVEL_SELECTOR; }},
+               {"MAP EDITOR", [this]()
+                { stateManager.currentMode = StateManager::MAP_EDITOR; }},
+               {"QUIT", [this]()
+                { stateManager.window.close(); }}};
+    menu = GameMenu(window.getView(), "PAC-MAN", sf::Vector2i(3, 4), TextColor::YELLOW, 3.f, options, sf::Vector2i(11, 9));
 }
 
 void MainMenuState::draw()
 {
-    arcadeText.drawString("1UP", 3, 1, window, sf::Vector2i(0, 4));
-    arcadeText.drawString("00", 6, 2, window);
-    arcadeText.drawString("HIGH SCORE", 9, 1, window, sf::Vector2i(0, 4));
+    menu.draw(window);
+
+    arcadeText.drawString("1UP", 3, 1, window, TextColor::RED);
+    arcadeText.drawString("00", 6, 2, window, TextColor::WHITE);
+    arcadeText.drawString("HIGH SCORE", 9, 1, window, TextColor::RED);
     drawScore(16, 2, highscore);
-    arcadeText.drawString("PAC-MAN", 3, 4, window, 3.f, sf::Vector2i(0, 24));
-
-    for (const auto &option : options)
-    {
-        arcadeText.drawString(option, 11, 9 + (&option - &options[0]) * 2, window);
-    }
-
-    sf::CircleShape triangle(TILE_SIZE / 2.f, 3);
-    triangle.setFillColor(sf::Color::Red);
-    triangle.setPosition({TILE_SIZE * (cursorPosition.x + .5f), TILE_SIZE * ((cursorPosition.y + (cursorIndex * 2)) + .5f)});
-    triangle.setOrigin({TILE_SIZE / 2.f, TILE_SIZE / 2.f});
-    triangle.setRotation(sf::degrees(90));
-    window.draw(triangle);
-
     // Debug::drawGrid(window);
 }
 
@@ -37,7 +33,7 @@ void MainMenuState::drawScore(int x, int y, int score)
     int scoreLength = scoreString.length();
     int startX = x - scoreLength;
 
-    arcadeText.drawString(scoreString, startX, y, window);
+    arcadeText.drawString(scoreString, startX, y, window, TextColor::WHITE);
 }
 
 void MainMenuState::getHighscore()
