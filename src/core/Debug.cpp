@@ -2,7 +2,6 @@
 
 void Debug::drawGrid(sf::RenderWindow &window)
 {
-    sf::Color gridColor = sf::Color(255, 255, 255, 100);
     float thickness = 1.0f;
 
     for (int x = 0; x <= MAP_WIDTH; x++)

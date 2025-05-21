@@ -6,38 +6,31 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
     {
     case StateManager::NORMAL_GAME:
     {
+        if (gs.pause)
+        {
+            gs.pauseMenu.handle(key);
+            return;
+        }
+
+        if (gs.gameOver)
+        {
+            gs.victoryMenu.handle(key);
+            return;
+        }
+
         Direction newDirection = gs.pacman.direction;
 
         switch (key.scancode)
         {
         case sf::Keyboard::Scancode::Up:
         {
-
-            if (gs.pause)
-            {
-                gs.pauseMenu.moveCursorUp();
-            }
-            else if (gs.victory)
-            {
-                gs.victoryMenu.moveCursorUp();
-            }
-            else
-            {
+            if (!gs.pause)
                 newDirection = UP;
-            }
             break;
         }
         case sf::Keyboard::Scancode::Down:
         {
-            if (gs.pause)
-            {
-                gs.pauseMenu.moveCursorDown();
-            }
-            else if (gs.victory)
-            {
-                gs.victoryMenu.moveCursorDown();
-            }
-            else
+            if (!gs.pause)
                 newDirection = DOWN;
             break;
         }
@@ -57,25 +50,17 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
         {
             if (!gs.gameOver)
             {
-                gs.pauseMenu.cursorIndex = 0;
                 gs.pause = !gs.pause;
+                gs.pauseMenu.cursorIndex = 0;
             }
             break;
         }
         case sf::Keyboard::Scancode::Enter:
         {
-            if (gs.pause && !gs.victory && !gs.gameOver)
-            {
-                gs.pauseMenu.executeOption();
-            }
-            else if (gs.gameOver)
+            if (gs.gameOver)
             {
                 sm.currentMode = StateManager::MAIN_MENU;
                 sm.mainMenuState->getHighscore();
-            }
-            else if (gs.victory)
-            {
-                gs.victoryMenu.executeOption();
             }
             break;
         }
@@ -88,65 +73,30 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
     }
     case StateManager::MAIN_MENU:
     {
-        if (key.scancode == sf::Keyboard::Scancode::Up)
-        {
-            sm.mainMenuState->menu.moveCursorUp();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Down)
-        {
-            sm.mainMenuState->menu.moveCursorDown();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Enter)
-        {
-            sm.mainMenuState->menu.executeOption();
-        }
+        sm.mainMenuState->menu.handle(key);
         break;
     }
     case StateManager::LEVEL_SELECTOR:
     {
-        if (key.scancode == sf::Keyboard::Scancode::Up)
-        {
-            sm.levelSelectorState->moveCursorUp();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Down)
-        {
-            sm.levelSelectorState->moveCursorDown();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Left)
-        {
-            sm.levelSelectorState->moveCursorLeft();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Right)
-        {
-            sm.levelSelectorState->moveCursorRight();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Escape)
-        {
-            sm.currentMode = StateManager::MAIN_MENU;
-            sm.mainMenuState->getHighscore();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Enter)
-        {
-            std::string mapPath = sm.levelSelectorState->maps[sm.levelSelectorState->cursorPosition.y][sm.levelSelectorState->cursorPosition.x].path;
-            sm.initGame(mapPath);
-        }
+        sm.levelSelectorState->handle(key);
         break;
     }
     case StateManager::MAP_EDITOR:
     {
-        if (key.scancode == sf::Keyboard::Scancode::Up)
-        {
-            sm.mapEditor->menu.moveCursorUp();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Down)
-        {
-            sm.mapEditor->menu.moveCursorDown();
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Enter)
-        {
-            sm.mapEditor->menu.executeOption();
-        }
+        sm.mapEditor->menu.handle(key);
+        break;
     }
+    }
+}
+
+// https://www.sfml-dev.org/tutorials/3.0/graphics/view/#coordinates-conversions
+void handle(const sf::Event::MouseMoved &mouseMoved, MapEditor &me)
+{
+    if (me.currentMode == me.CREATE)
+    {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(me.window);
+        sf::Vector2f worldPos = me.window.mapPixelToCoords(mousePos);
+        me.create->setCursorPos(static_cast<int>(worldPos.x / TILE_SIZE), static_cast<int>(worldPos.y / TILE_SIZE));
     }
 }
 
@@ -157,6 +107,12 @@ void handle(const sf::Event::Closed &close, StateManager &sm, GameState &gs)
 
 template <typename T>
 void handle(const T &, StateManager &sm, GameState &gs)
+{
+    // eventi non gestiti
+}
+
+template <typename T>
+void handle(const T &, MapEditor &me)
 {
     // eventi non gestiti
 }
@@ -191,7 +147,7 @@ StateManager::StateManager(unsigned w, unsigned h, std::string title) : w(w), h(
     window.setView(view);
 
     mainMenuState = std::make_unique<MainMenuState>(window, *this);
-    levelSelectorState = std::make_unique<LevelSelectorState>(window);
+    levelSelectorState = std::make_unique<LevelSelectorState>(window, *this);
     mapEditor = std::make_unique<MapEditor>(window, *this);
 };
 
@@ -230,7 +186,7 @@ void StateManager::doGraphics()
 void StateManager::handleInputs()
 {
     window.handleEvents([&](const auto &event)
-                        { handle(event, *this, *gameState); });
+                        { handle(event, *this, *gameState); handle(event, *mapEditor); });
 }
 
 void StateManager::initGame(std::string mapPath)

@@ -9,6 +9,8 @@
 
 #include "core/StateManager.hpp"
 
+struct StateManager;
+
 struct MapPreview
 {
     std::string name;
@@ -20,6 +22,7 @@ struct MapPreview
 struct LevelSelectorState
 {
     sf::RenderWindow &window;
+    StateManager &stateManager;
     ArcadeText arcadeText;
     sf::Vector2i cursorPosition = {0, 0};
     std::regex r;
@@ -27,16 +30,18 @@ struct LevelSelectorState
     float margin = 20.f, TILE_SIZE_PREVIEW;
     sf::Texture straightLine;
     sf::Texture cornerTile;
+    sf::Texture pacDot;
     std::vector<std::vector<MapPreview>> maps;
 
 public:
-    LevelSelectorState(sf::RenderWindow &window);
+    LevelSelectorState(sf::RenderWindow &window, StateManager &sm);
     void draw();
     void loadMaps();
     void moveCursorLeft();
     void moveCursorRight();
     void moveCursorUp();
     void moveCursorDown();
+    void handle(const sf::Event::KeyPressed &key);
 
 private:
     sf::Texture generateMapPreview(const std::string path);

@@ -109,3 +109,21 @@ void GameMenu::executeOption()
 {
     options[cursorIndex].action();
 }
+
+void GameMenu::handle(const sf::Event::KeyPressed &key)
+{
+    switch (key.scancode)
+    {
+    case sf::Keyboard::Scancode::Up:
+        moveCursorUp();
+        break;
+    case sf::Keyboard::Scancode::Down:
+        moveCursorDown();
+        break;
+    case sf::Keyboard::Scancode::Enter:
+        executeOption();
+        break;
+    default:
+        break;
+    }
+}

@@ -16,6 +16,8 @@ MapEditor::MapEditor(sf::RenderWindow &window, StateManager &sm) : window(window
          }}};
 
     menu = GameMenu(window.getView(), "MAP EDITOR", {4, 1}, TextColor::WHITE, options, {9, 9});
+
+    create = std::make_unique<Create>(window);
 }
 
 void MapEditor::doGraphics()
@@ -29,7 +31,7 @@ void MapEditor::doGraphics()
     }
     case CREATE:
     {
-        std::cout << "CREATE MODE" << std::endl;
+        create->doGraphics();
         break;
     }
     case EDIT:

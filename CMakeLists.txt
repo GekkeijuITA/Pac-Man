@@ -38,6 +38,7 @@ add_executable(main
     src/game_elements/ghosts/Pinky.cpp
 
     src/map_editor/MapEditor.cpp
+    src/map_editor/Create.cpp
 
     src/main.cpp
     src/GameMenu.cpp

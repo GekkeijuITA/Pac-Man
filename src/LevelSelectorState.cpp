@@ -2,7 +2,7 @@
 #include "../includes/lib/textures.hpp"
 #include "../includes/core/Debug.hpp"
 
-LevelSelectorState::LevelSelectorState(sf::RenderWindow &window) : window(window)
+LevelSelectorState::LevelSelectorState(sf::RenderWindow &window, StateManager &sm) : window(window), stateManager(sm)
 {
     r = std::regex("[^a-zA-Z0-9!,\",-,/]");
 
@@ -14,6 +14,11 @@ LevelSelectorState::LevelSelectorState(sf::RenderWindow &window) : window(window
     if (!cornerTile.loadFromFile(ANGLE_0))
     {
         std::cerr << "Errore nel caricamento di ANGLE_0\n";
+    }
+
+    if (!pacDot.loadFromFile(PACDOT_TEX))
+    {
+        std::cerr << "Errore nel caricamento di PACDOT\n";
     }
 
     TILE_SIZE_PREVIEW = TILE_SIZE / maxCols;
@@ -179,9 +184,9 @@ sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
             {
             case PACDOT:
             {
-                sf::CircleShape pacdot(TILE_SIZE_PREVIEW / 10.f);
-                pacdot.setPosition({x + (TILE_SIZE_PREVIEW / 2) - 4, y + (TILE_SIZE_PREVIEW / 2) - 4});
-                pacdot.setFillColor(sf::Color(255, 185, 176));
+                sf::Sprite pacdot(pacDot);
+                pacdot.setScale({(float)TILE_SIZE_PREVIEW / pacDot.getSize().x, (float)TILE_SIZE_PREVIEW / pacDot.getSize().y});
+                pacdot.setPosition({x, y});
                 renderTexture.draw(pacdot);
                 break;
             }
@@ -381,5 +386,38 @@ void LevelSelectorState::previousPage()
         page--;
         cursorPosition.x = maps[cursorPosition.y].size() - 1;
         cursorPosition.y = maps[cursorPosition.y].size() - 1;
+    }
+}
+
+void LevelSelectorState::handle(const sf::Event::KeyPressed &key)
+{
+    if (key.scancode == sf::Keyboard::Scancode::Up)
+    {
+        moveCursorUp();
+    }
+    else if (key.scancode == sf::Keyboard::Scancode::Down)
+    {
+        moveCursorDown();
+    }
+    else if (key.scancode == sf::Keyboard::Scancode::Left)
+    {
+        moveCursorLeft();
+    }
+    else if (key.scancode == sf::Keyboard::Scancode::Right)
+    {
+        moveCursorRight();
+    }
+    else if (key.scancode == sf::Keyboard::Scancode::Escape)
+    {
+        stateManager.currentMode = StateManager::MAIN_MENU;
+        stateManager.mainMenuState->getHighscore();
+    }
+    else if (key.scancode == sf::Keyboard::Scancode::Enter)
+    {
+        std::string mapPath = maps[cursorPosition.y][cursorPosition.x].path;
+        if (stateManager.currentMode == StateManager::LEVEL_SELECTOR)
+        {
+            stateManager.initGame(mapPath);
+        }
     }
 }

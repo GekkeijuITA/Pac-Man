@@ -5,8 +5,11 @@
 
 #include "../GameMenu.hpp"
 #include "../core/StateManager.hpp"
+#include "Create.hpp"
 
 struct StateManager;
+
+struct Create;
 
 struct MapEditor
 {
@@ -25,6 +28,8 @@ struct MapEditor
     std::vector<MenuOption> options;
     ArcadeText arcadeText;
     int cursorIndex = 0;
+
+    std::unique_ptr<Create> create;
 
     MapEditor(sf::RenderWindow &window, StateManager &sm);
 

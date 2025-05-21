@@ -1,4 +1,5 @@
 #pragma once
+
 inline const int MAP_WIDTH = 28;  // area di gioco
 inline const int MAP_HEIGHT = 31; // area di gioco
 inline const int TILE_SIZE = 32;
