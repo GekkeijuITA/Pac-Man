@@ -100,6 +100,17 @@ void handle(const sf::Event::MouseMoved &mouseMoved, MapEditor &me)
     }
 }
 
+void handle(const sf::Event::MouseButtonPressed &mouseButton, MapEditor &me)
+{
+    if (me.currentMode == me.CREATE)
+    {
+        if (mouseButton.button == sf::Mouse::Button::Left)
+        {
+            me.create->handle(mouseButton);
+        }
+    }
+}
+
 void handle(const sf::Event::Closed &close, StateManager &sm, GameState &gs)
 {
     sm.window.close();
