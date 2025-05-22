@@ -1,6 +1,7 @@
 #include "../includes/LevelSelectorState.hpp"
 #include "../includes/lib/textures.hpp"
 #include "../includes/core/Debug.hpp"
+#include "../includes/lib/TileFactory.hpp"
 
 LevelSelectorState::LevelSelectorState(sf::RenderWindow &window, StateManager &sm) : window(window), stateManager(sm)
 {
@@ -180,12 +181,27 @@ sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
         for (int c = 0; c < mapWidth; c++)
         {
             float x = c * TILE_SIZE_PREVIEW;
-            switch (map[r][c])
+            char tileType = map[r][c];
+
+            if (tileType != EMPTY_BLOCK && tileType)
+            {
+                auto tile = TileFactory::getIstance().getTile(tileType);
+                if (!tile)
+                {
+                    std::cerr << "Error loading tile data" << std::endl;
+                    break;
+                }
+                tile->sprite.setPosition({static_cast<float>(c) * TILE_SIZE_PREVIEW + TILE_SIZE_PREVIEW / 2.f, static_cast<float>(r) * TILE_SIZE_PREVIEW + TILE_SIZE_PREVIEW / 2.f});
+                tile->sprite.setScale({(float)TILE_SIZE_PREVIEW / tile->sprite.getTexture().getSize().x, (float)TILE_SIZE_PREVIEW / tile->sprite.getTexture().getSize().y});
+                renderTexture.draw(tile->sprite);
+            }
+
+            /*switch (map[r][c])
             {
             case PACDOT:
             {
                 sf::Sprite pacdot(pacDot);
-                pacdot.setScale({(float)TILE_SIZE_PREVIEW / pacDot.getSize().x, (float)TILE_SIZE_PREVIEW / pacDot.getSize().y});
+                pacdot.
                 pacdot.setPosition({x, y});
                 renderTexture.draw(pacdot);
                 break;
@@ -271,17 +287,9 @@ sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
                 renderTexture.draw(ghostDoor);
                 break;
             }
-            case EMPTY_BLOCK:
-            {
-                sf::RectangleShape emptyBlock({TILE_SIZE_PREVIEW, TILE_SIZE_PREVIEW});
-                emptyBlock.setPosition({x, y});
-                emptyBlock.setFillColor(sf::Color::Black);
-                renderTexture.draw(emptyBlock);
-                break;
-            }
             default:
                 break;
-            }
+            }*/
         }
     }
     renderTexture.display();

@@ -3,6 +3,7 @@
 #include "../../includes/game_elements/GameState.hpp"
 #include "../../includes/lib/text_ui.hpp"
 #include "../../includes/core/Debug.hpp"
+#include "../../includes/lib/TileFactory.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -430,117 +431,18 @@ void GameState::doGraphics()
         for (int c = 0; c < MAP_WIDTH; c++)
         {
             float x = c * TILE_SIZE;
-            switch (map[r][c])
+            char tileType = map[r][c];
+            if (tileType != EMPTY_BLOCK)
             {
-            case PACDOT:
-            {
-                sf::CircleShape pacdot(TILE_SIZE / 10.f);
-                pacdot.setPosition({x + (TILE_SIZE / 2) - 4, y + (TILE_SIZE / 2) - 4});
-                pacdot.setFillColor(sf::Color(255, 185, 176));
-                window.draw(pacdot);
-                break;
-            }
-            case LINE_H:
-            {
-                sf::Sprite wall(mapTextures[0].texture);
-                wall.setScale(mapTextures[0].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
-            case LINE_V:
-            {
-                sf::Sprite wall(mapTextures[0].texture);
-                wall.setScale(mapTextures[0].scale);
-                wall.setOrigin({mapTextures[0].texture.getSize().x / 2.f,
-                                mapTextures[0].texture.getSize().y / 2.f});
-                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
-                wall.setRotation(sf::degrees(-90));
-                window.draw(wall);
-                break;
-            }
-            case CORNER_0:
-            {
-                sf::Sprite wall(mapTextures[1].texture);
-                wall.setScale(mapTextures[1].scale);
-                wall.setPosition({x, y});
-                window.draw(wall);
-                break;
-            }
-            case CORNER_90:
-            {
-                sf::Sprite wall(mapTextures[1].texture);
-                wall.setScale(mapTextures[1].scale);
-                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
-                                mapTextures[1].texture.getSize().y / 2.f});
-
-                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
-                wall.setRotation(sf::degrees(-90));
-                window.draw(wall);
-                break;
-            }
-            case CORNER_180:
-            {
-                sf::Sprite wall(mapTextures[1].texture);
-                wall.setScale(mapTextures[1].scale);
-                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
-                                mapTextures[1].texture.getSize().y / 2.f});
-
-                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
-                wall.setRotation(sf::degrees(-180));
-                window.draw(wall);
-                break;
-            }
-            case CORNER_270:
-            {
-                sf::Sprite wall(mapTextures[1].texture);
-                wall.setScale(mapTextures[1].scale);
-                wall.setOrigin({mapTextures[1].texture.getSize().x / 2.f,
-                                mapTextures[1].texture.getSize().y / 2.f});
-
-                wall.setPosition({x + TILE_SIZE / 2.f, y + TILE_SIZE / 2.f});
-                wall.setRotation(sf::degrees(-270));
-                window.draw(wall);
-                break;
-            }
-            case POWERPELLET:
-            {
-                float scale = 3.f;
-                sf::CircleShape powerpellet(TILE_SIZE / scale);
-                powerpellet.setOrigin({TILE_SIZE / scale, TILE_SIZE / scale});
-                powerpellet.setPosition({x + (TILE_SIZE / 2), y + (TILE_SIZE / 2)});
-                powerpellet.setFillColor(sf::Color(255, 185, 176));
-                window.draw(powerpellet);
-                break;
-            }
-            case GHOST_DOOR_H:
-            {
-                sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
-                ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
-                ghostDoor.setFillColor(sf::Color(255, 203, 255));
-                window.draw(ghostDoor);
-                break;
-            }
-            case GHOST_DOOR_V:
-            {
-                sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
-                ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
-                ghostDoor.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
-                ghostDoor.setRotation(sf::degrees(90));
-                ghostDoor.setFillColor(sf::Color(255, 203, 255));
-                window.draw(ghostDoor);
-                break;
-            }
-            case EMPTY_BLOCK:
-            {
-                sf::RectangleShape emptyBlock({TILE_SIZE, TILE_SIZE});
-                emptyBlock.setPosition({x, y});
-                emptyBlock.setFillColor(sf::Color::Black);
-                window.draw(emptyBlock);
-                break;
-            }
-            default:
-                break;
+                auto tile = TileFactory::getIstance().getTile(tileType);
+                if (!tile)
+                {
+                    std::cerr << "Error loading tile data" << std::endl;
+                    break;
+                }
+                tile->sprite.setPosition({static_cast<float>(x) + TILE_SIZE / 2.f, static_cast<float>(y) + TILE_SIZE / 2.f});
+                tile->sprite.setScale({(float)TILE_SIZE / tile->sprite.getTexture().getSize().x, (float)TILE_SIZE / tile->sprite.getTexture().getSize().y});
+                window.draw(tile->sprite);
             }
         }
 

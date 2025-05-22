@@ -54,9 +54,9 @@ void TileFactory::loadAll()
     loadTile(LINE_H, STRAIGHT_LINE_H);
     loadTile(LINE_V, STRAIGHT_LINE_H, 90);
     loadTile(CORNER_0, ANGLE_0);
-    loadTile(CORNER_90, ANGLE_0, 90);
-    loadTile(CORNER_180, ANGLE_0, 180);
-    loadTile(CORNER_270, ANGLE_0, 270);
+    loadTile(CORNER_90, ANGLE_0, -90);
+    loadTile(CORNER_180, ANGLE_0, -180);
+    loadTile(CORNER_270, ANGLE_0, -270);
     loadTile(GHOST_DOOR_H, GHOST_DOOR_TEX_H);
     loadTile(GHOST_DOOR_V, GHOST_DOOR_TEX_H, 90);
     loadTile(PACDOT, PACDOT_TEX);
