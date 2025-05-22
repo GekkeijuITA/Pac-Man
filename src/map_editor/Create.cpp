@@ -169,6 +169,16 @@ void Create::doUI()
     for (size_t i = 0; i < tileDisplayOrder.size(); ++i)
     {
         char tileType = tileDisplayOrder[i];
+        if (tileType == PACMAN && maxPacman <= 0)
+            continue;
+        if (tileType == BLINKY && maxBlinky <= 0)
+            continue;
+        if (tileType == PINKY && maxPinky <= 0)
+            continue;
+        if (tileType == INKY && maxInky <= 0)
+            continue;
+        if (tileType == CLYDE && maxClyde <= 0)
+            continue;
 
         Tile tile = tileSprites.at(tileType);
         tile.sprite.setOrigin({0.f, 0.f});
@@ -261,7 +271,50 @@ void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
             {
                 tileType = tileDisplayOrder[selectedTileIndex];
             }
+
+            if (tileType == PACMAN && maxPacman <= 0)
+                return;
+            if (tileType == BLINKY && maxBlinky <= 0)
+                return;
+            if (tileType == PINKY && maxPinky <= 0)
+                return;
+            if (tileType == INKY && maxInky <= 0)
+                return;
+            if (tileType == CLYDE && maxClyde <= 0)
+                return;
+
             map[cursorPos.y][cursorPos.x] = tileType;
+
+            if (tileType == PACMAN)
+            {
+                maxPacman--;
+                selectedTileIndex = -1;
+                lastTileType = EMPTY_BLOCK;
+            }
+            else if (tileType == BLINKY)
+            {
+                maxBlinky--;
+                selectedTileIndex = -1;
+                lastTileType = EMPTY_BLOCK;
+            }
+            else if (tileType == PINKY)
+            {
+                maxPinky--;
+                selectedTileIndex = -1;
+                lastTileType = EMPTY_BLOCK;
+            }
+            else if (tileType == INKY)
+            {
+                maxInky--;
+                selectedTileIndex = -1;
+                lastTileType = EMPTY_BLOCK;
+            }
+            else if (tileType == CLYDE)
+            {
+                maxClyde--;
+                selectedTileIndex = -1;
+                lastTileType = EMPTY_BLOCK;
+            }
         }
         else if (hoveredTileIndex != -1)
         {
@@ -275,6 +328,26 @@ void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
         if (isCursorOnMap() && tileType != EMPTY_BLOCK)
         {
             map[cursorPos.y][cursorPos.x] = EMPTY_BLOCK;
+            if (tileType == PACMAN)
+            {
+                maxPacman++;
+            }
+            else if (tileType == BLINKY)
+            {
+                maxBlinky++;
+            }
+            else if (tileType == PINKY)
+            {
+                maxPinky++;
+            }
+            else if (tileType == INKY)
+            {
+                maxInky++;
+            }
+            else if (tileType == CLYDE)
+            {
+                maxClyde++;
+            }
         }
         else if (tileType != EMPTY_BLOCK)
         {

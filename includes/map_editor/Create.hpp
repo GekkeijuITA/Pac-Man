@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../../includes/lib/text_ui.hpp"
+#include "../../includes/GameMenu.hpp"
 
 struct Tile
 {
@@ -22,7 +23,7 @@ struct Create
     std::vector<char> tileDisplayOrder;
     char lastTileType = EMPTY_BLOCK;
 
-    int hoveredTileIndex = -1, selectedTileIndex = -1;
+    int hoveredTileIndex = -1, selectedTileIndex = -1, maxPacman = 1, maxBlinky = 1, maxInky = 1, maxPinky = 1, maxClyde = 1;
     ArcadeText arcadeText;
     std::vector<std::vector<char>> map;
 
