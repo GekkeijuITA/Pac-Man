@@ -19,6 +19,7 @@ add_executable(main
 
     src/lib/TextUI.cpp
     src/lib/textures.cpp
+    src/lib/TileFactory.cpp
 
     src/game_elements/Fruit.cpp
     src/game_elements/GameState.cpp

@@ -1,4 +1,5 @@
 #include "../includes/core/StateManager.hpp"
+#include "../includes/lib/TileFactory.hpp"
 
 int main()
 {    
@@ -8,6 +9,7 @@ int main()
     unsigned int h = desktop.size.y;
 
     StateManager sm(w, h, "Pac-Man");
+    TileFactory::getIstance();
 
     sf::Clock clock;
 

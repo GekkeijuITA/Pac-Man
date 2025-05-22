@@ -2,31 +2,12 @@
 #include "../../includes/core/Debug.hpp"
 #include "../../includes/lib/global_values.hpp"
 #include "../../includes/lib/textures.hpp"
+#include "../../includes/lib/TileFactory.hpp"
 
 #include <iostream>
 
 Create::Create(sf::RenderWindow &window) : window(window)
 {
-    if (!wallTex.loadFromFile(STRAIGHT_LINE_H))
-    {
-        std::cerr << "Error loading straight line texture" << std::endl;
-    }
-
-    if (!cornerTex.loadFromFile(ANGLE_0))
-    {
-        std::cerr << "Error loading angle texture" << std::endl;
-    }
-
-    if (!pacdotTex.loadFromFile(PACDOT_TEX))
-    {
-        std::cerr << "Error loading pacdot texture" << std::endl;
-    }
-
-    if (!ghostDoorTex.loadFromFile(GHOST_DOOR_TEX_H))
-    {
-        std::cerr << "Error loading ghost door texture" << std::endl;
-    }
-
     if (!gameAsset.loadFromFile(ASSET))
     {
         std::cerr << "Error loading fruit texture" << std::endl;
@@ -37,79 +18,104 @@ Create::Create(sf::RenderWindow &window) : window(window)
     float x = 0.f;
     float y = MAP_HEIGHT * TILE_SIZE;
 
-    sf::Sprite pacdotSprite(pacdotTex);
-    pacdotSprite.setScale({(float)TILE_SIZE / pacdotTex.getSize().x, (float)TILE_SIZE / pacdotTex.getSize().y});
-    pacdotSprite.setPosition({x, y});
-    tileSprites.insert({PACDOT, {"PACDOT", pacdotSprite, {x, y}}});
-    tileDisplayOrder.push_back(PACDOT);
+    auto tileData = TileFactory::getIstance().getTile(PACDOT);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"PACDOT", tileData->sprite, {x, y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    sf::Sprite wallSprite(wallTex);
-    wallSprite.setScale({(float)TILE_SIZE / wallTex.getSize().x, (float)TILE_SIZE / wallTex.getSize().y});
-    wallSprite.setPosition({x + (TILE_SIZE * 2), y});
-    tileSprites.insert({LINE_H, {"WALL", wallSprite, {x + (TILE_SIZE * 2), y}}});
-    tileDisplayOrder.push_back(LINE_H);
+    tileData = TileFactory::getIstance().getTile(LINE_H);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"WALL", tileData->sprite, {x + (TILE_SIZE * 2), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    sf::Sprite cornerSprite(cornerTex);
-    cornerSprite.setScale({(float)TILE_SIZE / cornerTex.getSize().x, (float)TILE_SIZE / cornerTex.getSize().y});
-    cornerSprite.setPosition({x + (TILE_SIZE * 4), y});
-    tileSprites.insert({CORNER_0, {"CORNER", cornerSprite, {x + (TILE_SIZE * 4), y}}});
-    tileDisplayOrder.push_back(CORNER_0);
+    tileData = TileFactory::getIstance().getTile(CORNER_0);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"CORNER", tileData->sprite, {x + (TILE_SIZE * 4), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    sf::Sprite powerPelletSprite(pacdotTex);
-    powerPelletSprite.setScale({(float)TILE_SIZE / pacdotTex.getSize().x, (float)TILE_SIZE / pacdotTex.getSize().y});
-    powerPelletSprite.setPosition({x + (TILE_SIZE * 6), y});
-    tileSprites.insert({POWERPELLET, {"POWER PELLET", powerPelletSprite, {x + (TILE_SIZE * 6), y}}});
-    tileDisplayOrder.push_back(POWERPELLET);
+    tileData = TileFactory::getIstance().getTile(POWERPELLET);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"POWERPELLET", tileData->sprite, {x + (TILE_SIZE * 6), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    sf::Sprite ghostDoorSprite(ghostDoorTex);
-    ghostDoorSprite.setScale({(float)TILE_SIZE / wallTex.getSize().x, (float)TILE_SIZE / wallTex.getSize().y});
-    ghostDoorSprite.setPosition({x + (TILE_SIZE * 8), y});
-    tileSprites.insert({GHOST_DOOR_H, {"GHOST DOOR", ghostDoorSprite, {x + (TILE_SIZE * 8), y}}});
-    tileDisplayOrder.push_back(GHOST_DOOR_H);
+    tileData = TileFactory::getIstance().getTile(GHOST_DOOR_H);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"GHOST DOOR", tileData->sprite, {x + (TILE_SIZE * 8), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    // Cherry
-    sf::IntRect texRect({2 * (TILE_SIZE / 2), 3 * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2});
-    sf::Sprite fruit(gameAsset, texRect);
-    fruit.setScale({2.f, 2.f});
-    fruit.setPosition({x + (TILE_SIZE * 10), y});
-    tileSprites.insert({FRUIT, {"FRUIT GENERATOR", fruit, {x + (TILE_SIZE * 10), y}}});
-    tileDisplayOrder.push_back(FRUIT);
+    tileData = TileFactory::getIstance().getTile(FRUIT);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"FRUIT GENERATOR", tileData->sprite, {x + (TILE_SIZE * 10), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    // PacMan
-    texRect = sf::IntRect({1 * (TILE_SIZE / 2), 1 * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2});
-    sf::Sprite pacmanSprite(gameAsset, texRect);
-    pacmanSprite.setScale({2.f, 2.f});
-    pacmanSprite.setPosition({x + (TILE_SIZE * 12), y});
-    tileSprites.insert({PACMAN, {"PACMAN SPAWN", pacmanSprite, {x + (TILE_SIZE * 12), y}}});
-    tileDisplayOrder.push_back(PACMAN);
+    tileData = TileFactory::getIstance().getTile(PACMAN);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"PACMAN SPAWN", tileData->sprite, {x + (TILE_SIZE * 12), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    texRect = sf::IntRect({0, 4 * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2});
-    sf::Sprite blinkySprite(gameAsset, texRect);
-    blinkySprite.setScale({2.f, 2.f});
-    blinkySprite.setPosition({x + (TILE_SIZE * 14), y});
-    tileSprites.insert({BLINKY, {"BLINKY", blinkySprite, {x + (TILE_SIZE * 14), y}}});
-    tileDisplayOrder.push_back(BLINKY);
+    tileData = TileFactory::getIstance().getTile(BLINKY);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"BLINKY", tileData->sprite, {x + (TILE_SIZE * 14), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    texRect = sf::IntRect({0, 5 * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2});
-    sf::Sprite pinkySprite(gameAsset, texRect);
-    pinkySprite.setScale({2.f, 2.f});
-    pinkySprite.setPosition({x + (TILE_SIZE * 16), y});
-    tileSprites.insert({PINKY, {"PINKY", pinkySprite, {x + (TILE_SIZE * 16), y}}});
-    tileDisplayOrder.push_back(PINKY);
+    tileData = TileFactory::getIstance().getTile(PINKY);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"PINKY", tileData->sprite, {x + (TILE_SIZE * 16), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    texRect = sf::IntRect({0, 6 * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2});
-    sf::Sprite inkySprite(gameAsset, texRect);
-    inkySprite.setScale({2.f, 2.f});
-    inkySprite.setPosition({x + (TILE_SIZE * 18), y});
-    tileSprites.insert({INKY, {"INKY", inkySprite, {x + (TILE_SIZE * 18), y}}});
-    tileDisplayOrder.push_back(INKY);
+    tileData = TileFactory::getIstance().getTile(INKY);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"INKY", tileData->sprite, {x + (TILE_SIZE * 18), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
-    texRect = sf::IntRect({0, 7 * (TILE_SIZE / 2)}, {TILE_SIZE / 2, TILE_SIZE / 2});
-    sf::Sprite clydeSprite(gameAsset, texRect);
-    clydeSprite.setScale({2.f, 2.f});
-    clydeSprite.setPosition({x + (TILE_SIZE * 20), y});
-    tileSprites.insert({CLYDE, {"CLYDE", clydeSprite, {x + (TILE_SIZE * 20), y}}});
-    tileDisplayOrder.push_back(CLYDE);
+    tileData = TileFactory::getIstance().getTile(CLYDE);
+    if (!tileData)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+    tileSprites.insert({tileData->type, {"CLYDE", tileData->sprite, {x + (TILE_SIZE * 20), y}}});
+    tileDisplayOrder.push_back(tileData->type);
 
     map.resize(MAP_HEIGHT);
     for (size_t i = 0; i < MAP_HEIGHT; ++i)
@@ -163,7 +169,10 @@ void Create::doUI()
     for (size_t i = 0; i < tileDisplayOrder.size(); ++i)
     {
         char tileType = tileDisplayOrder[i];
+
         Tile tile = tileSprites.at(tileType);
+        tile.sprite.setOrigin({0.f, 0.f});
+        tile.sprite.setPosition(tile.position);
         tile.sprite.setScale(tile.sprite.getScale() * 2.f);
 
         window.draw(tile.sprite);
@@ -219,66 +228,14 @@ void Create::drawMap()
             char tileType = map[i][j];
             if (tileType != EMPTY_BLOCK)
             {
-                if (tileSprites.find(tileType) == tileSprites.end())
+                auto tile = TileFactory::getIstance().getTile(tileType);
+                if (!tile)
                 {
-                    // varianti
-                    switch (tileType)
-                    {
-                    case LINE_V:
-                    {
-                        Tile tile = tileSprites.at(LINE_H);
-                        tile.sprite.setOrigin({tile.sprite.getLocalBounds().size.x / 2.f, tile.sprite.getLocalBounds().size.y / 2.f});
-                        tile.sprite.setPosition({static_cast<float>(j) * TILE_SIZE + TILE_SIZE / 2.f, static_cast<float>(i) * TILE_SIZE + TILE_SIZE / 2.f});
-                        tile.sprite.setRotation(sf::degrees(90));
-                        window.draw(tile.sprite);
-                        break;
-                    }
-                    case GHOST_DOOR_V:
-                    {
-                        Tile tile = tileSprites.at(GHOST_DOOR_H);
-                        tile.sprite.setOrigin({tile.sprite.getLocalBounds().size.x / 2.f, tile.sprite.getLocalBounds().size.y / 2.f});
-                        tile.sprite.setPosition({static_cast<float>(j) * TILE_SIZE + TILE_SIZE / 2.f, static_cast<float>(i) * TILE_SIZE + TILE_SIZE / 2.f});
-                        tile.sprite.setRotation(sf::degrees(90));
-                        window.draw(tile.sprite);
-                        break;
-                    }
-                    case CORNER_90:
-                    {
-                        Tile tile = tileSprites.at(CORNER_0);
-                        tile.sprite.setOrigin({tile.sprite.getLocalBounds().size.x / 2.f, tile.sprite.getLocalBounds().size.y / 2.f});
-                        tile.sprite.setPosition({static_cast<float>(j) * TILE_SIZE + TILE_SIZE / 2.f, static_cast<float>(i) * TILE_SIZE + TILE_SIZE / 2.f});
-                        tile.sprite.setRotation(sf::degrees(90));
-                        window.draw(tile.sprite);
-                        break;
-                    }
-                    case CORNER_180:
-                    {
-                        Tile tile = tileSprites.at(CORNER_0);
-                        tile.sprite.setOrigin({tile.sprite.getLocalBounds().size.x / 2.f, tile.sprite.getLocalBounds().size.y / 2.f});
-                        tile.sprite.setPosition({static_cast<float>(j) * TILE_SIZE + TILE_SIZE / 2.f, static_cast<float>(i) * TILE_SIZE + TILE_SIZE / 2.f});
-                        tile.sprite.setRotation(sf::degrees(180));
-                        window.draw(tile.sprite);
-                        break;
-                    }
-                    case CORNER_270:
-                    {
-                        Tile tile = tileSprites.at(CORNER_0);
-                        tile.sprite.setOrigin({tile.sprite.getLocalBounds().size.x / 2.f, tile.sprite.getLocalBounds().size.y / 2.f});
-                        tile.sprite.setPosition({static_cast<float>(j) * TILE_SIZE + TILE_SIZE / 2.f, static_cast<float>(i) * TILE_SIZE + TILE_SIZE / 2.f});
-                        tile.sprite.setRotation(sf::degrees(270));
-                        window.draw(tile.sprite);
-                        break;
-                    }
-                    default:
-                        break;
-                    }
+                    std::cerr << "Error loading tile data" << std::endl;
+                    break;
                 }
-                else
-                {
-                    Tile tile = tileSprites.at(tileType);
-                    tile.sprite.setPosition({static_cast<float>(j) * TILE_SIZE, static_cast<float>(i) * TILE_SIZE});
-                    window.draw(tile.sprite);
-                }
+                tile->sprite.setPosition({static_cast<float>(j) * TILE_SIZE + TILE_SIZE / 2.f, static_cast<float>(i) * TILE_SIZE + TILE_SIZE / 2.f});
+                window.draw(tile->sprite);
             }
         }
     }
