@@ -263,7 +263,7 @@ sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
                 renderTexture.draw(powerpellet);
                 break;
             }
-            case GHOST_DOOR:
+            case GHOST_DOOR_H:
             {
                 sf::RectangleShape ghostDoor({TILE_SIZE_PREVIEW, TILE_SIZE_PREVIEW / 4});
                 ghostDoor.setPosition({x, y + TILE_SIZE_PREVIEW / 1.8f});

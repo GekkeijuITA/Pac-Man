@@ -367,7 +367,7 @@ bool GameState::getMap()
                 clyde.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
             }
-            else if (row[i] == GHOST_DOOR)
+            else if (row[i] == GHOST_DOOR_H)
             {
                 blinky.addExitTile(map.size() - 1, i);
                 pinky.addExitTile(map.size() - 1, i);
@@ -440,7 +440,7 @@ void GameState::doGraphics()
                 window.draw(pacdot);
                 break;
             }
-            case LINE_V:
+            case LINE_H:
             {
                 sf::Sprite wall(mapTextures[0].texture);
                 wall.setScale(mapTextures[0].scale);
@@ -448,7 +448,7 @@ void GameState::doGraphics()
                 window.draw(wall);
                 break;
             }
-            case LINE_H:
+            case LINE_V:
             {
                 sf::Sprite wall(mapTextures[0].texture);
                 wall.setScale(mapTextures[0].scale);
@@ -513,10 +513,20 @@ void GameState::doGraphics()
                 window.draw(powerpellet);
                 break;
             }
-            case GHOST_DOOR:
+            case GHOST_DOOR_H:
             {
                 sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
                 ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
+                ghostDoor.setFillColor(sf::Color(255, 203, 255));
+                window.draw(ghostDoor);
+                break;
+            }
+            case GHOST_DOOR_V:
+            {
+                sf::RectangleShape ghostDoor({TILE_SIZE, TILE_SIZE / 4});
+                ghostDoor.setPosition({x, y + TILE_SIZE / 1.8f});
+                ghostDoor.setOrigin({TILE_SIZE / 2, TILE_SIZE / 2});
+                ghostDoor.setRotation(sf::degrees(90));
                 ghostDoor.setFillColor(sf::Color(255, 203, 255));
                 window.draw(ghostDoor);
                 break;

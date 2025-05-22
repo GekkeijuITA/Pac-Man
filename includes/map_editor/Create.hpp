@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <memory>
+
 #include "../../includes/lib/text_ui.hpp"
 
 struct Tile
@@ -18,9 +18,13 @@ struct Create
     sf::RenderWindow &window;
     sf::Vector2i cursorPos;
     sf::Texture wallTex, cornerTex, pacdotTex, ghostDoorTex, gameAsset;
-    std::vector<Tile> tileSprites;
+    std::map<char, Tile> tileSprites;
+    std::vector<char> tileDisplayOrder;
+    char lastTileType = EMPTY_BLOCK;
+
     int hoveredTileIndex = -1, selectedTileIndex = -1;
     ArcadeText arcadeText;
+    std::vector<std::vector<char>> map;
 
     Create(sf::RenderWindow &window);
 
@@ -29,8 +33,10 @@ public:
     void doUI();
     void setCursorPos(int x, int y);
     void handle(const sf::Event::MouseButtonPressed &mouseButton);
+    void handle(const sf::Event::KeyPressed &key);
 
 private:
     void drawCursor();
     bool isCursorOnMap();
+    void drawMap();
 };

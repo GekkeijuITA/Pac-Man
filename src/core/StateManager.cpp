@@ -83,7 +83,14 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
     }
     case StateManager::MAP_EDITOR:
     {
-        sm.mapEditor->menu.handle(key);
+        if (sm.mapEditor->currentMode == MapEditor::CREATE)
+        {
+            sm.mapEditor->create->handle(key);
+        }
+        else
+        {
+            sm.mapEditor->menu.handle(key);
+        }
         break;
     }
     }
@@ -104,10 +111,7 @@ void handle(const sf::Event::MouseButtonPressed &mouseButton, MapEditor &me)
 {
     if (me.currentMode == me.CREATE)
     {
-        if (mouseButton.button == sf::Mouse::Button::Left)
-        {
-            me.create->handle(mouseButton);
-        }
+        me.create->handle(mouseButton);
     }
 }
 
