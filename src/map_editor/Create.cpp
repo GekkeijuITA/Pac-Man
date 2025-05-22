@@ -126,6 +126,18 @@ Create::Create(sf::RenderWindow &window) : window(window)
             map[i][j] = EMPTY_BLOCK;
         }
     }
+
+    options = {
+        {"Save", [this]()
+         {
+             std::cout << "Saving map..." << std::endl;
+         }},
+        {"Save and Exit", [this]()
+         {
+             std::cout << "Exiting..." << std::endl;
+             // Exit logic here
+         }}};
+    menu = GameMenu(window.getView(), "OPTIONS", sf::Vector2i(1, 1), TextColor::WHITE, options, sf::Vector2i(2, 4));
 }
 
 void Create::doGraphics()
@@ -134,6 +146,11 @@ void Create::doGraphics()
     drawCursor();
     doUI();
     drawMap();
+
+    if (optionsMenu)
+    {
+        menu.draw(window);
+    }
 }
 
 void Create::drawCursor()
@@ -194,7 +211,7 @@ void Create::doUI()
         }
     }
 
-    if (isCursorOnMap())
+    if (isCursorOnMap() || cursorPos.x >= tileDisplayOrder.size() * 2 || cursorPos.y >= MAP_HEIGHT + 2)
     {
         hoveredTileIndex = -1;
     }
@@ -226,7 +243,21 @@ void Create::doUI()
         window.draw(hoveredTileOutline);
     }
 
-    arcadeText.drawString(selectedTileName, 0, MAP_HEIGHT + 3, window, TextColor::WHITE);
+    arcadeText.drawString(selectedTileName, 0, MAP_HEIGHT + 2.3f, window, 0.5f, TextColor::WHITE);
+    std::string prefix = "Map Name '";
+    arcadeText.drawString(prefix + mapName + "'", 0, MAP_HEIGHT + 3.5f, window, TextColor::CYAN);
+
+    if (writingNameMap)
+    {
+        float textX = prefix.length();
+        float textY = (MAP_HEIGHT + 3.5f);
+        float scale = 1.0f;
+
+        sf::RectangleShape cursorLine(sf::Vector2f(TILE_SIZE * scale * 0.15f, TILE_SIZE * scale * 1.2f));
+        cursorLine.setFillColor(sf::Color::Cyan);
+        cursorLine.setPosition({(textX + textCursorPos) * TILE_SIZE, (textY * TILE_SIZE) - TILE_SIZE * 0.1f});
+        window.draw(cursorLine);
+    }
 }
 
 void Create::drawMap()
@@ -256,109 +287,120 @@ bool Create::isCursorOnMap()
     return cursorPos.x >= 0 && cursorPos.x < MAP_WIDTH && cursorPos.y >= 0 && cursorPos.y < MAP_HEIGHT;
 }
 
+void Create::drawInputText()
+{
+}
+
 void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
 {
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+    if (!optionsMenu)
     {
-        if (isCursorOnMap() && selectedTileIndex != -1)
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
         {
-            char tileType;
-            if (lastTileType != EMPTY_BLOCK)
+            if (isCursorOnMap() && selectedTileIndex != -1 && !writingNameMap)
             {
-                tileType = lastTileType;
+                char tileType;
+                if (lastTileType != EMPTY_BLOCK)
+                {
+                    tileType = lastTileType;
+                }
+                else
+                {
+                    tileType = tileDisplayOrder[selectedTileIndex];
+                }
+
+                if (tileType == PACMAN && maxPacman <= 0)
+                    return;
+                if (tileType == BLINKY && maxBlinky <= 0)
+                    return;
+                if (tileType == PINKY && maxPinky <= 0)
+                    return;
+                if (tileType == INKY && maxInky <= 0)
+                    return;
+                if (tileType == CLYDE && maxClyde <= 0)
+                    return;
+
+                map[cursorPos.y][cursorPos.x] = tileType;
+
+                if (tileType == PACMAN)
+                {
+                    maxPacman--;
+                    selectedTileIndex = -1;
+                    lastTileType = EMPTY_BLOCK;
+                }
+                else if (tileType == BLINKY)
+                {
+                    maxBlinky--;
+                    selectedTileIndex = -1;
+                    lastTileType = EMPTY_BLOCK;
+                }
+                else if (tileType == PINKY)
+                {
+                    maxPinky--;
+                    selectedTileIndex = -1;
+                    lastTileType = EMPTY_BLOCK;
+                }
+                else if (tileType == INKY)
+                {
+                    maxInky--;
+                    selectedTileIndex = -1;
+                    lastTileType = EMPTY_BLOCK;
+                }
+                else if (tileType == CLYDE)
+                {
+                    maxClyde--;
+                    selectedTileIndex = -1;
+                    lastTileType = EMPTY_BLOCK;
+                }
+            }
+            else if (cursorPos.y >= MAP_HEIGHT + 3)
+            {
+                writingNameMap = true;
+            }
+            else if (hoveredTileIndex != -1 && !writingNameMap)
+            {
+                lastTileType = EMPTY_BLOCK;
+                selectedTileIndex = hoveredTileIndex;
+            }
+        }
+        else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+        {
+            if (isCursorOnMap())
+            {
+                char tileType = map[cursorPos.y][cursorPos.x];
+                map[cursorPos.y][cursorPos.x] = EMPTY_BLOCK;
+                if (tileType == PACMAN)
+                {
+                    maxPacman++;
+                }
+                else if (tileType == BLINKY)
+                {
+                    maxBlinky++;
+                }
+                else if (tileType == PINKY)
+                {
+                    maxPinky++;
+                }
+                else if (tileType == INKY)
+                {
+                    maxInky++;
+                }
+                else if (tileType == CLYDE)
+                {
+                    maxClyde++;
+                }
             }
             else
             {
-                tileType = tileDisplayOrder[selectedTileIndex];
-            }
-
-            if (tileType == PACMAN && maxPacman <= 0)
-                return;
-            if (tileType == BLINKY && maxBlinky <= 0)
-                return;
-            if (tileType == PINKY && maxPinky <= 0)
-                return;
-            if (tileType == INKY && maxInky <= 0)
-                return;
-            if (tileType == CLYDE && maxClyde <= 0)
-                return;
-
-            map[cursorPos.y][cursorPos.x] = tileType;
-
-            if (tileType == PACMAN)
-            {
-                maxPacman--;
                 selectedTileIndex = -1;
-                lastTileType = EMPTY_BLOCK;
             }
-            else if (tileType == BLINKY)
-            {
-                maxBlinky--;
-                selectedTileIndex = -1;
-                lastTileType = EMPTY_BLOCK;
-            }
-            else if (tileType == PINKY)
-            {
-                maxPinky--;
-                selectedTileIndex = -1;
-                lastTileType = EMPTY_BLOCK;
-            }
-            else if (tileType == INKY)
-            {
-                maxInky--;
-                selectedTileIndex = -1;
-                lastTileType = EMPTY_BLOCK;
-            }
-            else if (tileType == CLYDE)
-            {
-                maxClyde--;
-                selectedTileIndex = -1;
-                lastTileType = EMPTY_BLOCK;
-            }
-        }
-        else if (hoveredTileIndex != -1)
-        {
-            lastTileType = EMPTY_BLOCK;
-            selectedTileIndex = hoveredTileIndex;
-        }
-    }
-    else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
-    {
-        char tileType = map[cursorPos.y][cursorPos.x];
-        if (isCursorOnMap() && tileType != EMPTY_BLOCK)
-        {
-            map[cursorPos.y][cursorPos.x] = EMPTY_BLOCK;
-            if (tileType == PACMAN)
-            {
-                maxPacman++;
-            }
-            else if (tileType == BLINKY)
-            {
-                maxBlinky++;
-            }
-            else if (tileType == PINKY)
-            {
-                maxPinky++;
-            }
-            else if (tileType == INKY)
-            {
-                maxInky++;
-            }
-            else if (tileType == CLYDE)
-            {
-                maxClyde++;
-            }
-        }
-        else if (tileType != EMPTY_BLOCK)
-        {
-            selectedTileIndex = -1;
         }
     }
 }
 
 void Create::handle(const sf::Event::KeyPressed &key)
 {
-    if (key.scancode == sf::Keyboard::Scancode::R)
+    if (key.scancode == sf::Keyboard::Scancode::R && !optionsMenu && isCursorOnMap())
     {
         char &tileType = map[cursorPos.y][cursorPos.x];
         switch (tileType)
@@ -397,6 +439,52 @@ void Create::handle(const sf::Event::KeyPressed &key)
             break;
         default:
             break;
+        }
+    }
+
+    if (writingNameMap)
+    {
+        if (key.scancode == sf::Keyboard::Scancode::Enter)
+        {
+            writingNameMap = false;
+            std::cout << "Map name: " << mapName << std::endl;
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Escape)
+        {
+            writingNameMap = false;
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Left)
+        {
+            if (textCursorPos > 0)
+                textCursorPos--;
+        }
+        else if (key.scancode == sf::Keyboard::Scancode::Right)
+        {
+            if (textCursorPos < mapName.size())
+                textCursorPos++;
+        }
+    }
+}
+
+void Create::handle(const sf::Event::TextEntered &textEntered)
+{
+    if (writingNameMap)
+    {
+        if (textEntered.unicode == '\b')
+        {
+            if (textCursorPos == 0)
+                return;
+            textCursorPos--;
+            if (textCursorPos < mapName.size())
+                mapName.erase(textCursorPos, 1);
+        }
+        else if (mapName.size() < 16)
+        {
+            if (std::isalnum(textEntered.unicode) || textEntered.unicode == '!' || textEntered.unicode == '/' || textEntered.unicode == '-' || textEntered.unicode == ' ')
+            {
+                mapName += static_cast<char>(textEntered.unicode);
+                textCursorPos++;
+            }
         }
     }
 }

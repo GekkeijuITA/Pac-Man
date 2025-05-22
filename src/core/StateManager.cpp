@@ -85,7 +85,20 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
     {
         if (sm.mapEditor->currentMode == MapEditor::CREATE)
         {
-            sm.mapEditor->create->handle(key);
+            if (key.scancode == sf::Keyboard::Scancode::Escape)
+            {
+                sm.mapEditor->create->optionsMenu = !sm.mapEditor->create->optionsMenu;
+                sm.mapEditor->create->menu.cursorIndex = 0;
+            }
+
+            if (sm.mapEditor->create->optionsMenu)
+            {
+                sm.mapEditor->create->menu.handle(key);
+            }
+            else
+            {
+                sm.mapEditor->create->handle(key);
+            }
         }
         else
         {
@@ -99,7 +112,7 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
 // https://www.sfml-dev.org/tutorials/3.0/graphics/view/#coordinates-conversions
 void handle(const sf::Event::MouseMoved &mouseMoved, MapEditor &me)
 {
-    if (me.currentMode == me.CREATE)
+    if (me.currentMode == me.CREATE && !me.create->optionsMenu)
     {
         sf::Vector2i mousePos = sf::Mouse::getPosition(me.window);
         sf::Vector2f worldPos = me.window.mapPixelToCoords(mousePos);
@@ -118,6 +131,14 @@ void handle(const sf::Event::MouseButtonPressed &mouseButton, MapEditor &me)
 void handle(const sf::Event::Closed &close, StateManager &sm, GameState &gs)
 {
     sm.window.close();
+}
+
+void handle(const sf::Event::TextEntered &textEntered, MapEditor &me)
+{
+    if (me.currentMode == me.CREATE && me.create->writingNameMap)
+    {
+        me.create->handle(textEntered);
+    }
 }
 
 template <typename T>

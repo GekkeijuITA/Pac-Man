@@ -13,8 +13,6 @@ struct MainMenuState
     StateManager &stateManager;
     ArcadeText arcadeText;
     int highscore;
-    sf::Vector2i cursorPosition = {10, 9};
-    int cursorIndex = 0;
     std::vector<MenuOption> options;
 
     MainMenuState(sf::RenderWindow &window, StateManager &stateManager);
