@@ -114,6 +114,7 @@ void GameState::update(float elapsed)
         {
             gameOverTimer -= elapsed;
         }
+        return;
     }
 
     if (pacman.getDotEaten() == eatableTiles)
