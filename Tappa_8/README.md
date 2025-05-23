@@ -1,10 +1,13 @@
-# Tappa n.8
-L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare il sistema di istanziamento dei frutti in una posizione specifica della mappa che indicheremo con il carattere "F".
+# Tappa n.8: L'Apparizione dei Frutti
 
-Il despawn, scelto casualmente tra 9 e 10 secondi, si congela se PacMan ha il powerpellet attivo. 
+In questa tappa, l'obiettivo è stato implementare il sistema di **istanziamento dei frutti** all'interno della mappa. Ho fatto in modo che compaiano in una posizione specifica, che ho indicato con il carattere "F" nella configurazione della mappa.
 
-Il tipo di frutta dipende dal livello in cui siamo (es. al livello 1 sarà sempre la Cherry) e compaiono sempre due volte per livello: una volta a 70 e un'altra 170 pallini mangiati (solo se la prima non è più sullo schermo).
+Il **despawn** del frutto è impostato casualmente tra i 9 e i 10 secondi, ma c'è un dettaglio importante: si "congela" se Pac-Man ha un power pellet attivo. Questo significa che il frutto rimane visibile finché l'effetto del power pellet non termina.
 
-(https://pacman.fandom.com/wiki/Fruits)
+Il **tipo di frutto** dipende dal livello in cui ci troviamo (ad esempio, al livello 1 apparirà sempre la Ciliegia, come da tradizione di Pac-Man). I frutti compaiono sempre due volte per livello: una volta dopo che Pac-Man ha mangiato 70 pallini e una seconda volta dopo 170 pallini, ma solo se il primo frutto non è più presente sullo schermo. Per i riferimenti specifici sui frutti, ho consultato la [pagina dedicata di Pac-Man Fandom](https://pacman.fandom.com/wiki/Fruits).
 
-![demo](images/demo.png)
+Come per i fantasmi, anche qui ho adottato un approccio modulare: ho un file generico `Fruit` e poi dei file specifici per ogni tipo di frutto. Questi ultimi passano al file generico la posizione esatta della loro texture nello sprite-sheet e il punteggio associato.
+
+---
+
+![Demo con i frutti](images/demo.png)
