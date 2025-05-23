@@ -352,6 +352,8 @@ void Ghost::move(float elapsed)
         case RIGHT:
             canMove = !isWall(position.x, position.y + 1);
             break;
+        default:
+            break;
         }
 
         if (!canMove)
@@ -463,14 +465,19 @@ void Ghost::setState(GhostState newState)
         state = newState;
     }
 
-    if(state == SCARED) {
+    if (state == SCARED)
+    {
         direction = getOppositeDirection(direction);
         lastDirection = direction;
 
         currentSpeed = speed / 1.5f;
-    } else if(state == EATEN) {
+    }
+    else if (state == EATEN)
+    {
         currentSpeed = speed * 2.f;
-    } else {
+    }
+    else
+    {
         currentSpeed = speed;
     }
 }

@@ -2,7 +2,7 @@
 
 void Debug::drawGrid(sf::RenderWindow &window)
 {
-    float thickness = 1.0f;
+    float thickness = 2.f;
 
     for (int x = 0; x <= MAP_WIDTH; x++)
     {

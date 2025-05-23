@@ -14,7 +14,7 @@ sf::Sprite createSprite(
     float extraWidth)
 {
     sf::IntRect texRect({(position.x * tileSize) - offset, position.y * tileSize},
-                        {tileSize + extraWidth, tileSize});
+                        {static_cast<int>(tileSize + extraWidth), tileSize});
 
     sf::Sprite sprite(texture, texRect);
     if (withOrigin)

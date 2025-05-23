@@ -5,7 +5,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <bits/stdc++.h>
 
 State::State(unsigned w, unsigned h, std::string title) : lives(3),
                                                           score(0),

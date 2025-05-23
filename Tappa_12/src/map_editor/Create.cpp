@@ -185,7 +185,7 @@ void Create::drawCursor()
     sf::RectangleShape cursor(sf::Vector2f(TILE_SIZE, TILE_SIZE));
     cursor.setPosition({static_cast<float>(cursorPos.x) * TILE_SIZE, static_cast<float>(cursorPos.y) * TILE_SIZE});
     cursor.setFillColor(sf::Color::Transparent);
-    cursor.setOutlineThickness(1.5f);
+    cursor.setOutlineThickness(2.f);
     cursor.setOutlineColor(sf::Color::Red);
     window.draw(cursor);
 }
@@ -201,7 +201,7 @@ void Create::doUI()
     sf::RectangleShape outline(sf::Vector2f(TILE_SIZE * MAP_WIDTH, TILE_SIZE * 5));
     outline.setPosition({0.f, TILE_SIZE * MAP_HEIGHT});
     outline.setFillColor(sf::Color::Black);
-    outline.setOutlineThickness(1.f);
+    outline.setOutlineThickness(2.f);
     outline.setOutlineColor(Debug::gridColor);
     window.draw(outline);
 
