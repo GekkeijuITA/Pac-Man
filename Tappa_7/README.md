@@ -1,9 +1,19 @@
-# Tappa n.7
-L'obiettivo in questa tappa del progetto "Pac-Man" è quello di implementare il powerpellet. Quando PacMan lo mangia, i fantasmi devono cambiare il loro stato e la texture e la velocità. Tutti i fantasmi si spaventano (anche quando sono in casa) ma una volta che vengono mangiati e tornano a casa non sono più spaventati dal powerpellet in corso. Il powerpellet ha una durata limitata che però si resetta ogni volta che PacMan mangia un powerpellet. Bisogna tenere conto anche della streak dei fantasmi mangiati durante **un** powerpellet e la formula per calcolare il punteggio di quando un fantasma viene mangiato è $$200\cdot 2^{\text{streak}} \quad \text{streak}\in\{0,3\}$$
-Il fantasma quando entra nella modalità ``SCARED`` deve andare nella direzione opposta a quella che sta avendo. 
+# Tappa n.7: Il Power Pellet e la Reazione dei Fantasmi
 
-Una funzionalità che è stata ostica da implementare è stata il pathfinding dei fantasmi per il ritorno alla casa.
+L'obiettivo di questa tappa del progetto Pac-Man è stato l'implementazione del **power pellet**. Quando Pac-Man lo mangia, i fantasmi devono cambiare il loro stato, la texture e la velocità. Tutti i fantasmi si spaventano (anche quelli ancora in casa), ma una volta che vengono "mangiati" da Pac-Man e ritornano alla loro base, non sono più spaventati dal power pellet in corso. Il power pellet ha una durata limitata, ma questa si resetta ogni volta che Pac-Man ne mangia un altro. Ho anche dovuto tenere conto della "streak" dei fantasmi mangiati durante *un singolo* power pellet, e la formula per calcolare il punteggio che ho usato è $$200\cdot 2^{\text{streak}} \quad \text{con streak}\in\{0,3\}$$
 
-Si è utilizzato un algoritmo BFS calcolando la tile `GHOST_DOOR` più vicina al fantasma in quel momento.
+Quando un fantasma entra in modalità `SCARED`, deve immediatamente invertire la sua direzione di movimento.
 
-![demo](images/demo.png)
+### La Sfida: Il Ritorno a Casa dei Fantasmi Spaventati
+
+Una funzionalità che si è rivelata piuttosto difficile da implementare è stata il **pathfinding** dei fantasmi quando devono ritornare alla loro casa dopo essere stati mangiati.
+
+Per risolvere questo problema, ho utilizzato un algoritmo **BFS (Breadth-First Search)**. Questo algoritmo mi permette di calcolare la tile `GHOST_DOOR` più vicina alla posizione attuale del fantasma in quel momento, fornendo un percorso efficiente per il suo ritorno.
+
+---
+
+**Fonti:**
+* [Algoritmo BFS](https://medium.com/@RobuRishabh/classic-graph-algorithms-c-9773f2841f2e)
+---
+
+![Demo con i power pellet e i fantasmi spaventati](images/demo.png)
