@@ -19,10 +19,10 @@ add_executable(
     Tappa_1/src/main.cpp
 )
 
-#add_executable(
-#    Tappa2 
-#    Tappa_2/src/main.cpp
-#)
+add_executable(
+    Tappa2 
+    Tappa_2/src/main.cpp
+)
 #
 #add_executable(
 #    Tappa3 
@@ -31,5 +31,5 @@ add_executable(
 #)
 
 target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
-#target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
+target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
 #target_link_libraries(Tappa3 PRIVATE SFML::Graphics)
