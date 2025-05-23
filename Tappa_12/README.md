@@ -21,4 +21,5 @@ La novità di questa tappa è l'**editor di mappe**. La sua base operativa è la
 
 ---
 
-![Demo dell'editor di mappe](images/demo.png)
+![Demo dell'editor di mappe](images/demo-edit.png)
+![Demo dell'editor di mappe](images/demo-create.png)
