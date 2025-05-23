@@ -48,7 +48,7 @@ struct PacMan
     void draw(sf::RenderWindow &window);
     void move(float elapsed);
     void setPosition(int x, int y);
-    void setRotation(Direction dir);
+    void setNextDirection(Direction dir);
     void setMap(std::vector<std::vector<char>> *map);
     bool isWall(int x, int y);
     void eat(int x, int y);

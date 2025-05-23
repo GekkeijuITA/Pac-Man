@@ -69,45 +69,6 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
     pauseMenu = GameMenu(window.getView(), "PAUSE", sf::Vector2i(10, 3), TextColor::WHITE, pauseOptions, sf::Vector2i(10, 6));
     victoryMenu = GameMenu(window.getView(), "VICTORY", sf::Vector2i(8, 3), TextColor::WHITE, victoryOptions, sf::Vector2i(8, 6));
 
-    sf::Texture temp;
-    sf::Vector2u texSize;
-
-    if (!temp.loadFromFile(STRAIGHT_LINE_H))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[0].texture = temp;
-    texSize = mapTextures[0].texture.getSize();
-    mapTextures[0].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ANGLE_0))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    mapTextures[1].texture = temp;
-    texSize = mapTextures[1].texture.getSize();
-    mapTextures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
-    if (!temp.loadFromFile(ASSET))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    textures[0].texture = temp;
-    texSize = textures[0].texture.getSize();
-    textures[0].scale = {2.f, 2.f};
-
-    if (!temp.loadFromFile(TEXT))
-    {
-        std::cerr << "Errore nel caricamento della texture" << std::endl;
-        exit(1);
-    }
-    textures[1].texture = temp;
-    texSize = textures[1].texture.getSize();
-    textures[1].scale = {(float)TILE_SIZE / texSize.x, (float)TILE_SIZE / texSize.y};
-
     maxFruits = 12 - lives;
     fruitCount = 0;
     getHighscore();
@@ -136,6 +97,7 @@ void GameState::update(float elapsed)
         {
             gameOverTimer -= elapsed;
         }
+        return;
     }
 
     if (pacman.getDotEaten() == eatableTiles)
@@ -549,15 +511,21 @@ void GameState::drawScore(int x, int y, int score)
 
 void GameState::drawLives()
 {
-    sf::Vector2i pacmanPos = pacman.PACMAN_TEX_MAP.at(LEFT);
-    sf::Sprite pacmanSprite = createSprite(textures[0].texture, pacmanPos, textures[0].scale, 2.f, TILE_SIZE / 2, true);
+    auto tile = TileFactory::getIstance().getTile(PACMAN);
+    if (!tile)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+
     for (int i = 0; i < lives; i++)
     {
-        pacmanSprite.setPosition({
+        tile->sprite.setPosition({
             (((i + 1) * 2) + 1.f) * TILE_SIZE,
             (MAP_HEIGHT + 4) * TILE_SIZE,
         });
-        window.draw(pacmanSprite);
+        tile->sprite.setScale({4.f, 4.f});
+        window.draw(tile->sprite);
     }
 }
 
@@ -624,6 +592,8 @@ void GameState::resetGame()
 {
     victory = false;
     lives = LIVES;
+    gameOver = false;
+    gameOverTimer = GAME_OVER_TIME;
     score = 0;
     level = 1;
     fruitCount = 0;
@@ -703,15 +673,19 @@ void GameState::handle(const sf::Event::KeyPressed &key)
         return;
     }
 
-    if (gameOver)
+    if (victory)
     {
         victoryMenu.handle(key);
         return;
     }
 
-    if (victory)
+    if (gameOver)
     {
-        victoryMenu.handle(key);
+        if (key.scancode == sf::Keyboard::Scancode::Enter && gameOverTimer <= 0.f)
+        {
+            stateManager.currentMode = StateManager::MAIN_MENU;
+            stateManager.mainMenuState->getHighscore();
+        }
         return;
     }
 
@@ -752,18 +726,9 @@ void GameState::handle(const sf::Event::KeyPressed &key)
         }
         break;
     }
-    case sf::Keyboard::Scancode::Enter:
-    {
-        if (gameOver)
-        {
-            stateManager.currentMode = StateManager::MAIN_MENU;
-            stateManager.mainMenuState->getHighscore();
-        }
-        break;
-    }
     default:
         return;
     }
 
-    pacman.setRotation(newDirection);
+    pacman.setNextDirection(newDirection);
 }

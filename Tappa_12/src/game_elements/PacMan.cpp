@@ -1,6 +1,7 @@
 #include "../../includes/game_elements/PacMan.hpp"
 #include "../../includes/game_elements/GameState.hpp"
 #include "../../includes/lib/textures.hpp"
+#include "../../includes/lib/TileFactory.hpp"
 #include <iostream>
 
 PacMan::PacMan(GameState &gameState) : map(nullptr), gameState(gameState)
@@ -53,7 +54,7 @@ void PacMan::setPosition(int x, int y)
     fPosition = {0.f, 0.f};
 }
 
-void PacMan::setRotation(Direction dir)
+void PacMan::setNextDirection(Direction dir)
 {
     nextDirection = dir;
 }
@@ -102,7 +103,7 @@ void PacMan::updateDirection()
         {
             direction = nextDirection;
             fPosition = {0.f, 0.f};
-            nextDirection = NONE;
+            setNextDirection(NONE);
         }
     }
 }
@@ -199,7 +200,7 @@ int PacMan::getDotEaten()
 void PacMan::respawn()
 {
     setPosition(spawn.x, spawn.y);
-    setRotation(NONE);
+    setNextDirection(NONE);
     direction = LEFT;
     powerPellet = false;
     powerPelletDuration = POWER_PELLET_DURATION;
