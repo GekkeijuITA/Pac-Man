@@ -12,10 +12,15 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main 
-    src/main.cpp
-    src/PacMan.cpp
+message(STATUS "Include directory: ${CMAKE_SOURCE_DIR}/includes")
+
+add_executable(
+    Tappa1 
+    Tappa_1/src/main.cpp
 )
 
-target_compile_features(main PRIVATE cxx_std_17)
-target_link_libraries(main PRIVATE SFML::Graphics)
+target_include_directories(Tappa1 PRIVATE
+    "${CMAKE_SOURCE_DIR}/includes"
+)
+
+target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
