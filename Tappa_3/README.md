@@ -1,8 +1,17 @@
-# Tappa n.3
-L'obiettivo in questa tappa è stato quello di implementare Pac-Man con il movimento tipico (compreso il "buffer" per la prossima direzione), la collisione con le pareti e il teletrasporto da un lato all'altro della mappa. E l'illusione che Pac-Man mangi i pallini.
+## Tappa n.3: Pac-Man Prende Vita: Movimento e Interazioni
 
-L'ostacolo principale è stato quello di implementare la funzione del movimento per avere un movimento fluido in linea con la griglia e anche il cambio di direzione appena possibile usando il "buffer".
+In questa tappa, l'obiettivo principale è stato dare vita a **Pac-Man**. Ho implementato il suo movimento caratteristico, includendo il fondamentale "buffer" per la prossima direzione. Ho gestito le **collisioni con le pareti** e il **teletrasporto** da un lato all'altro della mappa (l'effetto Pac-Man). Inoltre, ho curato l'illusione che Pac-Man stia effettivamente "mangiando" i pallini. Rispetto alla tappa precedente, ho aggiunto anche la funzione `handle()` per gestire tutti gli eventi legati al movimento di Pac-Man.
 
-Per implementare il movimento fluido uso due vettori: uno di interi e uno di float. Il primo è il movimento che Pac-Man compie nella matrice e il secondo serve per rendere fluida l'animazione di movimento. Per il cambio di direzione appena possibile, uso una variabile di tipo Direction che contiene la direzione in cui Pac-Man deve andare appena il blocco in quella direzione è libero, per fare ciò ho usato una funzione che controlla se il blocco in questione non è un muro e se il Pac-Man è allineato al centro della tile (con un margine di tolleranza). Questo è possibile perchè il vettore di float contiene valori da -1 a 1 circa.
+---
 
-![demo](images/demo.png)
+### La Sfida: Movimento Fluido e Cambio Direzione Preciso
+
+L'ostacolo maggiore che ho affrontato è stata l'implementazione del movimento per ottenere sia una **fluidità in linea con la griglia** sia la possibilità di **cambiare direzione non appena possibile**, grazie al "buffer".
+
+Per il **movimento fluido**, uso due vettori: uno di interi per tracciare la posizione di Pac-Man nella matrice del gioco, e uno di `float` che mi serve per rendere l'animazione di movimento davvero scorrevole.
+
+Per quanto riguarda il **cambio di direzione "al volo"**, ho introdotto una variabile di tipo `Direction`. Questa variabile contiene la direzione desiderata in cui Pac-Man deve muoversi non appena il blocco in quella direzione si libera. Per realizzare ciò, ho creato una funzione che controlla due cose fondamentali: primo, che il blocco di destinazione non sia un muro; secondo, che Pac-Man sia sufficientemente allineato al centro della tile (con un piccolo margine di tolleranza). Quest'ultima parte è possibile proprio grazie al vettore di `float`, i cui valori oscillano tra -1 e 1 circa, permettendomi un controllo preciso sul posizionamento.
+
+---
+
+![Demo del movimento di Pac-Man](images/demo.png)
