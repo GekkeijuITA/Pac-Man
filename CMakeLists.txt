@@ -55,8 +55,24 @@ add_executable(
     Tappa_5/src/ghosts/Pinky.cpp
 )
 
+add_executable(
+    Tappa6 
+
+    Tappa_6/src/main.cpp
+    Tappa_6/src/PacMan.cpp
+    Tappa_6/src/textures.cpp
+    Tappa_6/src/Ghost.cpp
+    Tappa_6/src/State.cpp
+
+    Tappa_6/src/ghosts/Blinky.cpp
+    Tappa_6/src/ghosts/Clyde.cpp
+    Tappa_6/src/ghosts/Inky.cpp
+    Tappa_6/src/ghosts/Pinky.cpp
+)
+
 target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa3 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa4 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa5 PRIVATE SFML::Graphics)
+target_link_libraries(Tappa6 PRIVATE SFML::Graphics)
