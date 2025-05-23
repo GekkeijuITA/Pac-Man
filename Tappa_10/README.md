@@ -8,4 +8,4 @@ In questa fase, ho anche dedicato del tempo ad aggiornare lo sprite-sheet: ho ri
 
 ---
 
-![Demo del gioco con le animazioni](images/demo.png)
+![Demo del gioco con le animazioni](images/demo.gif)
