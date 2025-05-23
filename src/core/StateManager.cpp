@@ -85,20 +85,11 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
     {
         if (sm.mapEditor->currentMode == MapEditor::CREATE)
         {
-            if (key.scancode == sf::Keyboard::Scancode::Escape)
-            {
-                sm.mapEditor->create->optionsMenu = !sm.mapEditor->create->optionsMenu;
-                sm.mapEditor->create->menu.cursorIndex = 0;
-            }
-
             if (sm.mapEditor->create->optionsMenu)
             {
                 sm.mapEditor->create->menu.handle(key);
             }
-            else
-            {
-                sm.mapEditor->create->handle(key);
-            }
+            sm.mapEditor->create->handle(key);
         }
         else
         {

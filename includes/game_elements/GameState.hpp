@@ -49,6 +49,7 @@ struct GameState
     PacMan pacman;
     std::vector<std::vector<char>> map;
     std::string mapPath;
+    std::vector<Ghost *> ghosts;
 
     Blinky blinky;
     Pinky pinky;

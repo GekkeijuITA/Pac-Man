@@ -28,49 +28,96 @@ void ArcadeText::drawChar(float x, float y, sf::Vector2i charPos, sf::RenderWind
 // Disegna la stringa con un fattore di scala e un offset per lo sprite sheet
 void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow &window, float scaleFactor, TextColor color)
 {
+    float offset = 0.f;
     for (size_t i = 0; i < str.length(); i++)
     {
+        offset = i;
         std::string c(1, std::toupper(str[i]));
-        if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
+        if (c == "\n")
+        {
+            y += 1.f;
+            offset = 0.f;
             continue;
-        drawChar(x, y, CHAR_MAP.at(c) + getColor(color), window, scaleFactor, i);
+        }
+        else if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
+        {
+            offset++;
+            continue;
+        }
+        drawChar(x, y, CHAR_MAP.at(c) + getColor(color), window, scaleFactor, offset);
+        offset++;
     }
 }
 
 // Disegna la stringa con un offset per lo sprite sheet
 void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow &window, TextColor color)
 {
+    float offset = 0.f;
     for (size_t i = 0; i < str.length(); i++)
     {
         std::string c(1, std::toupper(str[i]));
-        if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
+        if (c == "\n")
+        {
+            y += 1.f;
+            offset = 0.f;
             continue;
+        }
+        else if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
+        {
+            offset++;
+            continue;
+        }
 
-        drawChar(x, y, CHAR_MAP.at(c) + getColor(color), window, 1.f, i);
+        drawChar(x, y, CHAR_MAP.at(c) + getColor(color), window, 1.f, offset);
+        offset++;
     }
 }
 
 // Disegna la stringa con un fattore di scala
 void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow &window, float scaleFactor)
 {
+    float offset = 0.f;
     for (size_t i = 0; i < str.length(); i++)
     {
+        offset = i;
         std::string c(1, std::toupper(str[i]));
-        if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
+        if (c == "\n")
+        {
+            y += 1.f;
+            offset = 0.f;
             continue;
-        drawChar(x, y, CHAR_MAP.at(c), window, scaleFactor, i);
+        }
+        else if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
+        {
+            offset++;
+            continue;
+        }
+        drawChar(x, y, CHAR_MAP.at(c), window, scaleFactor, offset);
+        offset++;
     }
 }
 
 // Disegna la stringa senza fattore di scala e offset
 void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow &window)
 {
+    float offset = 0.f;
     for (size_t i = 0; i < str.length(); i++)
     {
+        offset = i;
         std::string c(1, std::toupper(str[i]));
-        if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
+        if (c == "\n")
+        {
+            y += 1.f;
+            offset = 0.f;
             continue;
-        drawChar(x, y, CHAR_MAP.at(c), window, 1.f, i);
+        }
+        else if (c == " " || CHAR_MAP.find(c) == CHAR_MAP.end())
+        {
+            offset++;
+            continue;
+        }
+        drawChar(x, y, CHAR_MAP.at(c), window, 1.f, offset);
+        offset++;
     }
 }
 

@@ -141,7 +141,7 @@ void GameState::update(float elapsed)
         {
             pacman.powerPellet = false;
 
-            for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+            for (Ghost *ghost : ghosts)
             {
                 if (ghost->state == Ghost::SCARED)
                 {
@@ -154,7 +154,7 @@ void GameState::update(float elapsed)
 
     collisions(elapsed);
 
-    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    for (Ghost *ghost : ghosts)
     {
         ghost->move(elapsed);
         if (ghost->state == Ghost::EATEN)
@@ -266,7 +266,7 @@ void GameState::bounds()
 {
     checkBounds(pacman.position);
 
-    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    for (Ghost *ghost : ghosts)
     {
         checkBounds(ghost->position);
     }
@@ -349,24 +349,28 @@ bool GameState::getMap()
                 blinky.setPosition(map.size() - 1, i);
                 blinky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
+                ghosts.push_back(&blinky);
             }
             else if (row[i] == PINKY)
             {
                 pinky.setPosition(map.size() - 1, i);
                 pinky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
+                ghosts.push_back(&pinky);
             }
             else if (row[i] == INKY)
             {
                 inky.setPosition(map.size() - 1, i);
                 inky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
+                ghosts.push_back(&inky);
             }
             else if (row[i] == CLYDE)
             {
                 clyde.setPosition(map.size() - 1, i);
                 clyde.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
+                ghosts.push_back(&clyde);
             }
             else if (row[i] == GHOST_DOOR_H)
             {
@@ -415,7 +419,7 @@ bool GameState::getMap()
 
     pacman.setMap(&map);
 
-    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    for (Ghost *ghost : ghosts)
     {
         ghost->setMap(&map);
     }
@@ -450,7 +454,7 @@ void GameState::doGraphics()
         {
             pacman.draw(window);
 
-            for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+            for (Ghost *ghost : ghosts)
             {
                 ghost->draw(window);
 
@@ -582,7 +586,7 @@ void GameState::resetRound()
     map.clear();
     fruitPositions.clear();
     fruits.clear();
-    for (Ghost *ghost : std::initializer_list<Ghost *>{&blinky, &pinky, &inky, &clyde})
+    for (Ghost *ghost : ghosts)
     {
         if (ghost == &blinky)
         {

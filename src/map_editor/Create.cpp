@@ -5,8 +5,9 @@
 #include "../../includes/lib/TileFactory.hpp"
 
 #include <iostream>
+#include <fstream>
 
-Create::Create(sf::RenderWindow &window) : window(window)
+Create::Create(sf::RenderWindow &window, MapEditor &me) : window(window), mapEditor(me)
 {
     if (!gameAsset.loadFromFile(ASSET))
     {
@@ -130,14 +131,23 @@ Create::Create(sf::RenderWindow &window) : window(window)
     options = {
         {"Save", [this]()
          {
-             std::cout << "Saving map..." << std::endl;
+             saveMap();
          }},
         {"Save and Exit", [this]()
          {
-             std::cout << "Exiting..." << std::endl;
-             // Exit logic here
+             saveMap();
+             mapEditor.currentMode = MapEditor::MENU;
+         }},
+        {"Exit without saving", [this]()
+         {
+             mapEditor.currentMode = MapEditor::MENU;
          }}};
     menu = GameMenu(window.getView(), "OPTIONS", sf::Vector2i(1, 1), TextColor::WHITE, options, sf::Vector2i(2, 4));
+}
+
+Create::Create(sf::RenderWindow &window, MapEditor &mapEditor, std::string mapName) : Create(window, mapEditor)
+{
+    this->mapName = mapName;
 }
 
 void Create::doGraphics()
@@ -150,6 +160,10 @@ void Create::doGraphics()
     if (optionsMenu)
     {
         menu.draw(window);
+        if (!errorMessage.empty())
+        {
+            arcadeText.drawString(errorMessage, 1, 12, window, TextColor::RED);
+        }
     }
 }
 
@@ -244,20 +258,7 @@ void Create::doUI()
     }
 
     arcadeText.drawString(selectedTileName, 0, MAP_HEIGHT + 2.3f, window, 0.5f, TextColor::WHITE);
-    std::string prefix = "Map Name '";
-    arcadeText.drawString(prefix + mapName + "'", 0, MAP_HEIGHT + 3.5f, window, TextColor::CYAN);
-
-    if (writingNameMap)
-    {
-        float textX = prefix.length();
-        float textY = (MAP_HEIGHT + 3.5f);
-        float scale = 1.0f;
-
-        sf::RectangleShape cursorLine(sf::Vector2f(TILE_SIZE * scale * 0.15f, TILE_SIZE * scale * 1.2f));
-        cursorLine.setFillColor(sf::Color::Cyan);
-        cursorLine.setPosition({(textX + textCursorPos) * TILE_SIZE, (textY * TILE_SIZE) - TILE_SIZE * 0.1f});
-        window.draw(cursorLine);
-    }
+    drawInputText();
 }
 
 void Create::drawMap()
@@ -289,6 +290,74 @@ bool Create::isCursorOnMap()
 
 void Create::drawInputText()
 {
+    std::string prefix = "Map Name '";
+    arcadeText.drawString(prefix + mapName + "'", 0, MAP_HEIGHT + 3.5f, window, TextColor::CYAN);
+
+    if (writingNameMap)
+    {
+        float textX = prefix.length();
+        float textY = (MAP_HEIGHT + 3.5f);
+        float scale = 1.0f;
+
+        sf::RectangleShape cursorLine(sf::Vector2f(TILE_SIZE * scale * 0.15f, TILE_SIZE * scale * 1.2f));
+        cursorLine.setFillColor(sf::Color::Cyan);
+        cursorLine.setPosition({(textX + textCursorPos) * TILE_SIZE, (textY * TILE_SIZE) - TILE_SIZE * 0.1f});
+        window.draw(cursorLine);
+    }
+}
+
+// https://stackoverflow.com/questions/5252612/replace-space-with-an-underscore
+void Create::saveMap()
+{
+    if (mapName.empty())
+    {
+        errorMessage = "Map name cannot be empty";
+        return;
+    }
+
+    if (maxPacman > 0)
+    {
+        errorMessage = "You must place a pacman";
+        return;
+    }
+
+    if (maxBlinky > 0 && maxPinky > 0 && maxInky > 0 && maxClyde > 0)
+    {
+        errorMessage = "You must place at least\none ghost";
+        return;
+    }
+
+    if (pacdotPlaced == 0)
+    {
+        errorMessage = "You must place at least\none pacdot";
+        return;
+    }
+
+    std::ofstream mapFile;
+    std::string safeMapName = mapName;
+    std::replace(safeMapName.begin(), safeMapName.end(), ' ', '_');
+    if (safeMapName.empty())
+    {
+        errorMessage = "Map name cannot be empty";
+        return;
+    }
+
+    std::string filePath = folderPath + safeMapName + ".txt";
+    mapFile.open(filePath, std::ios::out);
+    if (!mapFile.is_open())
+    {
+        errorMessage = "Error opening file";
+        std::cerr << "Error opening file: " << filePath << std::endl;
+        return;
+    }
+
+    for (size_t i = 0; i < map.size(); i++)
+    {
+        mapFile << std::string(map[i].begin(), map[i].end()) << "\n";
+    }
+
+    errorMessage = "Map saved successfully!";
+    mapFile.close();
 }
 
 void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
@@ -352,6 +421,14 @@ void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
                     selectedTileIndex = -1;
                     lastTileType = EMPTY_BLOCK;
                 }
+                else if (tileType == PACDOT)
+                {
+                    pacdotPlaced++;
+                }
+                else if (tileType == GHOST_DOOR_H || tileType == GHOST_DOOR_V)
+                {
+                    ghostDoorPlaced++;
+                }
             }
             else if (cursorPos.y >= MAP_HEIGHT + 3)
             {
@@ -388,6 +465,14 @@ void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
                 else if (tileType == CLYDE)
                 {
                     maxClyde++;
+                }
+                else if (tileType == PACDOT)
+                {
+                    pacdotPlaced--;
+                }
+                else if (tileType == GHOST_DOOR_H || tileType == GHOST_DOOR_V)
+                {
+                    ghostDoorPlaced--;
                 }
             }
             else
@@ -444,12 +529,7 @@ void Create::handle(const sf::Event::KeyPressed &key)
 
     if (writingNameMap)
     {
-        if (key.scancode == sf::Keyboard::Scancode::Enter)
-        {
-            writingNameMap = false;
-            std::cout << "Map name: " << mapName << std::endl;
-        }
-        else if (key.scancode == sf::Keyboard::Scancode::Escape)
+        if (key.scancode == sf::Keyboard::Scancode::Enter || key.scancode == sf::Keyboard::Scancode::Escape)
         {
             writingNameMap = false;
         }
@@ -462,6 +542,15 @@ void Create::handle(const sf::Event::KeyPressed &key)
         {
             if (textCursorPos < mapName.size())
                 textCursorPos++;
+        }
+    }
+    else
+    {
+        if (key.scancode == sf::Keyboard::Scancode::Escape)
+        {
+            optionsMenu = !optionsMenu;
+            menu.cursorIndex = 0;
+            errorMessage.clear();
         }
     }
 }
@@ -480,7 +569,7 @@ void Create::handle(const sf::Event::TextEntered &textEntered)
         }
         else if (mapName.size() < 16)
         {
-            if (std::isalnum(textEntered.unicode) || textEntered.unicode == '!' || textEntered.unicode == '/' || textEntered.unicode == '-' || textEntered.unicode == ' ')
+            if (std::isalnum(textEntered.unicode) || textEntered.unicode == '!' || textEntered.unicode == '-' || textEntered.unicode == ' ')
             {
                 mapName += static_cast<char>(textEntered.unicode);
                 textCursorPos++;

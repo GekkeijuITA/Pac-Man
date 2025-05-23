@@ -5,7 +5,9 @@ MapEditor::MapEditor(sf::RenderWindow &window, StateManager &sm) : window(window
 {
     options = {
         {"CREATE", [this]()
-         { currentMode = CREATE; }},
+         {
+             currentMode = CREATE;
+         }},
         {"EDIT", [this]()
          { currentMode = EDIT; }},
         {"BACK", [this]()
@@ -17,7 +19,7 @@ MapEditor::MapEditor(sf::RenderWindow &window, StateManager &sm) : window(window
 
     menu = GameMenu(window.getView(), "MAP EDITOR", {4, 1}, TextColor::WHITE, options, {9, 9});
 
-    create = std::make_unique<Create>(window);
+    create = std::make_unique<Create>(window, *this);
 }
 
 void MapEditor::doGraphics()
