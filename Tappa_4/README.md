@@ -1,7 +1,13 @@
-# Tappa n.4
-L'obiettivo in questa tappa è stato quello di implementare un minimo di ui come ad esempio il punteggio, l'high score, il numero di vite rimanenti e i frutti/oggetti raccolti. Inoltre sono state apportate alcune modifiche per prendere la texture di pacman da un foglio di sprite.
+# Tappa n.4: Interfaccia Utente e Ottimizzazioni
 
-Durante l'esecuzione del programma si verificava un leak di memoria dovuto alla matrice che contiene la mappa.
-Per risolvere questo problema ho cambiato mettendo la matrice come una matrice di vettori anzichè una matrice a dimensione fissa.
+In questa tappa, mi sono concentrato sull'implementazione di una **UI essenziale**, rendendo il gioco più completo. Ho aggiunto la visualizzazione del **punteggio**, dell'**high score**, il conteggio delle **vite rimanenti** e l'indicazione dei **frutti/oggetti raccolti**. Ho anche apportato delle modifiche per prendere le texture di Pac-Man direttamente da un **foglio di sprite**.
 
-![demo](images/demo.png)
+## Gestione degli Sprite e Risoluzione del Memory Leak
+
+A tal proposito, ho creato una funzione `createSprite`: prende come input diverse informazioni, inclusa la posizione esatta in coordinate della parte di immagine che interessa estrarre dallo sprite-sheet, e restituisce lo sprite pronto all'uso.
+
+Durante i test, però, ho notato un **leak di memoria** che era causato dalla matrice che contiene la mappa. Per risolvere questo problema, ho cambiato l'implementazione: invece di una matrice a dimensione fissa, ho optato per una **matrice di vettori**.
+
+---
+
+![Demo del gioco con UI](images/demo.png)
