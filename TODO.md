@@ -1,8 +1,8 @@
-- [ ] (Tappa 10) - Nella schermata di GameOver c'è pacman invisibile che continua a muoversi
+- [x] (Tappa 10) - Nella schermata di GameOver c'è pacman invisibile che continua a muoversi
 - [x] (Tappa 10) - Aggiungere una gif per la demo
 - [ ] (Tappa 12) creare la texture del pacdot e del powerpellet 
 - [x] (Tappa 12) fare il salvataggio con il controllo del nome della mappa con messaggio di errore
 - [ ] (Tappa 12) controllare il sistema di input per i vari menu di gioco (in particolare quello di vittoria)
 - [ ] (Tappa 12) controllare i limiti di movimento dei fantasmi (segmentation fault se va oltre i limiti in basso e forse in alto)
 - [ ] (Tappa 12) controllare la velocità dei fantasmi (si velocizzano sempre di più quando muoiono e rinascono)
-- [ ] (Tappa 12) migliorare l'esperienza del nome nell'editor (se clicco su una tile a caso anche del menu non deseleziona la modalità di scrittura)
+- [x] (Tappa 12) migliorare l'esperienza del nome nell'editor (se clicco su una tile a caso anche del menu non deseleziona la modalità di scrittura)
