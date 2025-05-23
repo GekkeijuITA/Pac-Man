@@ -5,6 +5,15 @@
 
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+
+namespace std
+{
+    bool operator==(const sf::Vector2i &a, const sf::Vector2i &b)
+    {
+        return a.x == b.x && a.y == b.y;
+    }
+}
 
 State::State(unsigned w, unsigned h, std::string title) : lives(3),
                                                           score(0),

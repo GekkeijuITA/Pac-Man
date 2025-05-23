@@ -6,6 +6,15 @@
 
 #include <fstream>
 #include <iostream>
+#include <algorithm>
+
+namespace std
+{
+    bool operator==(const sf::Vector2i &a, const sf::Vector2i &b)
+    {
+        return a.x == b.x && a.y == b.y;
+    }
+}
 
 GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &stateManager) : lives(LIVES),
                                                                                                   score(0),
