@@ -277,7 +277,6 @@ void GameState::bounds()
 
     for (Ghost *ghost : ghosts)
     {
-        std::cout << ghost->name << " " << ghost->position.x << " " << ghost->position.y << std::endl;
         checkBounds(ghost->position);
     }
 }
@@ -329,6 +328,7 @@ void GameState::collisions(float elapsed)
 bool GameState::getMap()
 {
     eatableTiles = 0;
+    ghosts.clear();
     std::fstream mapFile;
     mapFile.open(mapPath, std::ios::in);
     if (!mapFile.is_open())
@@ -382,7 +382,7 @@ bool GameState::getMap()
                 map.back()[i] = EMPTY_BLOCK;
                 ghosts.push_back(&clyde);
             }
-            else if (row[i] == GHOST_DOOR_H)
+            else if (row[i] == GHOST_DOOR_H || row[i] == GHOST_DOOR_V)
             {
                 blinky.addExitTile(map.size() - 1, i);
                 pinky.addExitTile(map.size() - 1, i);
@@ -592,10 +592,12 @@ void GameState::resetRound()
     pause = false;
     startGame = true;
     startGameTimer = START_GAME_TIME;
-    pacman.respawn();
     map.clear();
+    getMap();
     fruitPositions.clear();
     fruits.clear();
+
+    pacman.respawn();
     for (Ghost *ghost : ghosts)
     {
         if (ghost == &blinky)
@@ -611,9 +613,8 @@ void GameState::resetRound()
     if (lives < 0 && !gameOver)
     {
         setGameOver();
+        return;
     }
-
-    getMap();
 
     pauseMenu.setCursorPosition(pauseMenu.startOptionsPos.x - 1, pauseMenu.startOptionsPos.y);
     pauseMenu.cursorIndex = 0;
@@ -652,14 +653,14 @@ void GameState::nextLevel()
 {
     saveHighscore();
 
-    if (level == VICTORY_LEVEL)
+    if (level >= VICTORY_LEVEL)
     {
         victory = true;
         return;
     }
 
-    resetRound();
     level++;
+    resetRound();
     getHighscore();
 }
 

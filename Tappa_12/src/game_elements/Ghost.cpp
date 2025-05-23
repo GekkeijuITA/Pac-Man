@@ -246,20 +246,46 @@ void Ghost::findPathBFS(sf::Vector2i destination)
 
 void Ghost::move(float elapsed)
 {
+    if (!map)
+    {
+        std::cerr << "CRITICAL: Null map pointer in Ghost::move()" << std::endl;
+        return;
+    }
+
     if (stoppedForScore)
     {
         return;
     }
 
+    if (this == nullptr)
+    {
+        std::cerr << "CRITICAL: this is NULL" << std::endl;
+        return;
+    }
+
     if (state == EATEN)
     {
-        sprite->setTextureRect(sf::IntRect({GHOST_EYES_TEX_MAP.at(direction).x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
+        auto eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
+        if (eyeTexPos == GHOST_EYES_TEX_MAP.end())
+        {
+            std::cerr << "CRITICAL: Invalid direction for eyes texture: " << static_cast<int>(direction) << std::endl;
+            direction = LEFT;
+            eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
+        }
+        sprite->setTextureRect(sf::IntRect({eyeTexPos->second.x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
     }
     else
     {
-        std::map<Direction, Animation>::iterator it = GHOST_ANIM_MAP.find(direction);
-        if (it != GHOST_ANIM_MAP.end())
+        if (GHOST_ANIM_MAP.find(direction) != GHOST_ANIM_MAP.end())
+        {
+            std::map<Direction, Animation>::iterator it = GHOST_ANIM_MAP.find(direction);
             it->second.update(elapsed);
+        }
+        else
+        {
+            std::cerr << "CRITICAL: Invalid direction for ghost animation: " << static_cast<int>(direction) << std::endl;
+            direction = LEFT;
+        }
     }
 
     if (state == IN_HOUSE)
@@ -490,7 +516,7 @@ void Ghost::getExitTile()
 {
     if (exitTiles.empty())
     {
-        std::cerr << "Nessun tile di uscita disponibile" << std::endl;
+        std::cerr << "Nessuna tile di uscita disponibile" << std::endl;
         return;
     }
 
@@ -509,7 +535,10 @@ void Ghost::getExitTile()
 
 void Ghost::eat(int x, int y)
 {
-    if (position == gameState.pacman.getPosition())
+    if (!map)
+        return;
+
+    if (distance(getPacmanPosition()) < COLLIDE_BOX)
     {
         if (state == SCARED)
         {

@@ -158,6 +158,9 @@ void PacMan::move(float elapsed)
 
 void PacMan::eat(int x, int y)
 {
+    if (!map || x < 0 || x >= map->size() || y < 0 || y >= (*map)[0].size())
+        return;
+
     switch ((*map)[x][y])
     {
     case PACDOT:
