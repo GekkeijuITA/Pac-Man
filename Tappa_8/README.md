@@ -1,4 +1,4 @@
-# Tappa n.8: L'Apparizione dei Frutti
+# Tappa n.8: I Frutti
 
 In questa tappa, l'obiettivo è stato implementare il sistema di **istanziamento dei frutti** all'interno della mappa. Ho fatto in modo che compaiano in una posizione specifica, che ho indicato con il carattere "F" nella configurazione della mappa.
 
