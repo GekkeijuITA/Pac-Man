@@ -3,3 +3,4 @@ Provando a disegnare la finestra principale dell'applicazione, è emerso che per
 Per fare ciò si calcola il ratio della mappa e delle dimensioni della finestra, se il ratio della mappa è maggiore allora useremo il 70% della larghezza della finestra, altrimenti useremo il 70% dell'altezza della finestra. In questo modo la mappa si adatterà alla finestra.
 
 ![image](windows_screen.png)
+![image](mac_screen.png)
