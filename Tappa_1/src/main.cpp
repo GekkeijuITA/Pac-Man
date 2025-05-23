@@ -1,25 +1,13 @@
 #include <SFML/Graphics.hpp>
-#include "lib/textures.hpp"
 #include "lib/global_values.hpp"
 
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <map>
-#include <cmath>
-
-struct TileData
-{
-    sf::Texture texture;
-    sf::Vector2f scale;
-};
 
 struct State
 {
     sf::RenderWindow window;
-    std::map<int, TileData> mapTextures;
-    char map[MAP_WIDTH][MAP_HEIGHT];
-
     State(unsigned w, unsigned h, std::string title);
 };
 
@@ -50,11 +38,6 @@ State::State(unsigned w, unsigned h, std::string title)
         static_cast<int>((h - windowHeight) / 2)
     });
     window.setFramerateLimit(60);
-
-    sf::View view;
-    view.setSize({MAP_WIDTH * TILE_SIZE, (MAP_HEIGHT + 5) * TILE_SIZE});
-    view.setCenter({view.getSize().x / 2.f, view.getSize().y / 2.f});
-    window.setView(view);
 }
 
 ////////////
@@ -80,7 +63,6 @@ int main()
     unsigned int h = desktop.size.y;
 
     State gs(w, h, "Pac-Man");
-    sf::Clock clock;
 
     while (gs.window.isOpen())
     {

@@ -1,7 +1,3 @@
 # Tappa n.1
-## Obiettivo
-L'obiettivo in questa tappa del progetto "Pac-Man" è quello di rendere la finestra di gioco un minimo responsiva.
-## Ostacoli
-
-## Soluzione
-Per rendere possibile l'implementazione della finestra responsiva, è stato necessario usare una vista
+Provando a disegnare la finestra principale dell'applicazione, è emerso che per schermi di dimensione diversa avere dei valori fissi per la larghezza e l'altezza non era una buona idea. Quindi per evitare di dover "hardcodare" i valori di larghezza e altezza, è stato deciso di renderla responsiva.
+Per fare ciò si calcola 
