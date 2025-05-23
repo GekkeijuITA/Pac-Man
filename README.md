@@ -1,4 +1,4 @@
-![pacmanlogo](https://loodibee.com/wp-content/uploads/Pac-Man-Logo.png)
+![pacmanlogo](logo.png)
 
 ## Regole
 - Ogni 10000 punti si guadagna una vita (modificabile a 15000, 20000 o niente)
@@ -29,6 +29,11 @@
 - L'high score viene visualizzato per tutta la partita e si aggiorna subito nel caso in cui si superi
 - Deduco che ci debbano essere più livelli (storicamente 256 però guardando questo video ([link](https://www.youtube.com/watch?v=AuoH0vz3Mqk)) è sempre lo stesso livello ripetuto con lo stesso layout)
 - Ogni fantasma ha un proprio comportamento
+- Il testo del punteggio "incrementa" verso sinistra
+- I fantasmi escono dalla casa secondo quanti pacdot sono stati mangiati:
+    - 0 pacdot = Blinky (rosso) e Pinky (rosa)
+    - 30 pacdot = Inky (azzurro)
+    - 60 pacdot = Clyde (arancione)
 
 ## Link utili
 - Video di gameplay 1: [link](https://www.youtube.com/watch?v=i_OjztdQ8iw)
@@ -36,4 +41,14 @@
 - Wiki: [link](https://pacman.holenet.info/)
 
 ## Roadmap
-- [ ] Sistema layout mappa (mappa di default) con file di testo per ora
+- [x] Sistema layout mappa (mappa di default) con file di testo
+- [x] Aggiungere pac-man con il movimento classico
+- [x] Aggiungere sistema di punteggio
+- [x] Aggiungere frutti
+- [x] Aggiungere fantasmi con movimento classico
+- [x] Aggiungere collisioni con i fantasmi
+- [x] Aggiungere reazione fantasmi al power pellet
+- [x] Aggiungere schermate varie (game over, pausa, ecc.)
+- [x] Aggiungere schermata titolo
+- [x] Aggiungere editor livelli
+- [x] Aggiungere schermata di selezione livello
