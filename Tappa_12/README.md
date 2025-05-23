@@ -15,5 +15,10 @@ Ho anche messo mano a `GameMenu`, che ora è molto più flessibile. Non gestisce
 La novità di questa tappa è l'**editor di mappe**. La sua base operativa è la stessa sia per la creazione che per la modifica. Funziona così: c'è un parametro che viene passato solo quando si sceglie di "modificare" una mappa esistente: il nome della mappa. Se questo nome non viene passato (quindi stiamo "creando"), mi trovo di fronte a una griglia completamente vuota, pronta per essere riempita. Se invece il nome c'è, la mappa corrispondente viene caricata, e posso iniziare a modificarla.
 
 ---
+**Fonti utilizzate in questa Tappa:**
+* [Conversione delle coordinate del mouse](https://www.sfml-dev.org/tutorials/3.0/graphics/view/#coordinates-conversions)
+* [Sostituire gli spazi con underscore in una stringa](https://stackoverflow.com/questions/5252612/replace-space-with-an-underscore)
+
+---
 
 ![Demo dell'editor di mappe](images/demo.png)

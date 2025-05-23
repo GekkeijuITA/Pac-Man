@@ -12,4 +12,11 @@ Infine, per rendere i nomi delle mappe più leggibili, ho creato una funzione `p
 
 ---
 
+**Fonti utilizzate in questa Tappa:**
+
+* [Come rimuovere l'estensione da un nome di file in C++](https://stackoverflow.com/questions/6417817/easy-way-to-remove-extension-from-a-filename)
+* [Sostituire o rimuovere caratteri non corrispondenti a regex in C++](https://stackoverflow.com/questions/28963810/replace-or-remove-characters-that-are-not-in-regex-with-c)
+
+---
+
 ![Demo del selettore di livelli](images/demo.png)
