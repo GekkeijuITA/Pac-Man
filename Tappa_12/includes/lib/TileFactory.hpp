@@ -27,4 +27,5 @@ private:
 public:
     std::optional<TileData> getTile(char type);
     static TileFactory &getIstance();
+    void cleanUp();
 };

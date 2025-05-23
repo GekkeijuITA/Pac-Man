@@ -26,5 +26,7 @@ int main()
         sm.window.display();
     }
 
+    TileFactory::getIstance().cleanUp();
+
     return 0;
 }

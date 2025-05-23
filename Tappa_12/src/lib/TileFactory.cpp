@@ -88,3 +88,9 @@ TileFactory &TileFactory::getIstance()
     static TileFactory instance;
     return instance;
 }
+
+void TileFactory::cleanUp()
+{
+    tiles.clear();
+    textures.clear();
+}
