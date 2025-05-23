@@ -19,18 +19,17 @@ add_executable(
     Tappa_1/src/main.cpp
 )
 
-add_executable(
-    Tappa2 
-    Tappa_2/src/main.cpp
-)
-
-target_include_directories(Tappa1 PRIVATE
-    "${CMAKE_SOURCE_DIR}/includes"
-)
-
-target_include_directories(Tappa2 PRIVATE
-    "${CMAKE_SOURCE_DIR}/includes"
-)
+#add_executable(
+#    Tappa2 
+#    Tappa_2/src/main.cpp
+#)
+#
+#add_executable(
+#    Tappa3 
+#    Tappa_3/src/main.cpp
+#    Tappa_3/src/PacMan.cpp
+#)
 
 target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
-target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
+#target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
+#target_link_libraries(Tappa3 PRIVATE SFML::Graphics)

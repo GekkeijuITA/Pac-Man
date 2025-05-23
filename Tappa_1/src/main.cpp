@@ -1,5 +1,5 @@
 #include <SFML/Graphics.hpp>
-#include "lib/global_values.hpp"
+#include "../includes/global_values.hpp"
 
 #include <iostream>
 #include <string>
