@@ -1,6 +1,13 @@
-# Tappa n.2
-In questa tappa ci si è concentrati sulla creazione di un sistema di disegno per la mappa del gioco, che permette di visualizzare il mondo di gioco e le sue caratteristiche. Il sistema di mappa è stato progettato per essere modulare e facilmente estendibile, in modo da poter aggiungere nuove funzionalità in futuro.
+# Tappa n.2: Il Sistema di Disegno della Mappa
 
-In questa tappa è stato riscontrato un problema con la visualizzazione della mappa: usciva dal campo visivo del giocatore. Per risolvere questo problema, è stata usata una vista che "comprime" la mappa nell'area visibile al giocatore.
+In questa tappa, mi sono concentrato sulla creazione del **sistema di disegno per la mappa** del gioco. L'obiettivo era permettere di visualizzare il mondo di gioco e tutte le sue caratteristiche in modo chiaro. Ho progettato questo sistema per essere il più **modulare e facilmente estendibile** possibile, pensando già a tutte le funzionalità che avremmo potuto aggiungere in futuro.
 
-![map-system](images/map-system.png)
+### La Sfida della Visualizzazione e la Soluzione
+
+Durante lo sviluppo, ho incontrato un problema con la visualizzazione della mappa: **usciva dal campo visivo del giocatore**.
+
+Per risolvere questo problema, ho utilizzato una **vista** che ha il compito di "comprimere" la mappa, facendola rientrare perfettamente nell'area visibile al giocatore.
+
+---
+
+![Sistema Mappa in azione](images/map-system.png)
