@@ -21,13 +21,11 @@ State::State(unsigned w, unsigned h, std::string title)
 
     if (mapRatio > screenRatio)
     {
-        // mappa più larga dello schermo
         windowWidth = w * scaleFactor;
         windowHeight = windowWidth / mapRatio;
     }
     else
     {
-        // mappa più alta dello schermo
         windowHeight = h * scaleFactor;
         windowWidth = windowHeight * mapRatio;
     }
