@@ -5,3 +5,4 @@
 - [ ] (Tappa 12) controllare il sistema di input per i vari menu di gioco (in particolare quello di vittoria)
 - [ ] (Tappa 12) controllare i limiti di movimento dei fantasmi (segmentation fault se va oltre i limiti in basso e forse in alto)
 - [ ] (Tappa 12) controllare la velocità dei fantasmi (si velocizzano sempre di più quando muoiono e rinascono)
+- [ ] (Tappa 12) migliorare l'esperienza del nome nell'editor (se clicco su una tile a caso anche del menu non deseleziona la modalità di scrittura)
