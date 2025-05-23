@@ -438,16 +438,24 @@ void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
     {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
         {
-            if (isCursorOnMap() && selectedTileIndex != -1 && !writingNameMap)
+            if (isCursorOnMap())
             {
-                drawTile();
+                if (!writingNameMap && selectedTileIndex != -1)
+                {
+                    drawTile();
+                }
+                else
+                {
+                    writingNameMap = false;
+                }
             }
             else if (cursorPos.y >= MAP_HEIGHT + 3)
             {
                 writingNameMap = true;
             }
-            else if (hoveredTileIndex != -1 && !writingNameMap)
+            else if (hoveredTileIndex != -1)
             {
+                writingNameMap = false;
                 lastTileType = EMPTY_BLOCK;
                 selectedTileIndex = hoveredTileIndex;
             }
@@ -555,7 +563,7 @@ void Create::handle(const sf::Event::TextEntered &textEntered)
         {
             if (std::isalnum(textEntered.unicode) || textEntered.unicode == '!' || textEntered.unicode == '-' || textEntered.unicode == ' ')
             {
-                mapName += static_cast<char>(textEntered.unicode);
+                mapName.insert(textCursorPos, 1, static_cast<char>(textEntered.unicode));
                 textCursorPos++;
             }
         }
