@@ -85,6 +85,31 @@ add_executable(
     Tappa_7/src/ghosts/Pinky.cpp
 )
 
+add_executable(
+    Tappa8 
+
+    Tappa_8/src/main.cpp
+    Tappa_8/src/PacMan.cpp
+    Tappa_8/src/textures.cpp
+    Tappa_8/src/Ghost.cpp
+    Tappa_8/src/State.cpp
+    Tappa_8/src/Fruit.cpp
+
+    Tappa_8/src/ghosts/Blinky.cpp
+    Tappa_8/src/ghosts/Clyde.cpp
+    Tappa_8/src/ghosts/Inky.cpp
+    Tappa_8/src/ghosts/Pinky.cpp
+  
+    Tappa_8/src/fruits/Cherry.cpp
+    Tappa_8/src/fruits/Strawberry.cpp
+    Tappa_8/src/fruits/Orange.cpp
+    Tappa_8/src/fruits/Apple.cpp
+    Tappa_8/src/fruits/Grape.cpp
+    Tappa_8/src/fruits/Galaxian.cpp
+    Tappa_8/src/fruits/Key.cpp
+    Tappa_8/src/fruits/Bell.cpp
+)
+
 target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa3 PRIVATE SFML::Graphics)
@@ -92,3 +117,4 @@ target_link_libraries(Tappa4 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa5 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa6 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa7 PRIVATE SFML::Graphics)
+target_link_libraries(Tappa8 PRIVATE SFML::Graphics)
