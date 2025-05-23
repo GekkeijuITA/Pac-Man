@@ -6,69 +6,7 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
     {
     case StateManager::NORMAL_GAME:
     {
-        if (gs.pause)
-        {
-            gs.pauseMenu.handle(key);
-            return;
-        }
-
-        if (gs.gameOver)
-        {
-            gs.victoryMenu.handle(key);
-            return;
-        }
-
-        Direction newDirection = gs.pacman.direction;
-
-        switch (key.scancode)
-        {
-        case sf::Keyboard::Scancode::Up:
-        {
-            if (!gs.pause)
-                newDirection = UP;
-            break;
-        }
-        case sf::Keyboard::Scancode::Down:
-        {
-            if (!gs.pause)
-                newDirection = DOWN;
-            break;
-        }
-        case sf::Keyboard::Scancode::Left:
-        {
-            if (!gs.pause)
-                newDirection = LEFT;
-            break;
-        }
-        case sf::Keyboard::Scancode::Right:
-        {
-            if (!gs.pause)
-                newDirection = RIGHT;
-            break;
-        }
-        case sf::Keyboard::Scancode::Escape:
-        {
-            if (!gs.gameOver)
-            {
-                gs.pause = !gs.pause;
-                gs.pauseMenu.cursorIndex = 0;
-            }
-            break;
-        }
-        case sf::Keyboard::Scancode::Enter:
-        {
-            if (gs.gameOver)
-            {
-                sm.currentMode = StateManager::MAIN_MENU;
-                sm.mainMenuState->getHighscore();
-            }
-            break;
-        }
-        default:
-            return;
-        }
-
-        gs.pacman.setRotation(newDirection);
+        gs.handle(key);
         break;
     }
     case StateManager::MAIN_MENU:

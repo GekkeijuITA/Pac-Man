@@ -277,6 +277,7 @@ void GameState::bounds()
 
     for (Ghost *ghost : ghosts)
     {
+        std::cout << ghost->name << " " << ghost->position.x << " " << ghost->position.y << std::endl;
         checkBounds(ghost->position);
     }
 }
@@ -607,7 +608,7 @@ void GameState::resetRound()
         }
     }
 
-    if (lives <= 0 && !gameOver)
+    if (lives < 0 && !gameOver)
     {
         setGameOver();
     }
@@ -691,4 +692,77 @@ void GameState::getHighscore()
     std::getline(highscoreFile, highscoreString);
     highscore = highscoreString.empty() ? 0 : std::stoi(highscoreString);
     highscoreFile.close();
+}
+
+void GameState::handle(const sf::Event::KeyPressed &key)
+{
+    if (pause)
+    {
+        pauseMenu.handle(key);
+        return;
+    }
+
+    if (gameOver)
+    {
+        victoryMenu.handle(key);
+        return;
+    }
+
+    if (victory)
+    {
+        victoryMenu.handle(key);
+        return;
+    }
+
+    Direction newDirection = pacman.direction;
+
+    switch (key.scancode)
+    {
+    case sf::Keyboard::Scancode::Up:
+    {
+        if (!pause)
+            newDirection = UP;
+        break;
+    }
+    case sf::Keyboard::Scancode::Down:
+    {
+        if (!pause)
+            newDirection = DOWN;
+        break;
+    }
+    case sf::Keyboard::Scancode::Left:
+    {
+        if (!pause)
+            newDirection = LEFT;
+        break;
+    }
+    case sf::Keyboard::Scancode::Right:
+    {
+        if (!pause)
+            newDirection = RIGHT;
+        break;
+    }
+    case sf::Keyboard::Scancode::Escape:
+    {
+        if (!gameOver)
+        {
+            pause = !pause;
+            pauseMenu.cursorIndex = 0;
+        }
+        break;
+    }
+    case sf::Keyboard::Scancode::Enter:
+    {
+        if (gameOver)
+        {
+            stateManager.currentMode = StateManager::MAIN_MENU;
+            stateManager.mainMenuState->getHighscore();
+        }
+        break;
+    }
+    default:
+        return;
+    }
+
+    pacman.setRotation(newDirection);
 }

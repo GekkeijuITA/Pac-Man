@@ -29,7 +29,7 @@
 #define GAME_OVER_TIME 3.f
 #define START_GAME_TIME 3.f
 #define LIVES 3
-#define VICTORY_LEVEL 3
+#define VICTORY_LEVEL 1
 
 struct StateManager;
 
@@ -89,4 +89,5 @@ struct GameState
     void nextLevel();
     void saveHighscore();
     void getHighscore();
+    void handle(const sf::Event::KeyPressed &key);
 };

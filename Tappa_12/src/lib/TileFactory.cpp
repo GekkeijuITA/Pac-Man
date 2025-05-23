@@ -60,7 +60,7 @@ void TileFactory::loadAll()
     loadTile(GHOST_DOOR_H, GHOST_DOOR_TEX_H);
     loadTile(GHOST_DOOR_V, GHOST_DOOR_TEX_H, 90);
     loadTile(PACDOT, PACDOT_TEX);
-    loadTile(POWERPELLET, PACDOT_TEX);
+    loadTile(POWERPELLET, POWERPELLET_TEX);
     loadTile(PACMAN, ASSET, sf::Vector2i(1, 1), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
     loadTile(FRUIT, ASSET, sf::Vector2i(2, 3), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
     loadTile(BLINKY, ASSET, sf::Vector2i(2, 4), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));

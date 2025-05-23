@@ -6,6 +6,7 @@
 inline const std::string STRAIGHT_LINE_H = "../Tappa_12/resources/tiles/straight-tile-h.jpg";
 inline const std::string ANGLE_0 = "../Tappa_12/resources/tiles/corner-tile-0.jpg";
 inline const std::string PACDOT_TEX = "../Tappa_12/resources/tiles/pacdot.png";
+inline const std::string POWERPELLET_TEX = "../Tappa_12/resources/tiles/powerpellet.png";
 inline const std::string GHOST_DOOR_TEX_H = "../Tappa_12/resources/tiles/ghostdoor.png";
 inline const std::string ASSET = "../Tappa_12/resources/asset.png";
 inline const std::string TEXT = "../Tappa_12/resources/ui/text.png";

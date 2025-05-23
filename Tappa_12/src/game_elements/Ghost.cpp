@@ -94,49 +94,12 @@ void Ghost::draw(sf::RenderWindow &window)
         return;
     }
 
-    /*sf::Vector2i texPos;
-    if (state == EATEN)
-    {
-        texPos = GHOST_EYES_TEX_MAP.at(direction);
-    }
-    else if (state == SCARED)
-    {
-        texPos = GHOST_SCARED;
-    }
-    else
-    {
-
-    }*/
-
     float y = static_cast<float>((fPosition.x + position.x + 3.5f) * TILE_SIZE);
     float x = static_cast<float>((fPosition.y + position.y + 0.5f) * TILE_SIZE);
 
     sprite->setPosition({x, y});
 
     window.draw(*sprite);
-
-    /*sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
-    rect.setFillColor(sf::Color::Transparent);
-    rect.setOutlineThickness(1);
-    // Disegna la BFS
-    for (const auto &p : path)
-    {
-        float y_l = static_cast<float>((p.x + 3) * TILE_SIZE);
-        float x_l = static_cast<float>(p.y * TILE_SIZE);
-        if (name == "Blinky")
-            rect.setOutlineColor(sf::Color::Red);
-        else if (name == "Pinky")
-            rect.setOutlineColor(sf::Color::Magenta);
-        else if (name == "Inky")
-            rect.setOutlineColor(sf::Color::Cyan);
-        else if (name == "Clyde")
-            rect.setOutlineColor(sf::Color(255, 165, 0)); // Orange
-        else
-            rect.setOutlineColor(sf::Color::White);
-
-        rect.setPosition({x_l, y_l});
-        window.draw(rect);
-    }*/
 }
 
 void Ghost::setPosition(int x, int y)
@@ -161,6 +124,9 @@ void Ghost::setDirection(Direction dir)
 bool Ghost::isWall(int x, int y)
 {
     if (!map)
+        return false;
+
+    if (x < 0 || x >= map->size() || y < 0 || y >= (*map)[0].size())
         return false;
 
     if (state == NORMAL && (*map)[x][y] == GHOST_DOOR_H)
@@ -384,6 +350,8 @@ void Ghost::move(float elapsed)
             break;
         case RIGHT:
             canMove = !isWall(position.x, position.y + 1);
+            break;
+        default:
             break;
         }
 
