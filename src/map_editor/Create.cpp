@@ -440,67 +440,7 @@ void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
         {
             if (isCursorOnMap() && selectedTileIndex != -1 && !writingNameMap)
             {
-                char tileType;
-                if (lastTileType != EMPTY_BLOCK)
-                {
-                    tileType = lastTileType;
-                }
-                else
-                {
-                    tileType = tileDisplayOrder[selectedTileIndex];
-                }
-
-                if (tileType == PACMAN && maxPacman <= 0)
-                    return;
-                if (tileType == BLINKY && maxBlinky <= 0)
-                    return;
-                if (tileType == PINKY && maxPinky <= 0)
-                    return;
-                if (tileType == INKY && maxInky <= 0)
-                    return;
-                if (tileType == CLYDE && maxClyde <= 0)
-                    return;
-
-                map[cursorPos.y][cursorPos.x] = tileType;
-
-                if (tileType == PACMAN)
-                {
-                    maxPacman--;
-                    selectedTileIndex = -1;
-                    lastTileType = EMPTY_BLOCK;
-                }
-                else if (tileType == BLINKY)
-                {
-                    maxBlinky--;
-                    selectedTileIndex = -1;
-                    lastTileType = EMPTY_BLOCK;
-                }
-                else if (tileType == PINKY)
-                {
-                    maxPinky--;
-                    selectedTileIndex = -1;
-                    lastTileType = EMPTY_BLOCK;
-                }
-                else if (tileType == INKY)
-                {
-                    maxInky--;
-                    selectedTileIndex = -1;
-                    lastTileType = EMPTY_BLOCK;
-                }
-                else if (tileType == CLYDE)
-                {
-                    maxClyde--;
-                    selectedTileIndex = -1;
-                    lastTileType = EMPTY_BLOCK;
-                }
-                else if (tileType == PACDOT)
-                {
-                    pacdotPlaced++;
-                }
-                else if (tileType == GHOST_DOOR_H || tileType == GHOST_DOOR_V)
-                {
-                    ghostDoorPlaced++;
-                }
+                drawTile();
             }
             else if (cursorPos.y >= MAP_HEIGHT + 3)
             {
@@ -516,36 +456,7 @@ void Create::handle(const sf::Event::MouseButtonPressed &mouseButton)
         {
             if (isCursorOnMap())
             {
-                char tileType = map[cursorPos.y][cursorPos.x];
-                map[cursorPos.y][cursorPos.x] = EMPTY_BLOCK;
-                if (tileType == PACMAN)
-                {
-                    maxPacman++;
-                }
-                else if (tileType == BLINKY)
-                {
-                    maxBlinky++;
-                }
-                else if (tileType == PINKY)
-                {
-                    maxPinky++;
-                }
-                else if (tileType == INKY)
-                {
-                    maxInky++;
-                }
-                else if (tileType == CLYDE)
-                {
-                    maxClyde++;
-                }
-                else if (tileType == PACDOT)
-                {
-                    pacdotPlaced--;
-                }
-                else if (tileType == GHOST_DOOR_H || tileType == GHOST_DOOR_V)
-                {
-                    ghostDoorPlaced--;
-                }
+                deleteTile();
             }
             else
             {
@@ -648,5 +559,127 @@ void Create::handle(const sf::Event::TextEntered &textEntered)
                 textCursorPos++;
             }
         }
+    }
+}
+
+// https://en.sfml-dev.org/forums/index.php?topic=13412.0
+void Create::handle(const sf::Event::MouseMoved &mouseMoved)
+{
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+    setCursorPos(static_cast<int>(worldPos.x / TILE_SIZE), static_cast<int>(worldPos.y / TILE_SIZE));
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+    {
+        if (isCursorOnMap() && selectedTileIndex != -1 && !writingNameMap)
+        {
+            drawTile();
+        }
+    }
+    else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+    {
+        if (isCursorOnMap())
+        {
+            deleteTile();
+        }
+    }
+}
+
+void Create::drawTile()
+{
+    char tileType;
+    if (lastTileType != EMPTY_BLOCK)
+    {
+        tileType = lastTileType;
+    }
+    else
+    {
+        tileType = tileDisplayOrder[selectedTileIndex];
+    }
+
+    if (tileType == PACMAN && maxPacman <= 0)
+        return;
+    if (tileType == BLINKY && maxBlinky <= 0)
+        return;
+    if (tileType == PINKY && maxPinky <= 0)
+        return;
+    if (tileType == INKY && maxInky <= 0)
+        return;
+    if (tileType == CLYDE && maxClyde <= 0)
+        return;
+
+    map[cursorPos.y][cursorPos.x] = tileType;
+
+    if (tileType == PACMAN)
+    {
+        maxPacman--;
+        selectedTileIndex = -1;
+        lastTileType = EMPTY_BLOCK;
+    }
+    else if (tileType == BLINKY)
+    {
+        maxBlinky--;
+        selectedTileIndex = -1;
+        lastTileType = EMPTY_BLOCK;
+    }
+    else if (tileType == PINKY)
+    {
+        maxPinky--;
+        selectedTileIndex = -1;
+        lastTileType = EMPTY_BLOCK;
+    }
+    else if (tileType == INKY)
+    {
+        maxInky--;
+        selectedTileIndex = -1;
+        lastTileType = EMPTY_BLOCK;
+    }
+    else if (tileType == CLYDE)
+    {
+        maxClyde--;
+        selectedTileIndex = -1;
+        lastTileType = EMPTY_BLOCK;
+    }
+    else if (tileType == PACDOT)
+    {
+        pacdotPlaced++;
+    }
+    else if (tileType == GHOST_DOOR_H || tileType == GHOST_DOOR_V)
+    {
+        ghostDoorPlaced++;
+    }
+}
+
+void Create::deleteTile()
+{
+    char tileType = map[cursorPos.y][cursorPos.x];
+    map[cursorPos.y][cursorPos.x] = EMPTY_BLOCK;
+    if (tileType == PACMAN)
+    {
+        maxPacman++;
+    }
+    else if (tileType == BLINKY)
+    {
+        maxBlinky++;
+    }
+    else if (tileType == PINKY)
+    {
+        maxPinky++;
+    }
+    else if (tileType == INKY)
+    {
+        maxInky++;
+    }
+    else if (tileType == CLYDE)
+    {
+        maxClyde++;
+    }
+    else if (tileType == PACDOT)
+    {
+        pacdotPlaced--;
+    }
+    else if (tileType == GHOST_DOOR_H || tileType == GHOST_DOOR_V)
+    {
+        ghostDoorPlaced--;
     }
 }

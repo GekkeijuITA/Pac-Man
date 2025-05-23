@@ -109,9 +109,7 @@ void handle(const sf::Event::MouseMoved &mouseMoved, MapEditor &me)
 {
     if (me.currentMode == me.CREATE && !me.create->optionsMenu)
     {
-        sf::Vector2i mousePos = sf::Mouse::getPosition(me.window);
-        sf::Vector2f worldPos = me.window.mapPixelToCoords(mousePos);
-        me.create->setCursorPos(static_cast<int>(worldPos.x / TILE_SIZE), static_cast<int>(worldPos.y / TILE_SIZE));
+        me.create->handle(mouseMoved);
     }
 }
 

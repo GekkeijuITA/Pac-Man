@@ -10,7 +10,7 @@ MainMenuState::MainMenuState(sf::RenderWindow &window, StateManager &sm, MapEdit
     options = {{"PLAY", [this]()
                 { stateManager.currentMode = StateManager::LEVEL_SELECTOR; stateManager.levelSelectorState->loadMaps(); }},
                {"MAP EDITOR", [this]()
-                { stateManager.currentMode = StateManager::MAP_EDITOR; mapEditor.levelSelectorState->loadMaps(); }},
+                { stateManager.currentMode = StateManager::MAP_EDITOR; }},
                {"QUIT", [this]()
                 { stateManager.window.close(); }}};
     menu = GameMenu(window.getView(), "PAC-MAN", sf::Vector2i(3, 4), TextColor::YELLOW, 3.f, options, sf::Vector2i(11, 9));

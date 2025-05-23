@@ -9,7 +9,7 @@ MapEditor::MapEditor(sf::RenderWindow &window, StateManager &sm) : window(window
              currentMode = CREATE;
          }},
         {"EDIT", [this]()
-         { currentMode = EDIT; }},
+         { currentMode = EDIT; levelSelectorState->loadMaps(); }},
         {"BACK", [this]()
          {
              stateManager.currentMode = StateManager::MAIN_MENU;

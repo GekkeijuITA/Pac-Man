@@ -49,6 +49,7 @@ public:
     void handle(const sf::Event::MouseButtonPressed &mouseButton);
     void handle(const sf::Event::KeyPressed &key);
     void handle(const sf::Event::TextEntered &textEntered);
+    void handle(const sf::Event::MouseMoved &mouseMoved);
 
 private:
     void drawCursor();
@@ -57,4 +58,6 @@ private:
     void drawInputText();
     void saveMap();
     void loadMap();
+    void drawTile();
+    void deleteTile();
 };
