@@ -6,8 +6,10 @@
 #include "../GameMenu.hpp"
 #include "../core/StateManager.hpp"
 #include "Create.hpp"
+#include "../LevelSelectorState.hpp"
 
 struct StateManager;
+struct LevelSelectorState;
 
 struct Create;
 
@@ -30,9 +32,11 @@ struct MapEditor
     int cursorIndex = 0;
 
     std::unique_ptr<Create> create;
+    std::unique_ptr<LevelSelectorState> levelSelectorState;
 
     MapEditor(sf::RenderWindow &window, StateManager &sm);
 
 public:
     void doGraphics();
+    void initEditor(std::string mapName);
 };

@@ -18,7 +18,7 @@ MapEditor::MapEditor(sf::RenderWindow &window, StateManager &sm) : window(window
          }}};
 
     menu = GameMenu(window.getView(), "MAP EDITOR", {4, 1}, TextColor::WHITE, options, {9, 9});
-
+    levelSelectorState = std::make_unique<LevelSelectorState>(window, stateManager, *this);
     create = std::make_unique<Create>(window, *this);
 }
 
@@ -38,7 +38,7 @@ void MapEditor::doGraphics()
     }
     case EDIT:
     {
-        std::cout << "EDIT MODE" << std::endl;
+        levelSelectorState->draw();
         break;
     }
     default:
@@ -47,5 +47,10 @@ void MapEditor::doGraphics()
         break;
     }
     }
-    // Debug::drawGrid(window);
+}
+
+void MapEditor::initEditor(std::string mapName)
+{
+    currentMode = CREATE;
+    create = std::make_unique<Create>(window, *this, mapName);
 }

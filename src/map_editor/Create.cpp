@@ -136,7 +136,10 @@ Create::Create(sf::RenderWindow &window, MapEditor &me) : window(window), mapEdi
         {"Save and Exit", [this]()
          {
              saveMap();
-             mapEditor.currentMode = MapEditor::MENU;
+             if (errorMessage.empty())
+             {
+                 mapEditor.currentMode = MapEditor::MENU;
+             }
          }},
         {"Exit without saving", [this]()
          {
@@ -148,14 +151,15 @@ Create::Create(sf::RenderWindow &window, MapEditor &me) : window(window), mapEdi
 Create::Create(sf::RenderWindow &window, MapEditor &mapEditor, std::string mapName) : Create(window, mapEditor)
 {
     this->mapName = mapName;
+    loadMap();
 }
 
 void Create::doGraphics()
 {
-    Debug::drawGrid(window);
-    drawCursor();
-    doUI();
     drawMap();
+    Debug::drawGrid(window);
+    doUI();
+    drawCursor();
 
     if (optionsMenu)
     {
@@ -163,6 +167,10 @@ void Create::doGraphics()
         if (!errorMessage.empty())
         {
             arcadeText.drawString(errorMessage, 1, 12, window, TextColor::RED);
+        }
+        else if (!successMessage.empty())
+        {
+            arcadeText.drawString(successMessage, 1, 12, window, TextColor::CYAN);
         }
     }
 }
@@ -312,24 +320,28 @@ void Create::saveMap()
     if (mapName.empty())
     {
         errorMessage = "Map name cannot be empty";
+        successMessage.clear();
         return;
     }
 
     if (maxPacman > 0)
     {
         errorMessage = "You must place a pacman";
+        successMessage.clear();
         return;
     }
 
     if (maxBlinky > 0 && maxPinky > 0 && maxInky > 0 && maxClyde > 0)
     {
         errorMessage = "You must place at least\none ghost";
+        successMessage.clear();
         return;
     }
 
     if (pacdotPlaced == 0)
     {
         errorMessage = "You must place at least\none pacdot";
+        successMessage.clear();
         return;
     }
 
@@ -339,11 +351,34 @@ void Create::saveMap()
     if (safeMapName.empty())
     {
         errorMessage = "Map name cannot be empty";
+        successMessage.clear();
         return;
     }
 
     std::string filePath = folderPath + safeMapName + ".txt";
     mapFile.open(filePath, std::ios::out);
+    if (!mapFile.is_open())
+    {
+        errorMessage = "Error opening file";
+        successMessage.clear();
+        return;
+    }
+
+    for (size_t i = 0; i < map.size(); i++)
+    {
+        mapFile << std::string(map[i].begin(), map[i].end()) << "\n";
+    }
+
+    errorMessage.clear();
+    successMessage = "Map saved successfully";
+    mapFile.close();
+}
+
+void Create::loadMap()
+{
+    std::ifstream mapFile;
+    std::string filePath = folderPath + mapName + ".txt";
+    mapFile.open(filePath, std::ios::in);
     if (!mapFile.is_open())
     {
         errorMessage = "Error opening file";
@@ -353,10 +388,47 @@ void Create::saveMap()
 
     for (size_t i = 0; i < map.size(); i++)
     {
-        mapFile << std::string(map[i].begin(), map[i].end()) << "\n";
+        std::string line;
+        std::getline(mapFile, line);
+        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+        if (line.length() != MAP_WIDTH)
+        {
+            errorMessage = "Invalid map format";
+            std::cerr << "Invalid map format on line (" << i + 1 << ") " << line.length() << " != " << MAP_WIDTH << std::endl;
+            return;
+        }
+        for (size_t j = 0; j < line.length(); j++)
+        {
+            switch (line[j])
+            {
+            case PACDOT:
+                pacdotPlaced++;
+                break;
+            case GHOST_DOOR_H:
+                ghostDoorPlaced++;
+                break;
+            case GHOST_DOOR_V:
+                ghostDoorPlaced++;
+                break;
+            case PACMAN:
+                maxPacman--;
+                break;
+            case BLINKY:
+                maxBlinky--;
+                break;
+            case PINKY:
+                maxPinky--;
+                break;
+            case INKY:
+                maxInky--;
+                break;
+            case CLYDE:
+                maxClyde--;
+                break;
+            }
+        }
+        std::copy(line.begin(), line.end(), map[i].begin());
     }
-
-    errorMessage = "Map saved successfully!";
     mapFile.close();
 }
 
@@ -551,6 +623,7 @@ void Create::handle(const sf::Event::KeyPressed &key)
             optionsMenu = !optionsMenu;
             menu.cursorIndex = 0;
             errorMessage.clear();
+            successMessage.clear();
         }
     }
 }

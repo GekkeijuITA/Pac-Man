@@ -8,8 +8,10 @@
 #include <sstream>
 
 #include "core/StateManager.hpp"
+#include "map_editor/MapEditor.hpp"
 
 struct StateManager;
+struct MapEditor;
 
 struct MapPreview
 {
@@ -23,6 +25,7 @@ struct LevelSelectorState
 {
     sf::RenderWindow &window;
     StateManager &stateManager;
+    MapEditor &mapEditor;
     ArcadeText arcadeText;
     sf::Vector2i cursorPosition = {0, 0};
     std::regex r;
@@ -34,7 +37,7 @@ struct LevelSelectorState
     std::vector<std::vector<MapPreview>> maps;
 
 public:
-    LevelSelectorState(sf::RenderWindow &window, StateManager &sm);
+    LevelSelectorState(sf::RenderWindow &window, StateManager &sm, MapEditor &me);
     void draw();
     void loadMaps();
     void moveCursorLeft();
@@ -46,6 +49,7 @@ public:
 private:
     sf::Texture generateMapPreview(const std::string path);
     void drawCursor();
+    std::string getMapName(std::string path);
     std::string prettify(std::string name);
     void nextPage();
     void previousPage();

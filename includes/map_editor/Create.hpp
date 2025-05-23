@@ -33,7 +33,7 @@ struct Create
     int hoveredTileIndex = -1, selectedTileIndex = -1, maxPacman = 1, maxBlinky = 1, maxInky = 1, maxPinky = 1, maxClyde = 1;
     ArcadeText arcadeText;
     std::vector<std::vector<char>> map;
-    std::string mapName, errorMessage;
+    std::string mapName, errorMessage, successMessage;
     const std::string folderPath = "../resources/maps/";
 
     GameMenu menu;
@@ -56,4 +56,5 @@ private:
     void drawMap();
     void drawInputText();
     void saveMap();
+    void loadMap();
 };

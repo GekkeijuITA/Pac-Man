@@ -91,6 +91,10 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
             }
             sm.mapEditor->create->handle(key);
         }
+        else if (sm.mapEditor->currentMode == MapEditor::EDIT)
+        {
+            sm.mapEditor->levelSelectorState->handle(key);
+        }
         else
         {
             sm.mapEditor->menu.handle(key);
@@ -173,9 +177,9 @@ StateManager::StateManager(unsigned w, unsigned h, std::string title) : w(w), h(
     view.setCenter({view.getSize().x / 2.f, view.getSize().y / 2.f});
     window.setView(view);
 
-    mainMenuState = std::make_unique<MainMenuState>(window, *this);
-    levelSelectorState = std::make_unique<LevelSelectorState>(window, *this);
     mapEditor = std::make_unique<MapEditor>(window, *this);
+    mainMenuState = std::make_unique<MainMenuState>(window, *this, *mapEditor);
+    levelSelectorState = std::make_unique<LevelSelectorState>(window, *this, *mapEditor);
 };
 
 void StateManager::update(float elapsed)

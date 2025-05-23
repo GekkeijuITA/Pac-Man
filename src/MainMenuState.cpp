@@ -2,15 +2,15 @@
 #include "../includes/core/Debug.hpp"
 #include <fstream>
 
-MainMenuState::MainMenuState(sf::RenderWindow &window, StateManager &sm)
-    : window(window), stateManager(sm)
+MainMenuState::MainMenuState(sf::RenderWindow &window, StateManager &sm, MapEditor &me)
+    : window(window), stateManager(sm), mapEditor(me)
 {
     getHighscore();
 
     options = {{"PLAY", [this]()
-                { stateManager.currentMode = StateManager::LEVEL_SELECTOR; }},
+                { stateManager.currentMode = StateManager::LEVEL_SELECTOR; stateManager.levelSelectorState->loadMaps(); }},
                {"MAP EDITOR", [this]()
-                { stateManager.currentMode = StateManager::MAP_EDITOR; }},
+                { stateManager.currentMode = StateManager::MAP_EDITOR; mapEditor.levelSelectorState->loadMaps(); }},
                {"QUIT", [this]()
                 { stateManager.window.close(); }}};
     menu = GameMenu(window.getView(), "PAC-MAN", sf::Vector2i(3, 4), TextColor::YELLOW, 3.f, options, sf::Vector2i(11, 9));

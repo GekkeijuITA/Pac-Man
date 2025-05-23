@@ -3,7 +3,7 @@
 #include "../includes/core/Debug.hpp"
 #include "../includes/lib/TileFactory.hpp"
 
-LevelSelectorState::LevelSelectorState(sf::RenderWindow &window, StateManager &sm) : window(window), stateManager(sm)
+LevelSelectorState::LevelSelectorState(sf::RenderWindow &window, StateManager &sm, MapEditor &me) : window(window), stateManager(sm), mapEditor(me)
 {
     r = std::regex("[^a-zA-Z0-9!,\",-,/]");
 
@@ -23,8 +23,6 @@ LevelSelectorState::LevelSelectorState(sf::RenderWindow &window, StateManager &s
     }
 
     TILE_SIZE_PREVIEW = TILE_SIZE / maxCols;
-
-    loadMaps();
 };
 
 void LevelSelectorState::loadMaps()
@@ -48,6 +46,12 @@ void LevelSelectorState::loadMaps()
     for (const auto &entry : std::filesystem::directory_iterator(path))
     {
         std::string path = entry.path();
+
+        if (stateManager.currentMode == StateManager::MAP_EDITOR && getMapName(path) == "classic")
+        {
+            continue;
+        }
+
         sf::Texture texture = generateMapPreview(path);
 
         if (c == maxCols)
@@ -81,17 +85,22 @@ void LevelSelectorState::loadMaps()
     totalPages = std::ceil(mapsLoaded / mapsPerPage);
 }
 
+std::string LevelSelectorState::getMapName(std::string path)
+{
+    size_t lastIndex;
+    std::string rawName;
+    lastIndex = path.find_last_of("/");
+    rawName = path.substr(lastIndex + 1, std::string::npos);
+    lastIndex = rawName.find_last_of(".");
+    rawName = rawName.substr(0, lastIndex);
+    return rawName;
+}
+
 // https://stackoverflow.com/questions/6417817/easy-way-to-remove-extension-from-a-filename
 // https://stackoverflow.com/questions/28963810/replace-or-remove-characters-that-are-not-in-regex-with-c
 std::string LevelSelectorState::prettify(std::string name)
 {
-    size_t lastIndex;
-    std::string rawName;
-    lastIndex = name.find_last_of("/");
-    rawName = name.substr(lastIndex + 1, std::string::npos);
-    lastIndex = rawName.find_last_of(".");
-    rawName = rawName.substr(0, lastIndex);
-
+    std::string rawName = getMapName(name);
     std::stringstream result;
     std::regex_replace(
         std::ostream_iterator<char>(result),
@@ -142,7 +151,12 @@ void LevelSelectorState::draw()
     float centerX = (view.getSize().x - pageString.length() * (TILE_SIZE / 2.f)) / (TILE_SIZE * 2.f);
     arcadeText.drawString(pageString, centerX, textY - 1.5f, window, TextColor::WHITE);
 
-    arcadeText.drawString("Press Enter to play", 0, textY, window, 0.7f, TextColor::WHITE);
+    std::string text = "play";
+    if (stateManager.currentMode == StateManager::MAP_EDITOR)
+    {
+        text = "edit";
+    }
+    arcadeText.drawString("Press Enter to " + text, 0, textY, window, 0.7f, TextColor::WHITE);
     arcadeText.drawString("Press ESC to go back", 0, textY + 1, window, 0.7f, TextColor::WHITE);
 
     drawCursor();
@@ -195,101 +209,6 @@ sf::Texture LevelSelectorState::generateMapPreview(const std::string path)
                 tile->sprite.setScale({(float)TILE_SIZE_PREVIEW / tile->sprite.getTexture().getSize().x, (float)TILE_SIZE_PREVIEW / tile->sprite.getTexture().getSize().y});
                 renderTexture.draw(tile->sprite);
             }
-
-            /*switch (map[r][c])
-            {
-            case PACDOT:
-            {
-                sf::Sprite pacdot(pacDot);
-                pacdot.
-                pacdot.setPosition({x, y});
-                renderTexture.draw(pacdot);
-                break;
-            }
-            case LINE_V:
-            {
-                sf::Sprite wall(straightLine);
-                wall.setScale({(float)TILE_SIZE_PREVIEW / straightLine.getSize().x, (float)TILE_SIZE_PREVIEW / straightLine.getSize().y});
-                wall.setPosition({x, y});
-                renderTexture.draw(wall);
-                break;
-            }
-            case LINE_H:
-            {
-                sf::Sprite wall(straightLine);
-                wall.setScale({(float)TILE_SIZE_PREVIEW / straightLine.getSize().x, (float)TILE_SIZE_PREVIEW / straightLine.getSize().y});
-                wall.setOrigin({straightLine.getSize().x / 2.f,
-                                straightLine.getSize().y / 2.f});
-                wall.setPosition({x + TILE_SIZE_PREVIEW / 2.f, y + TILE_SIZE_PREVIEW / 2.f});
-                wall.setRotation(sf::degrees(-90));
-                renderTexture.draw(wall);
-                break;
-            }
-            case CORNER_0:
-            {
-                sf::Sprite wall(cornerTile);
-                wall.setScale({(float)TILE_SIZE_PREVIEW / cornerTile.getSize().x, (float)TILE_SIZE_PREVIEW / cornerTile.getSize().y});
-                wall.setPosition({x, y});
-                renderTexture.draw(wall);
-                break;
-            }
-            case CORNER_90:
-            {
-                sf::Sprite wall(cornerTile);
-                wall.setScale({(float)TILE_SIZE_PREVIEW / cornerTile.getSize().x, (float)TILE_SIZE_PREVIEW / cornerTile.getSize().y});
-                wall.setOrigin({cornerTile.getSize().x / 2.f,
-                                cornerTile.getSize().y / 2.f});
-
-                wall.setPosition({x + TILE_SIZE_PREVIEW / 2.f, y + TILE_SIZE_PREVIEW / 2.f});
-                wall.setRotation(sf::degrees(-90));
-                renderTexture.draw(wall);
-                break;
-            }
-            case CORNER_180:
-            {
-                sf::Sprite wall(cornerTile);
-                wall.setScale({(float)TILE_SIZE_PREVIEW / cornerTile.getSize().x, (float)TILE_SIZE_PREVIEW / cornerTile.getSize().y});
-                wall.setOrigin({cornerTile.getSize().x / 2.f,
-                                cornerTile.getSize().y / 2.f});
-
-                wall.setPosition({x + TILE_SIZE_PREVIEW / 2.f, y + TILE_SIZE_PREVIEW / 2.f});
-                wall.setRotation(sf::degrees(-180));
-                renderTexture.draw(wall);
-                break;
-            }
-            case CORNER_270:
-            {
-                sf::Sprite wall(cornerTile);
-                wall.setScale({(float)TILE_SIZE_PREVIEW / cornerTile.getSize().x, (float)TILE_SIZE_PREVIEW / cornerTile.getSize().y});
-                wall.setOrigin({cornerTile.getSize().x / 2.f,
-                                cornerTile.getSize().y / 2.f});
-
-                wall.setPosition({x + TILE_SIZE_PREVIEW / 2.f, y + TILE_SIZE_PREVIEW / 2.f});
-                wall.setRotation(sf::degrees(-270));
-                renderTexture.draw(wall);
-                break;
-            }
-            case POWERPELLET:
-            {
-                float scale = 3.f;
-                sf::CircleShape powerpellet(TILE_SIZE_PREVIEW / scale);
-                powerpellet.setOrigin({TILE_SIZE_PREVIEW / scale, TILE_SIZE_PREVIEW / scale});
-                powerpellet.setPosition({x + (TILE_SIZE_PREVIEW / 2), y + (TILE_SIZE_PREVIEW / 2)});
-                powerpellet.setFillColor(sf::Color(255, 185, 176));
-                renderTexture.draw(powerpellet);
-                break;
-            }
-            case GHOST_DOOR_H:
-            {
-                sf::RectangleShape ghostDoor({TILE_SIZE_PREVIEW, TILE_SIZE_PREVIEW / 4});
-                ghostDoor.setPosition({x, y + TILE_SIZE_PREVIEW / 1.8f});
-                ghostDoor.setFillColor(sf::Color(255, 203, 255));
-                renderTexture.draw(ghostDoor);
-                break;
-            }
-            default:
-                break;
-            }*/
         }
     }
     renderTexture.display();
@@ -334,6 +253,11 @@ void LevelSelectorState::moveCursorLeft()
 void LevelSelectorState::moveCursorRight()
 {
     int currentRow = page * maxRows + cursorPosition.y;
+    if (currentRow >= static_cast<int>(maps.size()))
+    {
+        return;
+    }
+
     if (cursorPosition.x < static_cast<int>(maps[currentRow].size()) - 1)
     {
         cursorPosition.x++;
@@ -417,15 +341,31 @@ void LevelSelectorState::handle(const sf::Event::KeyPressed &key)
     }
     else if (key.scancode == sf::Keyboard::Scancode::Escape)
     {
-        stateManager.currentMode = StateManager::MAIN_MENU;
-        stateManager.mainMenuState->getHighscore();
+        if (stateManager.currentMode == StateManager::MAP_EDITOR)
+        {
+            mapEditor.currentMode = MapEditor::MENU;
+        }
+        else
+        {
+            stateManager.currentMode = StateManager::MAIN_MENU;
+            stateManager.mainMenuState->getHighscore();
+        }
     }
     else if (key.scancode == sf::Keyboard::Scancode::Enter)
     {
+        if (maps.empty())
+        {
+            return;
+        }
+
         std::string mapPath = maps[cursorPosition.y][cursorPosition.x].path;
         if (stateManager.currentMode == StateManager::LEVEL_SELECTOR)
         {
             stateManager.initGame(mapPath);
+        }
+        else if (stateManager.currentMode == StateManager::MAP_EDITOR)
+        {
+            mapEditor.initEditor(getMapName(mapPath));
         }
     }
 }
