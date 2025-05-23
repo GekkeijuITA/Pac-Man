@@ -1,0 +1,4 @@
+- [ ] creare la texture del pacdot e del powerpellet 
+- [x] fare il salvataggio con il controllo del nome della mappa con messaggio di errore
+- [ ] controllare il sistema di input per i vari menu di gioco (in particolare quello di vittoria)
+- [ ] controllare i limiti di movimento dei fantasmi (segmentation fault se va oltre i limiti in basso e forse in alto)
