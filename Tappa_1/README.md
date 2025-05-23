@@ -1,6 +1,23 @@
-# Tappa n.1
-Provando a disegnare la finestra principale dell'applicazione, è emerso che per schermi di dimensione diversa avere dei valori fissi per la larghezza e l'altezza non era una buona idea. Quindi per evitare di dover "hardcodare" i valori di larghezza e altezza, è stato deciso di renderla responsiva.
-Per fare ciò si calcola il ratio della mappa e delle dimensioni della finestra, se il ratio della mappa è maggiore allora useremo il 70% della larghezza della finestra, altrimenti useremo il 70% dell'altezza della finestra. In questo modo la mappa si adatterà alla finestra.
+## Tappa n.1: La Finestra Principale e la Questione delle Dimensioni
 
-![image](images/windows_screen.png)
-![image](images/mac_screen.png)
+Mentre iniziavo a lavorare sulla finestra principale dell'applicazione, mi sono reso conto subito di un problema critico: usare valori fissi per larghezza e altezza creava delle difficoltà significative su schermi di dimensioni diverse. Questa dipendenza da dimensioni "hardcodate" rendeva l'interfaccia tutt'altro che ottimale e decisamente poco flessibile.
+
+---
+
+### La Soluzione: Una Finestra Responsiva
+
+Per superare questa limitazione, la mia scelta è stata quella di rendere la finestra **responsiva**. Questo significa che ora le sue dimensioni e la visualizzazione della mappa si adattano dinamicamente allo spazio disponibile.
+
+Ecco come ho implementato il meccanismo di adattamento:
+
+1.  **Ho Calcolato il Rapporto:** Ho determinato il rapporto d'aspetto (ratio) sia della mappa che della finestra corrente.
+2.  **Ho Implementato l'Adattamento Intelligente:**
+    * Se il **rapporto della mappa è maggiore** (indicando che la mappa è più "orizzontale"), faccio in modo che la mappa occupi il **70% della larghezza** della finestra.
+    * Altrimenti (se la mappa è più "verticale"), la mappa occuperà il **70% dell'altezza** della finestra.
+
+Questo approccio mi garantisce che la mappa venga sempre visualizzata in modo proporzionato e senza distorsioni, indipendentemente dalle dimensioni dello schermo.
+
+---
+
+![Visualizzazione su Windows](images/windows_screen.png)
+![Visualizzazione su macOS](images/mac_screen.png)
