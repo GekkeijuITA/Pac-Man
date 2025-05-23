@@ -18,7 +18,7 @@ La novità di questa tappa è l'**editor di mappe**. La sua base operativa è la
 **Fonti utilizzate in questa Tappa:**
 * [Conversione delle coordinate del mouse](https://www.sfml-dev.org/tutorials/3.0/graphics/view/#coordinates-conversions)
 * [Sostituire gli spazi con underscore in una stringa](https://stackoverflow.com/questions/5252612/replace-space-with-an-underscore)
-
+* [Rilevare la pressione prolungata del tasto del mouse](https://en.sfml-dev.org/forums/index.php?topic=13412.0)
 ---
 
 ![Demo dell'editor di mappe](images/demo-edit.png)
