@@ -3,7 +3,8 @@
 - [x] (Tappa 12) creare la texture del pacdot e del powerpellet 
 - [x] (Tappa 12) fare il salvataggio con il controllo del nome della mappa con messaggio di errore
 - [x] (Tappa 12) controllare il sistema di input per i vari menu di gioco (in particolare quello di vittoria)
-- [ ] (Tappa 12) controllare i limiti di movimento dei fantasmi (segmentation fault se va oltre i limiti in basso e forse in alto)
-- [ ] (Tappa 12) controllare la velocità dei fantasmi (si velocizzano sempre di più quando muoiono e rinascono)
+- [x] (Tappa 12) controllare i limiti di movimento dei fantasmi (segmentation fault se va oltre i limiti in basso e forse in alto)
+- [x] (Tappa 12) controllare la velocità dei fantasmi (si velocizzano sempre di più quando muoiono e rinascono)
 - [x] (Tappa 12) migliorare l'esperienza del nome nell'editor (se clicco su una tile a caso anche del menu non deseleziona la modalità di scrittura)
 - [ ] (Tappa 12) unificare il sistema di texture anche per pacman, fantasmi e frutta
+    - [ ] Aggiungere le varie texture per i frutti (se capisco come fare questo allora per pacman e i fantasmi è uguale)
