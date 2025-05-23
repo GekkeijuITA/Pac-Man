@@ -171,6 +171,38 @@ add_executable(
     Tappa_10/src/fruits/Bell.cpp
 )
 
+add_executable(
+    Tappa11 
+
+    Tappa_11/src/Animation.cpp
+    Tappa_11/src/Debug.cpp
+    Tappa_11/src/Fruit.cpp
+    Tappa_11/src/GameMenu.cpp
+    Tappa_11/src/GameState.cpp
+    Tappa_11/src/Ghost.cpp
+    Tappa_11/src/main.cpp
+    Tappa_11/src/MainMenuState.cpp
+    Tappa_11/src/PacMan.cpp
+    Tappa_11/src/StateManager.cpp
+    Tappa_11/src/TextUI.cpp
+    Tappa_11/src/textures.cpp
+    Tappa_11/src/LevelSelectorState.cpp
+
+    Tappa_11/src/ghosts/Blinky.cpp
+    Tappa_11/src/ghosts/Clyde.cpp
+    Tappa_11/src/ghosts/Inky.cpp
+    Tappa_11/src/ghosts/Pinky.cpp
+  
+    Tappa_11/src/fruits/Cherry.cpp
+    Tappa_11/src/fruits/Strawberry.cpp
+    Tappa_11/src/fruits/Orange.cpp
+    Tappa_11/src/fruits/Apple.cpp
+    Tappa_11/src/fruits/Grape.cpp
+    Tappa_11/src/fruits/Galaxian.cpp
+    Tappa_11/src/fruits/Key.cpp
+    Tappa_11/src/fruits/Bell.cpp
+)
+
 target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa3 PRIVATE SFML::Graphics)
@@ -181,3 +213,4 @@ target_link_libraries(Tappa7 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa8 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa9 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa10 PRIVATE SFML::Graphics)
+target_link_libraries(Tappa11 PRIVATE SFML::Graphics)
