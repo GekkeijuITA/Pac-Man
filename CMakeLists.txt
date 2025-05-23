@@ -15,29 +15,48 @@ FetchContent_MakeAvailable(SFML)
 message(STATUS "Include directory: ${CMAKE_SOURCE_DIR}/includes")
 
 add_executable(
-    Tappa1 
+    Tappa1
+     
     Tappa_1/src/main.cpp
 )
 
 add_executable(
     Tappa2 
+
     Tappa_2/src/main.cpp
 )
 
 add_executable(
     Tappa3 
+
     Tappa_3/src/main.cpp
     Tappa_3/src/PacMan.cpp
 )
 
 add_executable(
-    Tappa4 
+    Tappa4
+
     Tappa_4/src/main.cpp
     Tappa_4/src/PacMan.cpp
     Tappa_4/src/textures.cpp
+)
+
+add_executable(
+    Tappa5 
+
+    Tappa_5/src/main.cpp
+    Tappa_5/src/PacMan.cpp
+    Tappa_5/src/textures.cpp
+    Tappa_5/src/Ghost.cpp
+
+    Tappa_5/src/ghosts/Blinky.cpp
+    Tappa_5/src/ghosts/Clyde.cpp
+    Tappa_5/src/ghosts/Inky.cpp
+    Tappa_5/src/ghosts/Pinky.cpp
 )
 
 target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa3 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa4 PRIVATE SFML::Graphics)
+target_link_libraries(Tappa5 PRIVATE SFML::Graphics)
