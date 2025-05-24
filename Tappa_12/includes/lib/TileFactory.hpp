@@ -5,6 +5,14 @@
 
 #include "global_values.hpp"
 #include "textures.hpp"
+#include "../game_elements/fruits/Cherry.hpp"
+#include "../game_elements/fruits/Strawberry.hpp"
+#include "../game_elements/fruits/Orange.hpp"
+#include "../game_elements/fruits/Apple.hpp"
+#include "../game_elements/fruits/Grape.hpp"
+#include "../game_elements/fruits/Galaxian.hpp"
+#include "../game_elements/fruits/Bell.hpp"
+#include "../game_elements/fruits/Key.hpp"
 
 struct TileData
 {

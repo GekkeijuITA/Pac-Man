@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include "../lib/global_values.hpp"
 #include "../lib/textures.hpp"
+
 #include <iostream>
 #include <time.h>
 #include <memory>
@@ -17,7 +18,7 @@ inline const sf::Vector2i FRUIT_SCORE_3000 = {4, 11};
 inline const sf::Vector2i FRUIT_SCORE_5000 = {4, 12};
 
 #define SCORE_DISPLAY_TIME 1.5f;
-#define FRUIT_BLINKING_TIME 0.5f;
+#define FRUIT_BLINKING_TIME 0.3f;
 
 struct GameState;
 
@@ -28,7 +29,7 @@ struct Fruit
     sf::Vector2i texPosition;
     int score;
     float fruitDisplayTimer, scoreDisplayTimer, blinkingTime = FRUIT_BLINKING_TIME;
-    bool eaten, isBlinking = false;
+    bool isBlinking = false;
     std::unique_ptr<sf::Sprite> sprite;
 
 protected:
@@ -38,7 +39,7 @@ protected:
         int score);
 
 public:
-    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderWindow &window, char tileType);
     int getScore();
     void setTimer();
     void drawScore(sf::RenderWindow &window);

@@ -41,13 +41,17 @@ struct TextureData
     sf::Vector2f scale;
 };
 
+struct FruitData
+{
+    sf::Vector2i position;
+    std::unique_ptr<Fruit> fruit;
+    bool isEaten = false;
+    bool isVisible = false;
+};
+
 struct GameState
 {
     sf::RenderWindow &window;
-    // Textures for the map
-    std::map<int, TextureData> mapTextures;
-    // Textures for the game
-    std::map<int, TextureData> textures;
     PacMan pacman;
     std::vector<std::vector<char>> map;
     std::string mapPath;
@@ -59,13 +63,12 @@ struct GameState
     Inky inky;
     Clyde clyde;
 
-    int lives, score, highscore, level, fruitCount, eatableTiles;
+    int lives, score, highscore, level, eatableTiles;
     bool gameOver, pause, startGame, victory, isWallBlinking = false, isWallWhite = false;
 
     size_t maxFruits;
-    std::deque<sf::Vector2i> recentFruits;
-    std::vector<std::unique_ptr<Fruit>> fruits;
-    std::vector<sf::Vector2i> fruitPositions;
+    std::deque<char> eatenFruits;
+    std::multimap<char, FruitData> fruits;
 
     GameMenu pauseMenu, victoryMenu;
     float gameOverTimer, startGameTimer, wallBlinkTimer, victoryTimer;
@@ -83,7 +86,7 @@ struct GameState
     void doUI();
     void drawScore(int x, int y, int score);
     void drawLives();
-    void drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor);
+    void drawFruit(float x, float y, char fruit, float scaleFactor);
     void drawRecentFruits();
     void resetRound();
     void resetGame();
@@ -95,4 +98,5 @@ struct GameState
     void handle(const sf::Event::KeyPressed &key);
     bool isWall(int x, int y);
     bool isCorner(int x, int y);
+    bool isFruit(char tileType);
 };

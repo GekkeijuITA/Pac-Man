@@ -170,7 +170,6 @@ void PacMan::eat(int x, int y)
         (*map)[x][y] = EMPTY_BLOCK;
         dotEaten++;
         gameState.score += 10;
-        std::cout << "Pac-Man ate: " << dotEaten << " dots total dots to eat to win: " << gameState.eatableTiles << std::endl;
         break;
     case POWERPELLET:
         (*map)[x][y] = EMPTY_BLOCK;
@@ -181,7 +180,6 @@ void PacMan::eat(int x, int y)
         powerPelletDuration = POWER_PELLET_DURATION;
         ghostStreak = 0;
         dotEaten++;
-        std::cout << "Pac-Man ate: " << dotEaten << " dots total dots to eat to win: " << gameState.eatableTiles << std::endl;
 
         if (gameState.blinky.state != Ghost::EATEN)
             gameState.blinky.setState(Ghost::SCARED);

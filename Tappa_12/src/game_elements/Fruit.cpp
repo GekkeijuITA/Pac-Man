@@ -1,4 +1,5 @@
 #include "../../includes/game_elements/Fruit.hpp"
+#include "../../includes/lib/TileFactory.hpp"
 
 Fruit::Fruit(
     sf::Vector2i position,
@@ -13,7 +14,6 @@ Fruit::Fruit(
 
     fruitDisplayTimer = 0.f;
     scoreDisplayTimer = SCORE_DISPLAY_TIME;
-    eaten = false;
     sprite = std::make_unique<sf::Sprite>(createSprite(tex, texPosition, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true));
 }
 
@@ -22,12 +22,19 @@ int Fruit::getScore()
     return score;
 }
 
-void Fruit::draw(sf::RenderWindow &window)
+void Fruit::draw(sf::RenderWindow &window, char tileType)
 {
+    auto tile = TileFactory::getIstance().getTile(tileType);
+    if (!tile)
+    {
+        std::cerr << "Error loading tile data" << std::endl;
+        return;
+    }
+
     float x = static_cast<float>((position.y + .5f) * TILE_SIZE);
     float y = static_cast<float>((position.x + 3.5f) * TILE_SIZE);
-    sprite->setPosition({x, y});
-    window.draw(*sprite);
+    tile->sprite.setPosition({x, y});
+    window.draw(tile->sprite);
 }
 
 // Imposta il timer casualmente tra 9 e 10 secondi

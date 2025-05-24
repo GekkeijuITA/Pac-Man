@@ -53,20 +53,33 @@ void TileFactory::loadAll()
 {
     loadTile(LINE_H, STRAIGHT_LINE_H);
     loadTile(LINE_V, STRAIGHT_LINE_H, 90);
+
     loadTile(CORNER_0, ANGLE_0);
     loadTile(CORNER_90, ANGLE_0, -90);
     loadTile(CORNER_180, ANGLE_0, -180);
     loadTile(CORNER_270, ANGLE_0, -270);
+
     loadTile(GHOST_DOOR_H, GHOST_DOOR_TEX_H);
     loadTile(GHOST_DOOR_V, GHOST_DOOR_TEX_H, 90);
+    
     loadTile(PACDOT, PACDOT_TEX);
     loadTile(POWERPELLET, POWERPELLET_TEX);
     loadTile(PACMAN, ASSET, sf::Vector2i(1, 1), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
-    loadTile(FRUIT, ASSET, sf::Vector2i(2, 3), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+    loadTile(FRUIT, ASSET, CHERRY_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+
     loadTile(BLINKY, ASSET, sf::Vector2i(2, 4), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
     loadTile(PINKY, ASSET, sf::Vector2i(2, 5), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
     loadTile(INKY, ASSET, sf::Vector2i(2, 6), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
     loadTile(CLYDE, ASSET, sf::Vector2i(2, 7), TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+
+    loadTile(CHERRY, ASSET, CHERRY_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+    loadTile(STRAWBERRY, ASSET, STRAWBERRY_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+    loadTile(ORANGE_FRUIT, ASSET, ORANGE_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+    loadTile(APPLE, ASSET, APPLE_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+    loadTile(GRAPE, ASSET, GRAPE_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+    loadTile(GALAXIAN, ASSET, GALAXIAN_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+    loadTile(BELL, ASSET, BELL_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
+    loadTile(KEY, ASSET, KEY_TEX, TILE_SIZE / 2, sf::Vector2f(2.f, 2.f));
 }
 
 // Dato il carattere del tipo di tile, restituisce il TileData corrispondente (es. 'P' per PACMAN)

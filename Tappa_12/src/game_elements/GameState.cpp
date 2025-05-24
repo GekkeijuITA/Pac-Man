@@ -30,7 +30,6 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
                                                                                         pause(false),
                                                                                         startGame(true),
                                                                                         level(1),
-                                                                                        fruitCount(0),
                                                                                         startGameTimer(START_GAME_TIME),
                                                                                         mapPath(mapPath),
                                                                                         victory(false),
@@ -59,7 +58,7 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
         exit(1);
     }
 
-    recentFruits.clear();
+    eatenFruits.clear();
 
     pauseOptions = {
         {"CONTINUE",
@@ -86,7 +85,6 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
     victoryMenu = GameMenu(window.getView(), "VICTORY", sf::Vector2i(8, 3), TextColor::WHITE, victoryOptions, sf::Vector2i(8, 6));
 
     maxFruits = 12 - lives;
-    fruitCount = 0;
     getHighscore();
 
     ArcadeText arcadeText;
@@ -198,51 +196,43 @@ void GameState::update(float elapsed)
                 }
             }
 
-            for (auto &fruit : fruits)
+            for (auto &fruitData : fruits)
             {
-                bool isFruitDisplayed = find(fruitPositions.begin(), fruitPositions.end(), fruit->position) != fruitPositions.end();
-
-                if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
+                if (fruitData.second.fruit->fruitDisplayTimer > 0.f && !fruitData.second.isEaten)
                 {
-                    if (!isFruitDisplayed)
-                    {
-                        fruitPositions.push_back(fruit->position);
-                    }
-
                     if (!pacman.powerPellet)
-                        fruit->fruitDisplayTimer -= elapsed;
+                        fruitData.second.fruit->fruitDisplayTimer -= elapsed;
 
-                    if (fruit->fruitDisplayTimer <= 3.f)
+                    if (fruitData.second.fruit->fruitDisplayTimer <= 3.f)
                     {
-                        if (fruit->blinkingTime > 0.f)
+                        if (fruitData.second.fruit->blinkingTime > 0.f)
                         {
-                            fruit->blinkingTime -= elapsed;
+                            fruitData.second.fruit->blinkingTime -= elapsed;
                         }
                         else
                         {
-                            fruit->isBlinking = !fruit->isBlinking;
-                            fruit->blinkingTime = FRUIT_BLINKING_TIME;
+                            fruitData.second.fruit->isBlinking = !fruitData.second.fruit->isBlinking;
+                            fruitData.second.fruit->blinkingTime = FRUIT_BLINKING_TIME;
                         }
                     }
                 }
 
-                if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
+                if (fruitData.second.fruit->scoreDisplayTimer > 0.f && fruitData.second.isEaten)
                 {
-                    fruit->scoreDisplayTimer -= elapsed;
+                    fruitData.second.fruit->scoreDisplayTimer -= elapsed;
 
-                    if (fruit->scoreDisplayTimer <= 0.f)
+                    if (fruitData.second.fruit->scoreDisplayTimer <= 0.f)
                     {
-                        isFruitDisplayed = false;
-                        fruitPositions.erase(std::remove(fruitPositions.begin(), fruitPositions.end(), fruit->position), fruitPositions.end());
-                        fruit->fruitDisplayTimer = 0.f;
-                        fruit->eaten = false;
-                        fruit->scoreDisplayTimer = 0.f;
+                        fruitData.second.isVisible = false;
+                        fruitData.second.fruit->fruitDisplayTimer = 0.f;
+                        fruitData.second.isEaten = false;
+                        fruitData.second.fruit->scoreDisplayTimer = 0.f;
                     }
                 }
 
-                if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !isFruitDisplayed)
+                if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !fruitData.second.isVisible)
                 {
-                    fruit->setTimer();
+                    fruitData.second.fruit->setTimer();
                 }
             }
 
@@ -326,16 +316,15 @@ void GameState::collisions(float elapsed)
         pacman.move(elapsed);
     }
 
-    for (auto &fruit : fruits)
+    for (auto &fruitData : fruits)
     {
-        if (fruit->fruitDisplayTimer > 0.f && fruit->position == pacman.position)
+        if (fruitData.second.fruit->position == pacman.position && !fruitData.second.isEaten && fruitData.second.fruit->fruitDisplayTimer > 0.f)
         {
-            score += fruit->getScore();
-            fruitCount++;
-            recentFruits.push_back(fruit->texPosition);
-            fruit->fruitDisplayTimer = 0.f;
-            fruit->eaten = true;
-            fruit->scoreDisplayTimer = SCORE_DISPLAY_TIME;
+            score += fruitData.second.fruit->getScore();
+            eatenFruits.push_back(fruitData.first);
+            fruitData.second.fruit->fruitDisplayTimer = 0.f;
+            fruitData.second.isEaten = true;
+            fruitData.second.fruit->scoreDisplayTimer = SCORE_DISPLAY_TIME;
         }
     }
 }
@@ -406,31 +395,32 @@ bool GameState::getMap()
             }
             else if (row[i] == FRUIT)
             {
+                sf::Vector2i fruitPos = {static_cast<int>(map.size()) - 1, i};
                 switch (level)
                 {
                 case 1:
-                    fruits.push_back(std::make_unique<Cherry>(sf::Vector2i(map.size() - 1, i)));
+                    fruits.insert(std::make_pair(CHERRY, FruitData{fruitPos, std::make_unique<Cherry>(fruitPos), false}));
                     break;
                 case 2:
-                    fruits.push_back(std::make_unique<Strawberry>(sf::Vector2i(map.size() - 1, i)));
+                    fruits.insert(std::make_pair(STRAWBERRY, FruitData{fruitPos, std::make_unique<Strawberry>(fruitPos), false}));
                     break;
                 case 3:
-                    fruits.push_back(std::make_unique<Orange>(sf::Vector2i(map.size() - 1, i)));
+                    fruits.insert(std::make_pair(ORANGE_FRUIT, FruitData{fruitPos, std::make_unique<Orange>(fruitPos), false}));
                     break;
                 case 4:
-                    fruits.push_back(std::make_unique<Apple>(sf::Vector2i(map.size() - 1, i)));
+                    fruits.insert(std::make_pair(APPLE, FruitData{fruitPos, std::make_unique<Apple>(fruitPos), false}));
                     break;
                 case 5:
-                    fruits.push_back(std::make_unique<Grape>(sf::Vector2i(map.size() - 1, i)));
+                    fruits.insert(std::make_pair(GRAPE, FruitData{fruitPos, std::make_unique<Grape>(fruitPos), false}));
                     break;
                 case 6:
-                    fruits.push_back(std::make_unique<Galaxian>(sf::Vector2i(map.size() - 1, i)));
+                    fruits.insert(std::make_pair(GALAXIAN, FruitData{fruitPos, std::make_unique<Galaxian>(fruitPos), false}));
                     break;
                 case 7:
-                    fruits.push_back(std::make_unique<Bell>(sf::Vector2i(map.size() - 1, i)));
+                    fruits.insert(std::make_pair(BELL, FruitData{fruitPos, std::make_unique<Bell>(fruitPos), false}));
                     break;
                 default:
-                    fruits.push_back(std::make_unique<Key>(sf::Vector2i(map.size() - 1, i)));
+                    fruits.insert(std::make_pair(KEY, FruitData{fruitPos, std::make_unique<Key>(fruitPos), false}));
                     break;
                 }
             }
@@ -468,6 +458,11 @@ void GameState::doGraphics()
                 {
                     std::cerr << "Error loading tile data" << std::endl;
                     break;
+                }
+
+                if (tileType == FRUIT)
+                {
+                    continue;
                 }
 
                 if (isWallBlinking)
@@ -514,16 +509,16 @@ void GameState::doGraphics()
                     }
                 }
 
-                for (const auto &fruit : fruits)
+                for (const auto &fruitElement : fruits)
                 {
-                    if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
+                    if (fruitElement.second.fruit->fruitDisplayTimer > 0.f && !fruitElement.second.isEaten)
                     {
-                        if (!fruit->isBlinking)
-                            fruit->draw(window);
+                        if (!fruitElement.second.fruit->isBlinking)
+                            fruitElement.second.fruit->draw(window, fruitElement.first);
                     }
-                    else if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
+                    else if (fruitElement.second.fruit->scoreDisplayTimer > 0.f && fruitElement.second.isEaten)
                     {
-                        fruit->drawScore(window);
+                        fruitElement.second.fruit->drawScore(window);
                     }
                 }
             }
@@ -604,29 +599,35 @@ void GameState::drawLives()
     }
 }
 
-void GameState::drawFruit(float x, float y, sf::Vector2i fruitPos, float scaleFactor)
+void GameState::drawFruit(float x, float y, char fruit, float scaleFactor)
 {
-    sf::Sprite fruitSprite = createSprite(textures[0].texture, fruitPos, textures[0].scale, scaleFactor, TILE_SIZE / 2, true);
-    fruitSprite.setPosition({x * TILE_SIZE, y * TILE_SIZE});
-    window.draw(fruitSprite);
+    auto tile = TileFactory::getIstance().getTile(fruit);
+    if (!tile)
+    {
+        std::cerr << "Error loading tile data for fruit: " << fruit << std::endl;
+        return;
+    }
+    tile->sprite.setPosition({x * TILE_SIZE, y * TILE_SIZE});
+    tile->sprite.setScale({scaleFactor, scaleFactor});  
+    window.draw(tile->sprite);
 }
 
 void GameState::drawRecentFruits()
 {
-    int recentFruitsSize = recentFruits.size();
+    int recentFruitsSize = eatenFruits.size();
 
     if (recentFruitsSize > maxFruits)
     {
-        recentFruits.pop_front();
+        eatenFruits.pop_front();
         recentFruitsSize--;
     }
 
     int startX = 24 - (recentFruitsSize - 1) * 2;
 
-    for (size_t i = 0; i < recentFruits.size(); i++)
+    for (size_t i = 0; i < eatenFruits.size(); i++)
     {
-        sf::Vector2i fruitPos = recentFruits[i];
-        drawFruit((startX + (i * 2)) + 1.f, (MAP_HEIGHT + 4), fruitPos, 2.f);
+        char fruitType = eatenFruits[i];
+        drawFruit((startX + (i * 2)) + 1.f, (MAP_HEIGHT + 4), fruitType, 2.f);
     }
 }
 
@@ -671,10 +672,8 @@ void GameState::resetGame()
     gameOverTimer = GAME_OVER_TIME;
     score = 0;
     level = 1;
-    fruitCount = 0;
-    recentFruits.clear();
+    eatenFruits.clear();
     map.clear();
-    fruitPositions.clear();
     fruits.clear();
     getMap();
     resetRound();
@@ -712,6 +711,7 @@ void GameState::nextLevel()
     level++;
     map.clear();
     pacman.dotEaten = 0;
+    fruits.clear();
     getMap();
     resetRound();
     getHighscore();
@@ -764,6 +764,12 @@ bool GameState::isCorner(int x, int y)
 
     char tile = map[x][y];
     return tile == CORNER_0 || tile == CORNER_90 || tile == CORNER_180 || tile == CORNER_270;
+}
+
+bool GameState::isFruit(char tileType)
+{
+    return tileType == FRUIT || tileType == CHERRY || tileType == STRAWBERRY || tileType == ORANGE_FRUIT ||
+           tileType == APPLE || tileType == GRAPE || tileType == GALAXIAN || tileType == BELL || tileType == KEY;
 }
 
 void GameState::handle(const sf::Event::KeyPressed &key)

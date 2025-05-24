@@ -26,6 +26,15 @@ inline const char CLYDE = 'C';
 
 inline const char FRUIT = 'F';
 
+inline const char CHERRY = 'c';
+inline const char STRAWBERRY = 's';
+inline const char ORANGE_FRUIT = 'o';
+inline const char APPLE = 'a';
+inline const char GRAPE = 'g';
+inline const char GALAXIAN = 'l';
+inline const char BELL = 'b';
+inline const char KEY = 'k';
+
 enum Direction
 {
     UP = 1,
