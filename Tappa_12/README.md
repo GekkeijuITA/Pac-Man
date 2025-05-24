@@ -10,9 +10,20 @@ Una delle novità più significative è l'introduzione di **`TileFactory`**. Que
 
 Ho anche messo mano a `GameMenu`, che ora è molto più flessibile. Non gestisce più solo le opzioni, ma anche l'input da tastiera in autonomia, e ogni opzione del menu ha un'azione specifica associata. Questo ha eliminato la necessità di fare confronti complessi con la posizione del cursore. Lo stesso principio è stato applicato a `LevelSelectorState`, che ora uso anche nell'editor di mappe per selezionare la mappa da modificare.
 
+## Nuove Animazioni
+Ho aggiunto le animazioni per la morte di Pac-Man e per la vittoria (i muri che lampeggiano).
+
+![Demo animazione morte di pacman](images/demo-pacmandeath.gif)
+
+
+![Demo animazione vittoria](images/demo-victoryblink.gif)
+
 ## Il Cuore dell'Editor
 
 La novità di questa tappa è l'**editor di mappe**. La sua base operativa è la stessa sia per la creazione che per la modifica. Funziona così: c'è un parametro che viene passato solo quando si sceglie di "modificare" una mappa esistente: il nome della mappa. Se questo nome non viene passato (quindi stiamo "creando"), mi trovo di fronte a una griglia completamente vuota, pronta per essere riempita. Se invece il nome c'è, la mappa corrispondente viene caricata, e posso iniziare a modificarla.
+
+![Demo dell'editor di mappe](images/demo-edit.png)
+![Demo dell'editor di mappe](images/demo-create.png)
 
 ---
 **Fonti utilizzate in questa Tappa:**
@@ -20,6 +31,3 @@ La novità di questa tappa è l'**editor di mappe**. La sua base operativa è la
 * [Sostituire gli spazi con underscore in una stringa](https://stackoverflow.com/questions/5252612/replace-space-with-an-underscore)
 * [Rilevare la pressione prolungata del tasto del mouse](https://en.sfml-dev.org/forums/index.php?topic=13412.0)
 ---
-
-![Demo dell'editor di mappe](images/demo-edit.png)
-![Demo dell'editor di mappe](images/demo-create.png)
