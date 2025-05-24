@@ -639,10 +639,6 @@ void GameState::resetRound()
     wallBlinkTimer = WALL_BLINK_TIME;
     isWallBlinking = false;
     isWallWhite = false;
-    map.clear();
-    getMap();
-    fruitPositions.clear();
-    fruits.clear();
 
     pacman.respawn();
     for (Ghost *ghost : ghosts)
@@ -677,7 +673,12 @@ void GameState::resetGame()
     level = 1;
     fruitCount = 0;
     recentFruits.clear();
+    map.clear();
+    fruitPositions.clear();
+    fruits.clear();
+    getMap();
     resetRound();
+    pacman.dotEaten = 0;
 }
 
 void GameState::setGameOver()
@@ -709,6 +710,9 @@ void GameState::nextLevel()
     }
 
     level++;
+    map.clear();
+    pacman.dotEaten = 0;
+    getMap();
     resetRound();
     getHighscore();
 }
