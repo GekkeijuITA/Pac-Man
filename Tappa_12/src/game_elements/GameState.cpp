@@ -37,6 +37,22 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
                                                                                         window(window),
                                                                                         stateManager(sm)
 {
+
+    if (!wallBlinkTexture.loadFromFile(STRAIGHT_LINE_H_BLINK))
+    {
+        std::cerr << "Errore nel caricamento della texture del muro" << std::endl;
+        exit(1);
+    }
+
+    if (!cornerBlinkTexture.loadFromFile(ANGLE_0_BLINK))
+    {
+        std::cerr << "Errore nel caricamento della texture dell'angolo" << std::endl;
+        exit(1);
+    }
+
+    wallBlinkTimer = WALL_BLINK_TIME;
+    victoryTimer = VICTORY_TIME;
+
     if (!getMap())
     {
         std::cerr << "Errore nel caricamento della mappa" << std::endl;
@@ -102,128 +118,148 @@ void GameState::update(float elapsed)
 
     if (pacman.getDotEaten() == eatableTiles)
     {
-        nextLevel();
+        isWallBlinking = true;
+        if (victoryTimer > 0.f)
+        {
+            victoryTimer -= elapsed;
+            if (wallBlinkTimer > 0.f)
+            {
+                wallBlinkTimer -= elapsed;
+            }
+            else
+            {
+                wallBlinkTimer = 0.2f;
+                isWallWhite = !isWallWhite;
+            }
+        }
+        else
+        {
+            nextLevel();
+        }
     }
 
-    if (!pacman.isDead)
+    if (!isWallBlinking)
     {
-        if (pacman.powerPellet)
+        if (!pacman.isDead)
         {
-            pacman.powerPelletDuration -= elapsed;
-            if (pacman.powerPelletDuration <= 0.f)
+            if (pacman.powerPellet)
             {
-                pacman.powerPellet = false;
-
-                for (Ghost *ghost : ghosts)
+                pacman.powerPelletDuration -= elapsed;
+                if (pacman.powerPelletDuration <= 0.f)
                 {
-                    if (ghost->state == Ghost::SCARED)
+                    pacman.powerPellet = false;
+
+                    for (Ghost *ghost : ghosts)
                     {
-                        ghost->setState(ghost->lastState);
-                        ghost->isTransitioning = (ghost->lastState == Ghost::IN_HOUSE);
+                        if (ghost->state == Ghost::SCARED)
+                        {
+                            ghost->setState(ghost->lastState);
+                            ghost->isTransitioning = (ghost->lastState == Ghost::IN_HOUSE);
+                        }
                     }
                 }
             }
-        }
 
-        collisions(elapsed);
+            collisions(elapsed);
 
-        for (Ghost *ghost : ghosts)
-        {
-            ghost->move(elapsed);
-            if (ghost->state == Ghost::EATEN)
+            for (Ghost *ghost : ghosts)
             {
-                if (ghost->scoreDisplayTimer > 0.f)
-                    ghost->scoreDisplayTimer -= elapsed;
-            }
-
-            if (ghost->state == Ghost::SCARED)
-            {
-                if (pacman.powerPelletDuration <= 3.f)
+                ghost->move(elapsed);
+                if (ghost->state == Ghost::EATEN)
                 {
-                    if (ghost->blinkingTime > 0.f)
+                    if (ghost->scoreDisplayTimer > 0.f)
+                        ghost->scoreDisplayTimer -= elapsed;
+                }
+
+                if (ghost->state == Ghost::SCARED)
+                {
+                    if (pacman.powerPelletDuration <= 3.f)
                     {
-                        ghost->blinkingTime -= elapsed;
-                        if (ghost->isWhite)
+                        if (ghost->blinkingTime > 0.f)
                         {
-                            ghost->backScaredAnim->update(elapsed);
+                            ghost->blinkingTime -= elapsed;
+                            if (ghost->isWhite)
+                            {
+                                ghost->backScaredAnim->update(elapsed);
+                            }
+                            else
+                            {
+                                ghost->scaredAnim->update(elapsed);
+                            }
                         }
                         else
                         {
-                            ghost->scaredAnim->update(elapsed);
+                            ghost->blinkingTime = 0.2f;
+                            ghost->isWhite = !ghost->isWhite;
                         }
                     }
                     else
+                        ghost->scaredAnim->update(elapsed);
+                }
+            }
+
+            for (auto &fruit : fruits)
+            {
+                bool isFruitDisplayed = find(fruitPositions.begin(), fruitPositions.end(), fruit->position) != fruitPositions.end();
+
+                if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
+                {
+                    if (!isFruitDisplayed)
                     {
-                        ghost->blinkingTime = 0.2f;
-                        ghost->isWhite = !ghost->isWhite;
+                        fruitPositions.push_back(fruit->position);
+                    }
+
+                    if (!pacman.powerPellet)
+                        fruit->fruitDisplayTimer -= elapsed;
+
+                    if (fruit->fruitDisplayTimer <= 3.f)
+                    {
+                        if (fruit->blinkingTime > 0.f)
+                        {
+                            fruit->blinkingTime -= elapsed;
+                        }
+                        else
+                        {
+                            fruit->isBlinking = !fruit->isBlinking;
+                            fruit->blinkingTime = FRUIT_BLINKING_TIME;
+                        }
                     }
                 }
-                else
-                    ghost->scaredAnim->update(elapsed);
+
+                if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
+                {
+                    fruit->scoreDisplayTimer -= elapsed;
+
+                    if (fruit->scoreDisplayTimer <= 0.f)
+                    {
+                        isFruitDisplayed = false;
+                        fruitPositions.erase(std::remove(fruitPositions.begin(), fruitPositions.end(), fruit->position), fruitPositions.end());
+                        fruit->fruitDisplayTimer = 0.f;
+                        fruit->eaten = false;
+                        fruit->scoreDisplayTimer = 0.f;
+                    }
+                }
+
+                if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !isFruitDisplayed)
+                {
+                    fruit->setTimer();
+                }
             }
+
+            bounds();
         }
-
-        for (auto &fruit : fruits)
+        else
         {
-            bool isFruitDisplayed = find(fruitPositions.begin(), fruitPositions.end(), fruit->position) != fruitPositions.end();
-
-            if (fruit->fruitDisplayTimer > 0.f && !fruit->eaten)
+            if (!pacman.DEATH_ANIMATION.empty())
             {
-                if (!isFruitDisplayed)
+                pacman.DEATH_ANIMATION.front().update(elapsed);
+
+                if (pacman.DEATH_ANIMATION.front().isFinished())
                 {
-                    fruitPositions.push_back(fruit->position);
+                    pacman.DEATH_ANIMATION.clear();
+                    pacman.isDead = false;
+                    resetRound();
                 }
-
-                if (!pacman.powerPellet)
-                    fruit->fruitDisplayTimer -= elapsed;
-
-                if (fruit->fruitDisplayTimer <= 3.f)
-                {
-                    if (fruit->blinkingTime > 0.f)
-                    {
-                        fruit->blinkingTime -= elapsed;
-                    }
-                    else
-                    {
-                        fruit->isBlinking = !fruit->isBlinking;
-                        fruit->blinkingTime = FRUIT_BLINKING_TIME;
-                    }
-                }
-            }
-
-            if (fruit->scoreDisplayTimer > 0.f && fruit->eaten)
-            {
-                fruit->scoreDisplayTimer -= elapsed;
-
-                if (fruit->scoreDisplayTimer <= 0.f)
-                {
-                    isFruitDisplayed = false;
-                    fruitPositions.erase(std::remove(fruitPositions.begin(), fruitPositions.end(), fruit->position), fruitPositions.end());
-                    fruit->fruitDisplayTimer = 0.f;
-                    fruit->eaten = false;
-                    fruit->scoreDisplayTimer = 0.f;
-                }
-            }
-
-            if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !isFruitDisplayed)
-            {
-                fruit->setTimer();
-            }
-        }
-
-        bounds();
-    }
-    else
-    {
-        if (!pacman.DEATH_ANIMATION.empty())
-        {
-            pacman.DEATH_ANIMATION.front().update(elapsed);
-
-            if (pacman.DEATH_ANIMATION.front().isFinished())
-            {
-                pacman.DEATH_ANIMATION.clear();
-                pacman.isDead = false;
-                resetRound();
             }
         }
     }
@@ -433,6 +469,25 @@ void GameState::doGraphics()
                     std::cerr << "Error loading tile data" << std::endl;
                     break;
                 }
+
+                if (isWallBlinking)
+                {
+                    if (isWall(r, c))
+                    {
+                        if (isWallWhite)
+                        {
+                            tile->sprite.setTexture(wallBlinkTexture);
+                        }
+                    }
+                    else if (isCorner(r, c))
+                    {
+                        if (isWallWhite)
+                        {
+                            tile->sprite.setTexture(cornerBlinkTexture);
+                        }
+                    }
+                }
+
                 tile->sprite.setPosition({static_cast<float>(x) + TILE_SIZE / 2.f, static_cast<float>(y) + TILE_SIZE / 2.f});
                 tile->sprite.setScale({(float)TILE_SIZE / tile->sprite.getTexture().getSize().x, (float)TILE_SIZE / tile->sprite.getTexture().getSize().y});
                 window.draw(tile->sprite);
@@ -443,7 +498,7 @@ void GameState::doGraphics()
         {
             pacman.draw(window);
 
-            if (!pacman.isDead)
+            if (!pacman.isDead && !isWallBlinking)
             {
                 for (Ghost *ghost : ghosts)
                 {
@@ -580,6 +635,10 @@ void GameState::resetRound()
     pause = false;
     startGame = true;
     startGameTimer = START_GAME_TIME;
+    victoryTimer = VICTORY_TIME;
+    wallBlinkTimer = WALL_BLINK_TIME;
+    isWallBlinking = false;
+    isWallWhite = false;
     map.clear();
     getMap();
     fruitPositions.clear();
@@ -683,6 +742,24 @@ void GameState::getHighscore()
     std::getline(highscoreFile, highscoreString);
     highscore = highscoreString.empty() ? 0 : std::stoi(highscoreString);
     highscoreFile.close();
+}
+
+bool GameState::isWall(int x, int y)
+{
+    if (x < 0 || x >= MAP_HEIGHT || y < 0 || y >= MAP_WIDTH)
+        return false;
+
+    char tile = map[x][y];
+    return tile == LINE_H || tile == LINE_V;
+}
+
+bool GameState::isCorner(int x, int y)
+{
+    if (x < 0 || x >= MAP_HEIGHT || y < 0 || y >= MAP_WIDTH)
+        return false;
+
+    char tile = map[x][y];
+    return tile == CORNER_0 || tile == CORNER_90 || tile == CORNER_180 || tile == CORNER_270;
 }
 
 void GameState::handle(const sf::Event::KeyPressed &key)

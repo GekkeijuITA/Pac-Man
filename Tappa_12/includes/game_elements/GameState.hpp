@@ -29,7 +29,9 @@
 #define GAME_OVER_TIME 3.f
 #define START_GAME_TIME 3.f
 #define LIVES 3
-#define VICTORY_LEVEL 1
+#define VICTORY_LEVEL 2
+#define WALL_BLINK_TIME 0.3f
+#define VICTORY_TIME 3.f
 
 struct StateManager;
 
@@ -50,6 +52,7 @@ struct GameState
     std::vector<std::vector<char>> map;
     std::string mapPath;
     std::vector<Ghost *> ghosts;
+    sf::Texture wallBlinkTexture, cornerBlinkTexture;
 
     Blinky blinky;
     Pinky pinky;
@@ -57,7 +60,7 @@ struct GameState
     Clyde clyde;
 
     int lives, score, highscore, level, fruitCount, eatableTiles;
-    bool gameOver, pause, startGame, victory;
+    bool gameOver, pause, startGame, victory, isWallBlinking = false, isWallWhite = false;
 
     size_t maxFruits;
     std::deque<sf::Vector2i> recentFruits;
@@ -65,7 +68,7 @@ struct GameState
     std::vector<sf::Vector2i> fruitPositions;
 
     GameMenu pauseMenu, victoryMenu;
-    float gameOverTimer, startGameTimer;
+    float gameOverTimer, startGameTimer, wallBlinkTimer, victoryTimer;
     ArcadeText arcadeText;
     std::vector<MenuOption> pauseOptions, victoryOptions;
 
@@ -90,4 +93,6 @@ struct GameState
     void saveHighscore();
     void getHighscore();
     void handle(const sf::Event::KeyPressed &key);
+    bool isWall(int x, int y);
+    bool isCorner(int x, int y);
 };
