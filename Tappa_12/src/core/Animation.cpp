@@ -11,7 +11,7 @@ void Animation::addFrame(Frame &&frame)
 
 void Animation::update(float elapsed)
 {
-    if (frames.empty())
+    if (frames.empty() || (finished && !loop))
         return;
 
     totalProgess += elapsed;
@@ -21,7 +21,15 @@ void Animation::update(float elapsed)
         totalProgess -= frames[currentFrame].duration;
         currentFrame++;
         if (currentFrame >= frames.size())
-            currentFrame = 0;
+        {
+            if (loop)
+                currentFrame = 0;
+            else
+            {
+                finished = true;
+                return;
+            }
+        }
     }
 
     target->setTextureRect(frames[currentFrame].rect);
@@ -42,4 +50,40 @@ void Animation::insertAnimation(Direction dir, std::map<Direction, Animation> &a
                                  {(TILE_SIZE / 2), (TILE_SIZE / 2)}),
                              frameDuration});
     }
+}
+
+void Animation::insertAnimation(std::vector<Animation> &animMap, sf::Vector2i tex, sf::Sprite &target, float frameDuration)
+{
+    animMap.emplace_back(target);
+    Animation &anim = animMap.back();
+    anim.addFrame({sf::IntRect(
+                       {tex.x * (TILE_SIZE / 2), tex.y * (TILE_SIZE / 2)},
+                       {(TILE_SIZE / 2), (TILE_SIZE / 2)}),
+                   frameDuration});
+}
+
+void Animation::insertAnimation(std::vector<Animation> &animMap, std::vector<sf::Vector2i> texVec, sf::Sprite &target, float frameDuration, bool loop)
+{
+    animMap.emplace_back(target);
+    Animation &anim = animMap.back();
+    anim.loop = loop;
+    for (const auto &tex : texVec)
+    {
+        anim.addFrame({sf::IntRect(
+                           {tex.x * (TILE_SIZE / 2), tex.y * (TILE_SIZE / 2)},
+                           {(TILE_SIZE / 2), (TILE_SIZE / 2)}),
+                       frameDuration});
+    }
+}
+
+bool Animation::isFinished()
+{
+    return currentFrame >= frames.size();
+}
+
+void Animation::reset()
+{
+    totalProgess = 0;
+    currentFrame = 0;
+    finished = false;
 }

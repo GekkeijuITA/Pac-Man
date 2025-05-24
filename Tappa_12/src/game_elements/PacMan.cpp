@@ -35,6 +35,8 @@ PacMan::PacMan(GameState &gameState) : map(nullptr), gameState(gameState)
                                  frameDuration});
         }
     }
+
+    setDeathAnimation();
 }
 
 void PacMan::draw(sf::RenderWindow &window)
@@ -205,9 +207,26 @@ void PacMan::respawn()
     powerPellet = false;
     powerPelletDuration = POWER_PELLET_DURATION;
     dotEaten = 0;
+    setDeathAnimation();
+
+    sprite->setTexture(tex);
+    if (!PACMAN_ANIM_MAP.empty())
+    {
+        std::map<Direction, Animation>::iterator it = PACMAN_ANIM_MAP.find(direction);
+        if (it != PACMAN_ANIM_MAP.end())
+        {
+            it->second.reset();
+            sprite->setTextureRect(it->second.frames[0].rect);
+        }
+    }
 }
 
 sf::Vector2i PacMan::getPosition()
 {
     return position;
+}
+
+void PacMan::setDeathAnimation()
+{
+    Animation::insertAnimation(DEATH_ANIMATION, deathFrames, *sprite, .2f, false);
 }

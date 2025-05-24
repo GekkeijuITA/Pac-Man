@@ -246,20 +246,8 @@ void Ghost::findPathBFS(sf::Vector2i destination)
 
 void Ghost::move(float elapsed)
 {
-    if (!map)
+    if (!map || stoppedForScore || this == nullptr)
     {
-        std::cerr << "CRITICAL: Null map pointer in Ghost::move()" << std::endl;
-        return;
-    }
-
-    if (stoppedForScore)
-    {
-        return;
-    }
-
-    if (this == nullptr)
-    {
-        std::cerr << "CRITICAL: this is NULL" << std::endl;
         return;
     }
 
@@ -268,7 +256,6 @@ void Ghost::move(float elapsed)
         auto eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
         if (eyeTexPos == GHOST_EYES_TEX_MAP.end())
         {
-            std::cerr << "CRITICAL: Invalid direction for eyes texture: " << static_cast<int>(direction) << std::endl;
             direction = LEFT;
             eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
         }
@@ -283,7 +270,6 @@ void Ghost::move(float elapsed)
         }
         else
         {
-            std::cerr << "CRITICAL: Invalid direction for ghost animation: " << static_cast<int>(direction) << std::endl;
             direction = LEFT;
         }
     }
@@ -535,9 +521,6 @@ void Ghost::getExitTile()
 
 void Ghost::eat(int x, int y)
 {
-    if (!map)
-        return;
-
     if (distance(getPacmanPosition()) < COLLIDE_BOX)
     {
         if (state == SCARED)
@@ -558,8 +541,8 @@ void Ghost::eat(int x, int y)
         }
         else
         {
+            gameState.pacman.isDead = true;
             gameState.lives--;
-            gameState.resetRound();
         }
     }
 }
