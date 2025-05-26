@@ -26,11 +26,9 @@ struct Fruit
 {
     sf::Texture tex;
     sf::Vector2i position;
-    sf::Vector2i texPosition;
     int score;
     float fruitDisplayTimer, scoreDisplayTimer, blinkingTime = FRUIT_BLINKING_TIME;
     bool isBlinking = false;
-    std::unique_ptr<sf::Sprite> sprite;
 
 protected:
     Fruit(

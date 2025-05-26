@@ -129,7 +129,7 @@ bool Ghost::isWall(int x, int y)
     if (x < 0 || x >= map->size() || y < 0 || y >= (*map)[0].size())
         return false;
 
-    if (state == NORMAL && (*map)[x][y] == GHOST_DOOR_H)
+    if (state == NORMAL && ((*map)[x][y] == GHOST_DOOR_H || (*map)[x][y] == GHOST_DOOR_V))
         return true;
 
     return (*map)[x][y] == LINE_H || (*map)[x][y] == LINE_V || (*map)[x][y] == CORNER_0 || (*map)[x][y] == CORNER_90 || (*map)[x][y] == CORNER_180 || (*map)[x][y] == CORNER_270;

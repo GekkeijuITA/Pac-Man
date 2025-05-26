@@ -4,7 +4,7 @@
 Fruit::Fruit(
     sf::Vector2i position,
     sf::Vector2i texPosition,
-    int score) : position(position), texPosition(texPosition), score(score)
+    int score) : position(position), score(score)
 {
     if (!tex.loadFromFile(ASSET))
     {
@@ -14,7 +14,6 @@ Fruit::Fruit(
 
     fruitDisplayTimer = 0.f;
     scoreDisplayTimer = SCORE_DISPLAY_TIME;
-    sprite = std::make_unique<sf::Sprite>(createSprite(tex, texPosition, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true));
 }
 
 int Fruit::getScore()
@@ -34,6 +33,7 @@ void Fruit::draw(sf::RenderWindow &window, char tileType)
     float x = static_cast<float>((position.y + .5f) * TILE_SIZE);
     float y = static_cast<float>((position.x + 3.5f) * TILE_SIZE);
     tile->sprite.setPosition({x, y});
+    tile->sprite.setScale({3.f, 3.f});
     window.draw(tile->sprite);
 }
 

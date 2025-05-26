@@ -8,5 +8,5 @@
 - [x] (Tappa 12) migliorare l'esperienza del nome nell'editor (se clicco su una tile a caso anche del menu non deseleziona la modalità di scrittura)
 - [ ] (Tappa 12) unificare il sistema di texture anche per pacman, fantasmi e frutta
     - [ ] Aggiungere le varie texture per i frutti (se capisco come fare questo allora per pacman e i fantasmi è uguale)
-- [ ] (Tappa 12) controllare l'effetto pacman in tutte le direzioni (a destra ho notato che si blocca probabilmente dovuto a un isWall())
-- [ ] (Tappa 12) sistemare la scala dello sprite dei frutti in mappa (troppo piccoli probabilmente da raddoppiare)
+- [x] (Tappa 12) controllare l'effetto pacman in tutte le direzioni (a destra ho notato che si blocca probabilmente dovuto a un isWall())
+- [x] (Tappa 12) sistemare la scala dello sprite dei frutti in mappa (troppo piccoli probabilmente da raddoppiare)

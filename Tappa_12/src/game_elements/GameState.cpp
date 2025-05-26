@@ -320,6 +320,13 @@ void GameState::collisions(float elapsed)
     {
         if (fruitData.second.fruit->position == pacman.position && !fruitData.second.isEaten && fruitData.second.fruit->fruitDisplayTimer > 0.f)
         {
+            int recentFruitsSize = eatenFruits.size();
+            if (recentFruitsSize > maxFruits)
+            {
+                eatenFruits.pop_front();
+                recentFruitsSize--;
+            }
+
             score += fruitData.second.fruit->getScore();
             eatenFruits.push_back(fruitData.first);
             fruitData.second.fruit->fruitDisplayTimer = 0.f;
@@ -608,26 +615,18 @@ void GameState::drawFruit(float x, float y, char fruit, float scaleFactor)
         return;
     }
     tile->sprite.setPosition({x * TILE_SIZE, y * TILE_SIZE});
-    tile->sprite.setScale({scaleFactor, scaleFactor});  
+    tile->sprite.setScale({scaleFactor, scaleFactor});
     window.draw(tile->sprite);
 }
 
 void GameState::drawRecentFruits()
 {
     int recentFruitsSize = eatenFruits.size();
-
-    if (recentFruitsSize > maxFruits)
-    {
-        eatenFruits.pop_front();
-        recentFruitsSize--;
-    }
-
     int startX = 24 - (recentFruitsSize - 1) * 2;
 
-    for (size_t i = 0; i < eatenFruits.size(); i++)
+    for (size_t i = 0; i < recentFruitsSize; i++)
     {
-        char fruitType = eatenFruits[i];
-        drawFruit((startX + (i * 2)) + 1.f, (MAP_HEIGHT + 4), fruitType, 2.f);
+        drawFruit(startX + (i * 2) + 1.f, MAP_HEIGHT + 4, eatenFruits[i], 4.f);
     }
 }
 
