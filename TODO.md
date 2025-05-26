@@ -10,3 +10,4 @@
     - [ ] Aggiungere le varie texture per i frutti (se capisco come fare questo allora per pacman e i fantasmi è uguale)
 - [x] (Tappa 12) controllare l'effetto pacman in tutte le direzioni (a destra ho notato che si blocca probabilmente dovuto a un isWall())
 - [x] (Tappa 12) sistemare la scala dello sprite dei frutti in mappa (troppo piccoli probabilmente da raddoppiare)
+- [ ] (Tappa 12) aggiungere la zona preferita dei fantasmi e implementare la modifica dei valori per ogni livello (durata powerpellet, velocità fantasmi, ecc.)
