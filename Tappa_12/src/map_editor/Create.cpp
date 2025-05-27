@@ -347,6 +347,13 @@ void Create::saveMap()
         return;
     }
 
+    if (ghostDoorPlaced == 0)
+    {
+        errorMessage = "You must place at least\none ghost door";
+        successMessage.clear();
+        return;
+    }
+
     if (maxInky == 0 && pacdotPlaced < 30)
     {
         errorMessage = "To use Inky, you need\nat least 30 pac-dots.\nYou still need " + std::to_string(30 - pacdotPlaced) + " more!";
@@ -556,7 +563,7 @@ void Create::handle(const sf::Event::KeyPressed &key)
         if (key.scancode == sf::Keyboard::Scancode::Escape)
         {
             optionsMenu = !optionsMenu;
-            menu.cursorIndex = 0;
+            menu.resetCursor();
             errorMessage.clear();
             successMessage.clear();
         }
