@@ -104,6 +104,7 @@ void Ghost::setMap(std::vector<std::vector<char>> *newMap)
 
 void Ghost::setDirection(Direction dir)
 {
+    lastDirection = direction;
     direction = dir;
 }
 
@@ -179,10 +180,10 @@ void Ghost::chooseDirection()
                 possibleDirections.push_back(RIGHT);
         }
     }
+
     if (!possibleDirections.empty())
     {
-        direction = possibleDirections[rand() % possibleDirections.size()];
-        lastDirection = direction;
+        setDirection(possibleDirections[rand() % possibleDirections.size()]);
     }
 }
 
@@ -253,7 +254,7 @@ void Ghost::move(float elapsed)
         auto eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
         if (eyeTexPos == GHOST_EYES_TEX_MAP.end())
         {
-            direction = LEFT;
+            setDirection(LEFT);
             eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
         }
         sprite->setTextureRect(sf::IntRect({eyeTexPos->second.x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
@@ -279,7 +280,7 @@ void Ghost::move(float elapsed)
         else
         {
             timeToEnterHouse += elapsed;
-            direction = lastDirection;
+            setDirection(lastDirection);
             if (!enteredHouse)
                 enteredHouse = true;
 
@@ -345,7 +346,7 @@ void Ghost::move(float elapsed)
         }
         else
         {
-            direction = LEFT;
+            setDirection(LEFT);
         }
     }
 
@@ -354,26 +355,33 @@ void Ghost::move(float elapsed)
 
     if (alignedToCell && !isTransitioning)
     {
-        bool canMove = false;
-        switch (direction)
+        int possibleDirectionsCount = 0;
+
+        // UP
+        if (!isWall(position.x - 1, position.y))
         {
-        case UP:
-            canMove = !isWall(position.x - 1, position.y);
-            break;
-        case DOWN:
-            canMove = !isWall(position.x + 1, position.y);
-            break;
-        case LEFT:
-            canMove = !isWall(position.x, position.y - 1);
-            break;
-        case RIGHT:
-            canMove = !isWall(position.x, position.y + 1);
-            break;
-        default:
-            break;
+            possibleDirectionsCount++;
         }
 
-        if (!canMove)
+        // DOWN
+        if (!isWall(position.x + 1, position.y))
+        {
+            possibleDirectionsCount++;
+        }
+
+        // LEFT
+        if (!isWall(position.x, position.y - 1))
+        {
+            possibleDirectionsCount++;
+        }
+
+        // RIGHT
+        if (!isWall(position.x, position.y + 1))
+        {
+            possibleDirectionsCount++;
+        }
+
+        if (possibleDirectionsCount > 0)
         {
             chooseDirection();
         }
@@ -463,15 +471,13 @@ double Ghost::distance(sf::Vector2i target)
 void Ghost::computeNextDirection(sf::Vector2i destination)
 {
     if (position.x < destination.x && !isWall(position.x + 1, position.y))
-        direction = DOWN;
+        setDirection(DOWN);
     else if (position.x > destination.x && !isWall(position.x - 1, position.y))
-        direction = UP;
+        setDirection(UP);
     else if (position.y < destination.y && !isWall(position.x, position.y + 1))
-        direction = RIGHT;
+        setDirection(RIGHT);
     else if (position.y > destination.y && !isWall(position.x, position.y - 1))
-        direction = LEFT;
-
-    lastDirection = direction;
+        setDirection(LEFT);
 }
 
 void Ghost::setState(GhostState newState)
@@ -484,8 +490,7 @@ void Ghost::setState(GhostState newState)
 
     if (state == SCARED)
     {
-        direction = getOppositeDirection(direction);
-        lastDirection = direction;
+        setDirection(getOppositeDirection(direction));
 
         if (gameState.level == 1)
         {
@@ -569,7 +574,6 @@ void Ghost::respawn(GhostState state)
     setState(state);
     setPosition(spawn.x, spawn.y);
     setDirection(NONE);
-    lastDirection = NONE;
     isTransitioning = false;
     getExitTile();
     findPathBFS(nearestExitTile);
