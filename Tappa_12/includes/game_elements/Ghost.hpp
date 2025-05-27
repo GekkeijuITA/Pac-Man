@@ -31,6 +31,7 @@ struct Ghost
     int dotLimit, score = 0;
     const double frameDuration = 0.2;
     bool isTransitioning = false, enteredHouse = false, stoppedForScore = false, isWhite = true;
+    bool isChasing = false;
 
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
@@ -52,6 +53,7 @@ struct Ghost
         NORMAL,
         EATEN,
         SCARED,
+        CHASE
     };
 
     GhostState state = IN_HOUSE, lastState;
@@ -62,6 +64,7 @@ struct Ghost
     std::unique_ptr<Animation> backScaredAnim;
 
 protected:
+    sf::Vector2i getPacmanPosition();
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
     std::map<Direction, sf::Vector2i> GHOST_EYES_TEX_MAP = {
         {UP, GHOST_U},
@@ -85,7 +88,6 @@ private:
     void findPathBFS(sf::Vector2i destination);
     void computeNextDirection(sf::Vector2i destination);
     Direction getOppositeDirection(Direction dir);
-    sf::Vector2i getPacmanPosition();
 
 public:
     void draw(sf::RenderWindow &window);

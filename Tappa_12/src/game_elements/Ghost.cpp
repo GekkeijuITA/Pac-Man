@@ -86,6 +86,29 @@ void Ghost::draw(sf::RenderWindow &window)
     sprite->setPosition({x, y});
 
     window.draw(*sprite);
+
+    sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
+    rect.setFillColor(sf::Color::Transparent);
+    rect.setOutlineThickness(1);
+    // Disegna la BFS
+    for (const auto &p : path)
+    {
+        float y_l = static_cast<float>((p.x + 3) * TILE_SIZE);
+        float x_l = static_cast<float>(p.y * TILE_SIZE);
+        if (name == "Blinky")
+            rect.setOutlineColor(sf::Color::Red);
+        else if (name == "Pinky")
+            rect.setOutlineColor(sf::Color::Magenta);
+        else if (name == "Inky")
+            rect.setOutlineColor(sf::Color::Cyan);
+        else if (name == "Clyde")
+            rect.setOutlineColor(sf::Color(255, 165, 0)); // Orange
+        else
+            rect.setOutlineColor(sf::Color::White);
+
+        rect.setPosition({x_l, y_l});
+        window.draw(rect);
+    }
 }
 
 void Ghost::setPosition(int x, int y)
@@ -294,6 +317,17 @@ void Ghost::move(float elapsed)
     }
     else
     {
+        sf::Vector2i pacmanPosition = getPacmanPosition();
+        if (distance(pacmanPosition) < 10.0f && state == NORMAL)
+        {
+            state = CHASE;
+            isChasing = true;
+        }
+        else if (state == CHASE && distance(pacmanPosition) >= 10.0f)
+        {
+            isChasing = false;
+        }
+
         if (state == IN_HOUSE)
         {
             if (gameState.pacman.getDotEaten() >= dotLimit)
@@ -332,6 +366,35 @@ void Ghost::move(float elapsed)
                 enteredHouse = true;
             }
         }
+        else if (state == NORMAL)
+        {
+            enteredHouse = false;
+            isTransitioning = false;
+        }
+        else if (state == CHASE)
+        {
+            isTransitioning = false;
+            if (path.empty() && isChasing)
+            {
+                findPathBFS(pacmanPosition);
+            }
+
+            if (!path.empty())
+            {
+                sf::Vector2i nextTile = path.back();
+                computeNextDirection(nextTile);
+
+                if (position == nextTile)
+                {
+                    path.pop_back();
+                }
+            }
+            else
+            {
+                state = NORMAL;
+                isChasing = false;
+            }
+        }
         else
         {
             isTransitioning = false;
@@ -352,7 +415,7 @@ void Ghost::move(float elapsed)
     float tolerance = 0.01f;
     bool alignedToCell = std::abs(fPosition.x) < tolerance && std::abs(fPosition.y) < tolerance;
 
-    if (alignedToCell && !isTransitioning)
+    if (alignedToCell && !isTransitioning && state != CHASE)
     {
         int possibleDirectionsCount = 0;
 
@@ -385,7 +448,6 @@ void Ghost::move(float elapsed)
             chooseDirection();
         }
     }
-
     sf::Vector2i nextTile = position;
 
     switch (direction)

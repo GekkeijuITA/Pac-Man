@@ -1,3 +1,4 @@
+#pragma once
 #include "../Ghost.hpp"
 
 inline const sf::Vector2i CLYDE_R = {0, 7};

@@ -1,3 +1,4 @@
+#pragma once
 #include "../Ghost.hpp"
 
 inline const sf::Vector2i INKY_R = {0, 6};
