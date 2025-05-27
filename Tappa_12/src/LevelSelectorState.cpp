@@ -294,6 +294,10 @@ void LevelSelectorState::moveCursorDown()
     if (cursorPosition.y < rows - 1)
     {
         cursorPosition.y++;
+        if (cursorPosition.x >= static_cast<int>(maps[cursorPosition.y].size()))
+        {
+            cursorPosition.x = static_cast<int>(maps[cursorPosition.y].size() - 1);
+        }
     }
     else if (cursorPosition.y == rows - 1)
     {
