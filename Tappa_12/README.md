@@ -20,6 +20,7 @@ Ho aggiunto le animazioni per la morte di Pac-Man e per la vittoria (i muri che 
 
 ## Alcuni miglioramenti nella logica di gioco
 Ho apportato alcune modifiche alla logica di gioco, in particolare per Pac-Man e i fantasmi. Ora le velocità di Pac-Man e dei fantasmi dipendono dal livello corrente e anche la durata del power-pellet varia in base al livello.
+Ai fantasmi è stata aggiunta una logica di inseguimento basica: se Pac-Man si avvicina a un fantasma, questo inizia a inseguirlo fino a una certa distanza, dopodiché torna al suo percorso originale.
 
 ## Il Cuore della Tappa
 
