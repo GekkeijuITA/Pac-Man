@@ -159,13 +159,13 @@ void Ghost::chooseDirection()
     }
     else
     {
-        if (lastDirection != DOWN && !isWall(x - 1, y))
+        if (getOppositeDirection(direction) != UP && !isWall(x - 1, y))
             possibleDirections.push_back(UP);
-        if (lastDirection != UP && !isWall(x + 1, y))
+        if (getOppositeDirection(direction) != DOWN && !isWall(x + 1, y))
             possibleDirections.push_back(DOWN);
-        if (lastDirection != RIGHT && !isWall(x, y - 1))
+        if (getOppositeDirection(direction) != LEFT && !isWall(x, y - 1))
             possibleDirections.push_back(LEFT);
-        if (lastDirection != LEFT && !isWall(x, y + 1))
+        if (getOppositeDirection(direction) != RIGHT && !isWall(x, y + 1))
             possibleDirections.push_back(RIGHT);
 
         if (possibleDirections.empty())
@@ -328,7 +328,6 @@ void Ghost::move(float elapsed)
             }
             else
             {
-                chooseDirection();
                 isTransitioning = false;
                 enteredHouse = true;
             }
@@ -381,7 +380,7 @@ void Ghost::move(float elapsed)
             possibleDirectionsCount++;
         }
 
-        if (possibleDirectionsCount > 0)
+        if (possibleDirectionsCount > 1)
         {
             chooseDirection();
         }
@@ -429,7 +428,7 @@ void Ghost::move(float elapsed)
         }
         fPosition += movement;
     }
-    else if (!isTransitioning)
+    else
     {
         chooseDirection();
     }
