@@ -38,5 +38,6 @@ public:
     void moveCursorUp();
     void moveCursorDown();
     void executeOption();
+    void resetCursor();
     void handle(const sf::Event::KeyPressed &key);
 };

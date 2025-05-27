@@ -138,11 +138,13 @@ Create::Create(sf::RenderWindow &window, MapEditor &me) : window(window), mapEdi
              saveMap();
              if (errorMessage.empty())
              {
+                 reset();
                  mapEditor.currentMode = MapEditor::MENU;
              }
          }},
         {"Exit without saving", [this]()
          {
+             reset();
              mapEditor.currentMode = MapEditor::MENU;
          }}};
     menu = GameMenu(window.getView(), "OPTIONS", sf::Vector2i(1, 1), TextColor::WHITE, options, sf::Vector2i(2, 4));
@@ -690,4 +692,28 @@ void Create::deleteTile()
     {
         ghostDoorPlaced--;
     }
+}
+
+void Create::reset()
+{
+    map.clear();
+
+    optionsMenu = false;
+
+    successMessage.clear();
+    errorMessage.clear();
+    mapName.clear();
+
+    textCursorPos = 0;
+    pacdotPlaced = 0;
+    ghostDoorPlaced = 0;
+    hoveredTileIndex = -1;
+    selectedTileIndex = -1;
+    maxPacman = 1;
+    maxBlinky = 1;
+    maxInky = 1;
+    maxPinky = 1;
+    maxClyde = 1;
+
+    menu.resetCursor();
 }

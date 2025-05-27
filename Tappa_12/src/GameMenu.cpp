@@ -110,6 +110,12 @@ void GameMenu::executeOption()
     options[cursorIndex].action();
 }
 
+void GameMenu::resetCursor()
+{
+    cursorIndex = 0;
+    setCursorPosition(cursorPosition.x, startOptionsPos.y);
+}
+
 void GameMenu::handle(const sf::Event::KeyPressed &key)
 {
     switch (key.scancode)

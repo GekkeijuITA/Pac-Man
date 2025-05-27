@@ -60,4 +60,5 @@ private:
     void loadMap();
     void drawTile();
     void deleteTile();
+    void reset();
 };

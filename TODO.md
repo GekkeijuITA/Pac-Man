@@ -12,4 +12,4 @@
 - [x] (Tappa 12) sistemare la scala dello sprite dei frutti in mappa (troppo piccoli probabilmente da raddoppiare)
 - [ ] (Tappa 12) aggiungere la zona preferita dei fantasmi 
 - [x] (Tappa 12) implementare la modifica dei valori per ogni livello (durata powerpellet, velocità fantasmi, ecc.)
-- [ ] (Tappa 12) Sistemare il create/edit perchè se fai create dopo edit rimane lo stato precedente
+- [x] (Tappa 12) Sistemare il create/edit perchè se fai create dopo edit rimane lo stato precedente
