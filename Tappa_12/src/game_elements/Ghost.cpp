@@ -124,7 +124,6 @@ bool Ghost::isWall(int x, int y)
         if (state == EATEN)
             return false;
 
-        // inoltre bisogna aggiungere un controllo del numero di pacdot nell'editor in base al fantasma inserito
         if (state == IN_HOUSE && isTransitioning)
             return false;
         else

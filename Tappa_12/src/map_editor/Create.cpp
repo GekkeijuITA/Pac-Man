@@ -347,6 +347,20 @@ void Create::saveMap()
         return;
     }
 
+    if (maxInky == 0 && pacdotPlaced < 30)
+    {
+        errorMessage = "To use Inky, you need\nat least 30 pac-dots.\nYou still need " + std::to_string(30 - pacdotPlaced) + " more!";
+        successMessage.clear();
+        return;
+    }
+
+    if (maxClyde == 0 && pacdotPlaced < 60)
+    {
+        errorMessage = "To use Clyde, you need\nat least 60 pac-dots.\nYou still need " + std::to_string(60 - pacdotPlaced) + " more!";
+        successMessage.clear();
+        return;
+    }
+
     std::ofstream mapFile;
     std::string safeMapName = mapName;
     std::replace(safeMapName.begin(), safeMapName.end(), ' ', '_');
