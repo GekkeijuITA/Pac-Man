@@ -7,6 +7,10 @@
 #include <string>
 #include <memory>
 
+#define COLLIDE_BOX 1.1f
+#define SCORE_DISPLAY_TIME 1.5f;
+#define GHOST_SPEED 2.5f
+
 inline const sf::Vector2i GHOST_SCARED = {8, 4};
 inline const sf::Vector2i GHOST_R = {8, 5};
 inline const sf::Vector2i GHOST_L = {9, 5};
@@ -22,10 +26,11 @@ struct GameState;
 
 struct Ghost
 {
-    float speed, currentSpeed, timeToEnterHouse, scoreDisplayTimer, blinkingTime = 0.2f;
-    int dotLimit, score;
+    float speed, currentSpeed = 0.f, timeToEnterHouse = 0.f, blinkingTime = 0.2f;
+    float scoreDisplayTimer = SCORE_DISPLAY_TIME;
+    int dotLimit, score = 0;
     const double frameDuration = 0.2;
-    bool isTransitioning, enteredHouse, stoppedForScore, isWhite = true;
+    bool isTransitioning = false, enteredHouse = false, stoppedForScore = false, isWhite = true;
 
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
@@ -38,8 +43,8 @@ struct Ghost
     GameState &gameState;
     std::vector<sf::Vector2i> path;
 
-    Direction direction;
-    Direction lastDirection;
+    Direction direction = NONE;
+    Direction lastDirection = NONE;
 
     enum GhostState
     {
@@ -49,7 +54,7 @@ struct Ghost
         SCARED,
     };
 
-    GhostState state, lastState;
+    GhostState state = IN_HOUSE, lastState;
 
     std::unique_ptr<sf::Sprite> sprite;
     std::map<Direction, Animation> GHOST_ANIM_MAP;
@@ -93,4 +98,5 @@ public:
     void addExitTile(int x, int y);
     void respawn(GhostState state);
     void drawScore();
+    void setSpeed();
 };

@@ -8,10 +8,6 @@
 #include <array>
 #include <unordered_map>
 
-#define COLLIDE_BOX 1.1f
-#define SCORE_DISPLAY_TIME 1.5f;
-#define GHOST_SPEED 2.5f
-
 namespace std
 {
     template <>
@@ -42,35 +38,12 @@ Ghost::Ghost(
     std::string name,
     GameState &gameState,
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP) : map(nullptr),
-                                                       state(state),
                                                        dotLimit(dotLimit),
                                                        name(name),
                                                        gameState(gameState),
                                                        GHOST_TEX_MAP(GHOST_TEX_MAP)
 {
-    if (gameState.level == 1)
-    {
-        speed = GHOST_SPEED * .75f;
-    }
-    else if (gameState.level >= 2 && gameState.level <= 4)
-    {
-        speed = GHOST_SPEED * .85f;
-    }
-    else
-    {
-        speed = GHOST_SPEED * .95f;
-    }
-
-    currentSpeed = speed;
-    direction = NONE;
-    lastDirection = NONE;
-    isTransitioning = false;
-    timeToEnterHouse = 0.f;
-    enteredHouse = false;
-    lastState = state;
-    score = 0;
-    scoreDisplayTimer = SCORE_DISPLAY_TIME;
-    stoppedForScore = false;
+    setState(state);
 
     if (!tex.loadFromFile(ASSET))
     {
@@ -142,8 +115,20 @@ bool Ghost::isWall(int x, int y)
     if (x < 0 || x >= map->size() || y < 0 || y >= (*map)[0].size())
         return false;
 
-    if (state == NORMAL && ((*map)[x][y] == GHOST_DOOR_H || (*map)[x][y] == GHOST_DOOR_V))
-        return true;
+    if(((*map)[x][y] == GHOST_DOOR_H || (*map)[x][y] == GHOST_DOOR_V)) {
+        if(state == NORMAL)
+            return true;
+        if(state == SCARED && lastState == IN_HOUSE)
+            return true;
+        if(state == EATEN)
+            return false;
+        
+        // Da sistemare questo: ad esempio Pinky nella mappa 1 non esce di casa, inoltre bisogna aggiungere un controllo del numero di pacdot nell'editor in base al fantasma inserito
+        if(state == IN_HOUSE && isTransitioning)
+            return false;
+        else
+            return true;
+    }
 
     return (*map)[x][y] == LINE_H || (*map)[x][y] == LINE_V || (*map)[x][y] == CORNER_0 || (*map)[x][y] == CORNER_90 || (*map)[x][y] == CORNER_180 || (*map)[x][y] == CORNER_270;
 }
@@ -274,23 +259,28 @@ void Ghost::move(float elapsed)
         }
         sprite->setTextureRect(sf::IntRect({eyeTexPos->second.x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
 
-        if (position != nearestExitTile && !enteredHouse)
+        if (position != nearestExitTile)
         {
+            if (path.empty() || path.back() != position)
+            {
+                findPathBFS(nearestExitTile);
+            }
+
             if (!path.empty())
             {
                 sf::Vector2i nextTile = path.back();
+                computeNextDirection(nextTile);
 
                 if (position == nextTile)
                 {
                     path.pop_back();
                 }
-                computeNextDirection(nextTile);
             }
             else
             {
                 computeNextDirection(nearestExitTile);
             }
-            timeToEnterHouse = 0.f;
+            isTransitioning = true;
         }
         else
         {
@@ -302,45 +292,60 @@ void Ghost::move(float elapsed)
             if (timeToEnterHouse >= .5f)
             {
                 setState(IN_HOUSE);
-                isTransitioning = true;
                 path.clear();
-                enteredHouse = false;
+                enteredHouse = true;
             }
         }
     }
     else
     {
-        if (state == IN_HOUSE)
+        if (state == IN_HOUSE || (state == SCARED && lastState == IN_HOUSE))
         {
             if (gameState.pacman.getDotEaten() >= dotLimit)
             {
                 if (position != nearestExitTile)
                 {
+                    if (path.empty() || path.back() != position)
+                    {
+                        findPathBFS(nearestExitTile);
+                    }
+
                     if (!path.empty())
                     {
                         sf::Vector2i nextTile = path.back();
+                        computeNextDirection(nextTile);
 
                         if (position == nextTile)
                         {
                             path.pop_back();
                         }
-                        computeNextDirection(nextTile);
                     }
                     else
                     {
                         computeNextDirection(nearestExitTile);
                     }
+                    isTransitioning = true;
+                    enteredHouse = false;
                 }
                 else
                 {
                     setState(NORMAL);
-                    isTransitioning = true;
+                    isTransitioning = false;
+                    enteredHouse = false;
+                    path.clear();
                 }
             }
             else
             {
                 chooseDirection();
+                isTransitioning = false;
+                enteredHouse = true;
             }
+        }
+        else
+        {
+            isTransitioning = false;
+            enteredHouse = false;
         }
 
         if (GHOST_ANIM_MAP.find(direction) != GHOST_ANIM_MAP.end())
@@ -627,4 +632,22 @@ Direction Ghost::getOppositeDirection(Direction dir)
     default:
         return NONE;
     }
+}
+
+void Ghost::setSpeed()
+{
+    if (gameState.level == 1)
+    {
+        speed = GHOST_SPEED * .75f;
+    }
+    else if (gameState.level >= 2 && gameState.level <= 4)
+    {
+        speed = GHOST_SPEED * .85f;
+    }
+    else
+    {
+        speed = GHOST_SPEED * .95f;
+    }
+
+    currentSpeed = speed;
 }

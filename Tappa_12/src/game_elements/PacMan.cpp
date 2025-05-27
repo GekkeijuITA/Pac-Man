@@ -183,7 +183,6 @@ void PacMan::eat(int x, int y)
         powerPellet = true;
         gameState.score += 50;
         powerPelletDurationTimer = powerPelletDuration;
-        std::cout << "Power Pellet activated! Duration: " << powerPelletDuration << " seconds." << std::endl;
         ghostStreak = 0;
         dotEaten++;
         timer = STOP_MOVE_POWERPELLET;

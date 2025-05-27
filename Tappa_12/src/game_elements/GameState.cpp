@@ -99,7 +99,6 @@ void GameState::update(float elapsed)
     {
         if (gameOverTimer > 0.f)
         {
-            std::cout << "Game Over Timer: " << gameOverTimer << std::endl;
             gameOverTimer -= elapsed;
         }
         return;
@@ -133,8 +132,6 @@ void GameState::update(float elapsed)
         {
             if (pacman.powerPellet)
             {
-
-                std::cout << "Power Pellet Duration Timer: " << pacman.powerPelletDurationTimer << std::endl;
                 if (pacman.powerPelletDurationTimer > 0.f)
                 {
                     pacman.powerPelletDurationTimer -= elapsed;
@@ -442,6 +439,7 @@ bool GameState::getMap()
     for (Ghost *ghost : ghosts)
     {
         ghost->setMap(&map);
+        ghost->setSpeed();
     }
 
     return true;
