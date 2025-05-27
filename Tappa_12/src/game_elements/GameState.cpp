@@ -17,8 +17,7 @@ namespace std
     }
 }
 
-GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &sm) :
-                                                                                        pacman(*this),
+GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &sm) : pacman(*this),
                                                                                         blinky(*this),
                                                                                         pinky(*this),
                                                                                         inky(*this),
@@ -140,6 +139,7 @@ void GameState::update(float elapsed)
                 {
                     pacman.powerPellet = false;
                     pacman.powerPelletDurationTimer = pacman.powerPelletDuration;
+                    pacman.currentSpeed = pacman.speed;
 
                     for (Ghost *ghost : ghosts)
                     {
