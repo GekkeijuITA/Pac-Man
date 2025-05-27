@@ -40,7 +40,7 @@ void Fruit::draw(sf::RenderWindow &window, char tileType)
 // Imposta il timer casualmente tra 9 e 10 secondi
 void Fruit::setTimer()
 {
-    fruitDisplayTimer = fruitDisplayTimer = (rand() % 2) + 9;
+    fruitDisplayTimer = (rand() % 2) + 9;
 }
 
 void Fruit::drawScore(sf::RenderWindow &window)

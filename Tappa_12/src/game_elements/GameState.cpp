@@ -192,36 +192,42 @@ void GameState::update(float elapsed)
 
             for (auto &fruitData : fruits)
             {
-                if (fruitData.second.fruit->fruitDisplayTimer > 0.f && !fruitData.second.isEaten)
+                if (fruitData.second.fruit->fruitDisplayTimer > 0.f)
                 {
-                    if (!pacman.powerPellet)
-                        fruitData.second.fruit->fruitDisplayTimer -= elapsed;
-
-                    if (fruitData.second.fruit->fruitDisplayTimer <= 3.f)
+                    if (!fruitData.second.isEaten)
                     {
-                        if (fruitData.second.fruit->blinkingTime > 0.f)
+                        if (!pacman.powerPellet)
+                            fruitData.second.fruit->fruitDisplayTimer -= elapsed;
+
+                        if (fruitData.second.fruit->fruitDisplayTimer <= 3.f)
                         {
-                            fruitData.second.fruit->blinkingTime -= elapsed;
-                        }
-                        else
-                        {
-                            fruitData.second.fruit->isBlinking = !fruitData.second.fruit->isBlinking;
-                            fruitData.second.fruit->blinkingTime = FRUIT_BLINKING_TIME;
+                            if (fruitData.second.fruit->blinkingTime > 0.f)
+                            {
+                                fruitData.second.fruit->blinkingTime -= elapsed;
+                            }
+                            else
+                            {
+                                fruitData.second.fruit->isBlinking = !fruitData.second.fruit->isBlinking;
+                                fruitData.second.fruit->blinkingTime = FRUIT_BLINKING_TIME;
+                            }
                         }
                     }
                 }
-
-                if (fruitData.second.fruit->scoreDisplayTimer > 0.f && fruitData.second.isEaten)
+                else if (fruitData.second.fruit->scoreDisplayTimer > 0.f && fruitData.second.isEaten)
                 {
                     fruitData.second.fruit->scoreDisplayTimer -= elapsed;
 
-                    if (fruitData.second.fruit->scoreDisplayTimer <= 0.f)
+                    if (fruitData.second.fruit->scoreDisplayTimer < 0.f)
                     {
                         fruitData.second.isVisible = false;
-                        fruitData.second.fruit->fruitDisplayTimer = 0.f;
                         fruitData.second.isEaten = false;
-                        fruitData.second.fruit->scoreDisplayTimer = 0.f;
                     }
+                }
+                else
+                {
+                    fruitData.second.isVisible = false;
+                    fruitData.second.isEaten = false;
+                    fruitData.second.fruit->isBlinking = false;
                 }
 
                 if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !fruitData.second.isVisible)

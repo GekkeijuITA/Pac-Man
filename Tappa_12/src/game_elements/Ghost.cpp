@@ -144,39 +144,39 @@ void Ghost::chooseDirection()
 
     if (isOrWasInHouse)
     {
-        if (lastDirection != DOWN && !isWall(x - 1, y))
+        if (lastDirection != DOWN && !isWall(x - 1, y) && x - 1 >= 0 && x - 1 < map->size())
             possibleDirections.push_back(UP);
-        if (lastDirection != UP && !isWall(x + 1, y))
+        if (lastDirection != UP && !isWall(x + 1, y) && x + 1 >= 0 && x + 1 < map->size())
             possibleDirections.push_back(DOWN);
 
         if (possibleDirections.empty())
         {
-            if (lastDirection == UP && !isWall(x + 1, y))
+            if (lastDirection == UP && !isWall(x + 1, y) && x + 1 < map->size())
                 possibleDirections.push_back(DOWN);
-            else if (lastDirection == DOWN && !isWall(x - 1, y))
+            else if (lastDirection == DOWN && !isWall(x - 1, y) && x - 1 >= 0)
                 possibleDirections.push_back(UP);
         }
     }
     else
     {
-        if (getOppositeDirection(direction) != UP && !isWall(x - 1, y))
+        if (getOppositeDirection(direction) != UP && !isWall(x - 1, y) && x - 1 >= 0 && x - 1 < map->size())
             possibleDirections.push_back(UP);
-        if (getOppositeDirection(direction) != DOWN && !isWall(x + 1, y))
+        if (getOppositeDirection(direction) != DOWN && !isWall(x + 1, y) && x + 1 >= 0 && x + 1 < map->size())
             possibleDirections.push_back(DOWN);
-        if (getOppositeDirection(direction) != LEFT && !isWall(x, y - 1))
+        if (getOppositeDirection(direction) != LEFT && !isWall(x, y - 1) && y - 1 >= 0 && y - 1 < (*map)[0].size())
             possibleDirections.push_back(LEFT);
-        if (getOppositeDirection(direction) != RIGHT && !isWall(x, y + 1))
+        if (getOppositeDirection(direction) != RIGHT && !isWall(x, y + 1) && y + 1 >= 0 && y + 1 < (*map)[0].size())
             possibleDirections.push_back(RIGHT);
 
         if (possibleDirections.empty())
         {
-            if (!isWall(x - 1, y))
+            if (!isWall(x - 1, y) && x - 1 >= 0 && x - 1 < map->size())
                 possibleDirections.push_back(UP);
-            if (!isWall(x + 1, y))
+            if (!isWall(x + 1, y) && x + 1 >= 0 && x + 1 < map->size())
                 possibleDirections.push_back(DOWN);
-            if (!isWall(x, y - 1))
+            if (!isWall(x, y - 1) && y - 1 >= 0 && y - 1 < (*map)[0].size())
                 possibleDirections.push_back(LEFT);
-            if (!isWall(x, y + 1))
+            if (!isWall(x, y + 1) && y + 1 >= 0 && y + 1 < (*map)[0].size())
                 possibleDirections.push_back(RIGHT);
         }
     }
