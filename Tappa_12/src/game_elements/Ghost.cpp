@@ -115,16 +115,17 @@ bool Ghost::isWall(int x, int y)
     if (x < 0 || x >= map->size() || y < 0 || y >= (*map)[0].size())
         return false;
 
-    if(((*map)[x][y] == GHOST_DOOR_H || (*map)[x][y] == GHOST_DOOR_V)) {
-        if(state == NORMAL)
+    if (((*map)[x][y] == GHOST_DOOR_H || (*map)[x][y] == GHOST_DOOR_V))
+    {
+        if (state == NORMAL)
             return true;
-        if(state == SCARED && lastState == IN_HOUSE)
+        if (state == SCARED && lastState == IN_HOUSE)
             return true;
-        if(state == EATEN)
+        if (state == EATEN)
             return false;
-        
-        // Da sistemare questo: ad esempio Pinky nella mappa 1 non esce di casa, inoltre bisogna aggiungere un controllo del numero di pacdot nell'editor in base al fantasma inserito
-        if(state == IN_HOUSE && isTransitioning)
+
+        // inoltre bisogna aggiungere un controllo del numero di pacdot nell'editor in base al fantasma inserito
+        if (state == IN_HOUSE && isTransitioning)
             return false;
         else
             return true;
@@ -215,7 +216,6 @@ void Ghost::findPathBFS(sf::Vector2i destination)
                 step = parent[step];
             }
             path.push_back(position);
-
             return;
         }
 
@@ -261,11 +261,6 @@ void Ghost::move(float elapsed)
 
         if (position != nearestExitTile)
         {
-            if (path.empty() || path.back() != position)
-            {
-                findPathBFS(nearestExitTile);
-            }
-
             if (!path.empty())
             {
                 sf::Vector2i nextTile = path.back();
@@ -299,17 +294,12 @@ void Ghost::move(float elapsed)
     }
     else
     {
-        if (state == IN_HOUSE || (state == SCARED && lastState == IN_HOUSE))
+        if (state == IN_HOUSE)
         {
             if (gameState.pacman.getDotEaten() >= dotLimit)
             {
                 if (position != nearestExitTile)
                 {
-                    if (path.empty() || path.back() != position)
-                    {
-                        findPathBFS(nearestExitTile);
-                    }
-
                     if (!path.empty())
                     {
                         sf::Vector2i nextTile = path.back();
@@ -324,6 +314,7 @@ void Ghost::move(float elapsed)
                     {
                         computeNextDirection(nearestExitTile);
                     }
+
                     isTransitioning = true;
                     enteredHouse = false;
                 }
