@@ -24,6 +24,9 @@ void MainMenuState::draw()
     arcadeText.drawString("00", 6, 2, window, TextColor::WHITE);
     arcadeText.drawString("HIGH SCORE", 9, 1, window, TextColor::RED);
     drawScore(16, 2, highscore);
+    arcadeText.drawString("1. Use the arrow keys\nto move", 4, 20, window, TextColor::SALMON);
+    arcadeText.drawString("2. Press 'ENTER' to\nselect", 4, 24, window, TextColor::SALMON);
+    arcadeText.drawString("3. press 'ESC' to pause", 4, 28, window, TextColor::SALMON);
     // Debug::drawGrid(window);
 }
 
