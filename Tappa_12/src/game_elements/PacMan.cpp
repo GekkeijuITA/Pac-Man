@@ -6,12 +6,10 @@
 
 PacMan::PacMan(GameState &gameState) : map(nullptr), gameState(gameState)
 {
-    speed = 5.f;
     dotEaten = 0;
     direction = LEFT;
     nextDirection = NONE;
     powerPellet = false;
-    powerPelletDuration = POWER_PELLET_DURATION; // in secondi
     ghostStreak = 0;
 
     if (!tex.loadFromFile(ASSET))
@@ -76,7 +74,7 @@ bool PacMan::isWall(int x, int y)
 
 void PacMan::updateDirection()
 {
-    if (nextDirection != NONE && nextDirection != direction)
+    if (nextDirection != NONE && nextDirection != direction && position.x >= 0 && position.y >= 0 && position.x < map->size() && position.y < (*map)[0].size())
     {
         sf::Vector2i dirVec(0, 0);
         switch (nextDirection)
@@ -112,6 +110,12 @@ void PacMan::updateDirection()
 
 void PacMan::move(float elapsed)
 {
+    if (timer > 0)
+    {
+        timer -= elapsed;
+        return;
+    }
+
     std::map<Direction, Animation>::iterator it = PACMAN_ANIM_MAP.find(direction);
     it->second.update(elapsed);
 
@@ -120,16 +124,16 @@ void PacMan::move(float elapsed)
     switch (direction)
     {
     case UP:
-        new_fPosition.x -= speed * elapsed;
+        new_fPosition.x -= currentSpeed * elapsed;
         break;
     case DOWN:
-        new_fPosition.x += speed * elapsed;
+        new_fPosition.x += currentSpeed * elapsed;
         break;
     case LEFT:
-        new_fPosition.y -= speed * elapsed;
+        new_fPosition.y -= currentSpeed * elapsed;
         break;
     case RIGHT:
-        new_fPosition.y += speed * elapsed;
+        new_fPosition.y += currentSpeed * elapsed;
         break;
     default:
         break;
@@ -170,6 +174,7 @@ void PacMan::eat(int x, int y)
         (*map)[x][y] = EMPTY_BLOCK;
         dotEaten++;
         gameState.score += 10;
+        timer = STOP_MOVE_PACDOT;
         break;
     case POWERPELLET:
         (*map)[x][y] = EMPTY_BLOCK;
@@ -177,18 +182,33 @@ void PacMan::eat(int x, int y)
             break;
         powerPellet = true;
         gameState.score += 50;
-        powerPelletDuration = POWER_PELLET_DURATION;
+        powerPelletDurationTimer = powerPelletDuration;
+        std::cout << "Power Pellet activated! Duration: " << powerPelletDuration << " seconds." << std::endl;
         ghostStreak = 0;
         dotEaten++;
+        timer = STOP_MOVE_POWERPELLET;
 
-        if (gameState.blinky.state != Ghost::EATEN)
-            gameState.blinky.setState(Ghost::SCARED);
-        if (gameState.pinky.state != Ghost::EATEN)
-            gameState.pinky.setState(Ghost::SCARED);
-        if (gameState.inky.state != Ghost::EATEN)
-            gameState.inky.setState(Ghost::SCARED);
-        if (gameState.clyde.state != Ghost::EATEN)
-            gameState.clyde.setState(Ghost::SCARED);
+        if (gameState.level == 1)
+        {
+            currentSpeed = PACMAN_SPEED * .9f;
+        }
+        else if (gameState.level >= 2 && gameState.level <= 4)
+        {
+            currentSpeed = PACMAN_SPEED * .95f;
+        }
+        else
+        {
+            currentSpeed = PACMAN_SPEED;
+        }
+
+        for (Ghost *ghost : gameState.ghosts)
+        {
+            if (ghost->state != Ghost::EATEN)
+            {
+                ghost->setState(Ghost::SCARED);
+            }
+        }
+
     default:
         break;
     }
@@ -205,8 +225,8 @@ void PacMan::respawn()
     setNextDirection(NONE);
     direction = LEFT;
     powerPellet = false;
-    powerPelletDuration = POWER_PELLET_DURATION;
     setDeathAnimation();
+    setPowerPelletDuration();
 
     sprite->setTexture(tex);
     if (!PACMAN_ANIM_MAP.empty())
@@ -228,4 +248,60 @@ sf::Vector2i PacMan::getPosition()
 void PacMan::setDeathAnimation()
 {
     Animation::insertAnimation(DEATH_ANIMATION, deathFrames, *sprite, .2f, false);
+}
+
+void PacMan::setPowerPelletDuration()
+{
+    if (gameState.level == 1)
+    {
+        powerPelletDuration = 6.f;
+    }
+    else if (gameState.level == 2 || gameState.level == 6 || gameState.level == 10)
+    {
+        powerPelletDuration = 5.f;
+    }
+    else if (gameState.level == 3)
+    {
+        powerPelletDuration = 4.f;
+    }
+    else if (gameState.level == 4 || gameState.level == 14)
+    {
+        powerPelletDuration = 3.f;
+    }
+    else if (gameState.level == 5 || gameState.level == 7 || gameState.level == 8 || gameState.level == 11)
+    {
+        powerPelletDuration = 2.f;
+    }
+    else if (gameState.level == 9 || gameState.level == 12 || gameState.level == 13 || gameState.level == 15 || gameState.level == 16 || gameState.level == 18)
+    {
+        powerPelletDuration = 1.f;
+    }
+    else
+    {
+        powerPelletDuration = 0.f;
+    }
+
+    powerPelletDurationTimer = powerPelletDuration;
+}
+
+void PacMan::setSpeed()
+{
+    if (gameState.level == 1)
+    {
+        speed = PACMAN_SPEED * .8f;
+    }
+    else if (gameState.level >= 2 && gameState.level <= 4)
+    {
+        speed = PACMAN_SPEED * .9f;
+    }
+    else if (gameState.level >= 5 && gameState.level <= 20)
+    {
+        speed = PACMAN_SPEED;
+    }
+    else
+    {
+        speed = PACMAN_SPEED * .9f;
+    }
+
+    currentSpeed = speed;
 }

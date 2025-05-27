@@ -63,15 +63,15 @@ struct GameState
     Inky inky;
     Clyde clyde;
 
-    int lives, score, highscore, level, eatableTiles;
-    bool gameOver, pause, startGame, victory, isWallBlinking = false, isWallWhite = false;
+    int lives = LIVES, score = 0, highscore = 0, level = 1, eatableTiles = 0;
+    bool gameOver = false, pause = false, startGame = true, victory = false, isWallBlinking = false, isWallWhite = false;
 
-    size_t maxFruits;
+    size_t maxFruits = 12 - LIVES;
     std::deque<char> eatenFruits;
     std::multimap<char, FruitData> fruits;
 
     GameMenu pauseMenu, victoryMenu;
-    float gameOverTimer, startGameTimer, wallBlinkTimer, victoryTimer;
+    float gameOverTimer, startGameTimer = START_GAME_TIME, wallBlinkTimer = WALL_BLINK_TIME, victoryTimer = VICTORY_TIME;
     ArcadeText arcadeText;
     std::vector<MenuOption> pauseOptions, victoryOptions;
 

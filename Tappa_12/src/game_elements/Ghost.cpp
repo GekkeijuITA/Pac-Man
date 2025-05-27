@@ -8,8 +8,9 @@
 #include <array>
 #include <unordered_map>
 
-#define COLLIDE_BOX 1.5f
+#define COLLIDE_BOX 1.1f
 #define SCORE_DISPLAY_TIME 1.5f;
+#define GHOST_SPEED 2.5f
 
 namespace std
 {
@@ -47,7 +48,19 @@ Ghost::Ghost(
                                                        gameState(gameState),
                                                        GHOST_TEX_MAP(GHOST_TEX_MAP)
 {
-    speed = 2.5f;
+    if (gameState.level == 1)
+    {
+        speed = GHOST_SPEED * .75f;
+    }
+    else if (gameState.level >= 2 && gameState.level <= 4)
+    {
+        speed = GHOST_SPEED * .85f;
+    }
+    else
+    {
+        speed = GHOST_SPEED * .95f;
+    }
+
     currentSpeed = speed;
     direction = NONE;
     lastDirection = NONE;
@@ -260,54 +273,7 @@ void Ghost::move(float elapsed)
             eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
         }
         sprite->setTextureRect(sf::IntRect({eyeTexPos->second.x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
-    }
-    else
-    {
-        if (GHOST_ANIM_MAP.find(direction) != GHOST_ANIM_MAP.end())
-        {
-            std::map<Direction, Animation>::iterator it = GHOST_ANIM_MAP.find(direction);
-            it->second.update(elapsed);
-        }
-        else
-        {
-            direction = LEFT;
-        }
-    }
 
-    if (state == IN_HOUSE)
-    {
-        if (gameState.pacman.getDotEaten() >= dotLimit)
-        {
-            if (position != nearestExitTile)
-            {
-                if (!path.empty())
-                {
-                    sf::Vector2i nextTile = path.back();
-
-                    if (position == nextTile)
-                    {
-                        path.pop_back();
-                    }
-                    computeNextDirection(nextTile);
-                }
-                else
-                {
-                    computeNextDirection(nearestExitTile);
-                }
-            }
-            else
-            {
-                setState(NORMAL);
-                isTransitioning = true;
-            }
-        }
-        else
-        {
-            chooseDirection();
-        }
-    }
-    else if (state == EATEN)
-    {
         if (position != nearestExitTile && !enteredHouse)
         {
             if (!path.empty())
@@ -340,6 +306,51 @@ void Ghost::move(float elapsed)
                 path.clear();
                 enteredHouse = false;
             }
+        }
+    }
+    else
+    {
+        if (state == IN_HOUSE)
+        {
+            if (gameState.pacman.getDotEaten() >= dotLimit)
+            {
+                if (position != nearestExitTile)
+                {
+                    if (!path.empty())
+                    {
+                        sf::Vector2i nextTile = path.back();
+
+                        if (position == nextTile)
+                        {
+                            path.pop_back();
+                        }
+                        computeNextDirection(nextTile);
+                    }
+                    else
+                    {
+                        computeNextDirection(nearestExitTile);
+                    }
+                }
+                else
+                {
+                    setState(NORMAL);
+                    isTransitioning = true;
+                }
+            }
+            else
+            {
+                chooseDirection();
+            }
+        }
+
+        if (GHOST_ANIM_MAP.find(direction) != GHOST_ANIM_MAP.end())
+        {
+            std::map<Direction, Animation>::iterator it = GHOST_ANIM_MAP.find(direction);
+            it->second.update(elapsed);
+        }
+        else
+        {
+            direction = LEFT;
         }
     }
 
@@ -481,7 +492,18 @@ void Ghost::setState(GhostState newState)
         direction = getOppositeDirection(direction);
         lastDirection = direction;
 
-        currentSpeed = speed / 1.5f;
+        if (gameState.level == 1)
+        {
+            currentSpeed = speed * .5f;
+        }
+        else if (gameState.level >= 2 && gameState.level <= 4)
+        {
+            currentSpeed = speed * .55f;
+        }
+        else if (gameState.level >= 5 && gameState.level <= 20)
+        {
+            currentSpeed = speed * .6f;
+        }
     }
     else if (state == EATEN)
     {

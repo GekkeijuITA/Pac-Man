@@ -17,22 +17,13 @@ namespace std
     }
 }
 
-GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &sm) : lives(LIVES),
-                                                                                        score(0),
-                                                                                        highscore(0),
+GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &sm) :
                                                                                         pacman(*this),
                                                                                         blinky(*this),
                                                                                         pinky(*this),
                                                                                         inky(*this),
                                                                                         clyde(*this),
-                                                                                        eatableTiles(0),
-                                                                                        gameOver(false),
-                                                                                        pause(false),
-                                                                                        startGame(true),
-                                                                                        level(1),
-                                                                                        startGameTimer(START_GAME_TIME),
                                                                                         mapPath(mapPath),
-                                                                                        victory(false),
                                                                                         window(window),
                                                                                         stateManager(sm)
 {
@@ -48,9 +39,6 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
         std::cerr << "Errore nel caricamento della texture dell'angolo" << std::endl;
         exit(1);
     }
-
-    wallBlinkTimer = WALL_BLINK_TIME;
-    victoryTimer = VICTORY_TIME;
 
     if (!getMap())
     {
@@ -84,10 +72,12 @@ GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager
     pauseMenu = GameMenu(window.getView(), "PAUSE", sf::Vector2i(10, 3), TextColor::WHITE, pauseOptions, sf::Vector2i(10, 6));
     victoryMenu = GameMenu(window.getView(), "VICTORY", sf::Vector2i(8, 3), TextColor::WHITE, victoryOptions, sf::Vector2i(8, 6));
 
-    maxFruits = 12 - lives;
     getHighscore();
 
     ArcadeText arcadeText;
+
+    pacman.setPowerPelletDuration();
+    pacman.setSpeed();
 }
 
 void GameState::update(float elapsed)
@@ -142,10 +132,16 @@ void GameState::update(float elapsed)
         {
             if (pacman.powerPellet)
             {
-                pacman.powerPelletDuration -= elapsed;
-                if (pacman.powerPelletDuration <= 0.f)
+
+                std::cout << "Power Pellet Duration Timer: " << pacman.powerPelletDurationTimer << std::endl;
+                if (pacman.powerPelletDurationTimer > 0.f)
+                {
+                    pacman.powerPelletDurationTimer -= elapsed;
+                }
+                else
                 {
                     pacman.powerPellet = false;
+                    pacman.powerPelletDurationTimer = pacman.powerPelletDuration;
 
                     for (Ghost *ghost : ghosts)
                     {
@@ -171,7 +167,7 @@ void GameState::update(float elapsed)
 
                 if (ghost->state == Ghost::SCARED)
                 {
-                    if (pacman.powerPelletDuration <= 3.f)
+                    if (pacman.powerPelletDurationTimer <= pacman.powerPelletDuration * .4f)
                     {
                         if (ghost->blinkingTime > 0.f)
                         {
@@ -233,6 +229,7 @@ void GameState::update(float elapsed)
                 if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !fruitData.second.isVisible)
                 {
                     fruitData.second.fruit->setTimer();
+                    fruitData.second.isVisible = true;
                 }
             }
 

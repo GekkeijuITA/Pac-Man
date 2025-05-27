@@ -7,6 +7,10 @@
 #include <map>
 #include <memory>
 
+#define PACMAN_SPEED 5.f
+#define STOP_MOVE_PACDOT 0.01f
+#define STOP_MOVE_POWERPELLET 0.05f
+
 inline const sf::Vector2i RIGHT_PACMAN = {1, 0};
 inline const sf::Vector2i LEFT_PACMAN = {1, 1};
 inline const sf::Vector2i UP_PACMAN = {1, 2};
@@ -25,15 +29,13 @@ inline const sf::Vector2i DEATH_9 = {11, 0};
 inline const sf::Vector2i DEATH_10 = {12, 0};
 inline const sf::Vector2i DEATH_11 = {13, 0};
 
-inline const float POWER_PELLET_DURATION = 5.f;
-
 struct GameState;
 
 struct PacMan
 {
     std::unique_ptr<sf::Sprite> sprite;
 
-    float speed, powerPelletDuration;
+    float speed, currentSpeed, powerPelletDuration, powerPelletDurationTimer, timer = 0.f;
     int dotEaten, ghostStreak;
     bool powerPellet, isDead = false;
 
@@ -72,5 +74,7 @@ struct PacMan
     int getDotEaten();
     void respawn();
     void setDeathAnimation();
+    void setPowerPelletDuration();
+    void setSpeed();
     sf::Vector2i getPosition();
 };
