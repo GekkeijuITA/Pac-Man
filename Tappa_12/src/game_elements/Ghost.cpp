@@ -87,7 +87,7 @@ void Ghost::draw(sf::RenderWindow &window)
 
     window.draw(*sprite);
 
-    sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
+    /*sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
     rect.setFillColor(sf::Color::Transparent);
     rect.setOutlineThickness(1);
     // Disegna la BFS
@@ -108,7 +108,7 @@ void Ghost::draw(sf::RenderWindow &window)
 
         rect.setPosition({x_l, y_l});
         window.draw(rect);
-    }
+    }*/
 }
 
 void Ghost::setPosition(int x, int y)
