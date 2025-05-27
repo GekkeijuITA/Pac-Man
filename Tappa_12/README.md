@@ -18,7 +18,10 @@ Ho aggiunto le animazioni per la morte di Pac-Man e per la vittoria (i muri che 
 
 ![Demo animazione vittoria](images/demo-victoryblink.gif)
 
-## Il Cuore dell'Editor
+## Alcuni miglioramenti nella logica di gioco
+Ho apportato alcune modifiche alla logica di gioco, in particolare per Pac-Man e i fantasmi. Ora le velocità di Pac-Man e dei fantasmi dipendono dal livello corrente e anche la durata del power-pellet varia in base al livello.
+
+## Il Cuore della Tappa
 
 La novità di questa tappa è l'**editor di mappe**. La sua base operativa è la stessa sia per la creazione che per la modifica. Funziona così: c'è un parametro che viene passato solo quando si sceglie di "modificare" una mappa esistente: il nome della mappa. Se questo nome non viene passato (quindi stiamo "creando"), mi trovo di fronte a una griglia completamente vuota, pronta per essere riempita. Se invece il nome c'è, la mappa corrispondente viene caricata, e posso iniziare a modificarla.
 
