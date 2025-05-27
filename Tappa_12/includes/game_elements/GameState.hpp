@@ -26,7 +26,7 @@
 #include "../GameMenu.hpp"
 #include "../core/StateManager.hpp"
 
-#define GAME_OVER_TIME 3.f
+#define GAME_OVER_TIME .5f
 #define START_GAME_TIME 3.f
 #define LIVES 3
 #define VICTORY_LEVEL 2

@@ -99,6 +99,7 @@ void GameState::update(float elapsed)
     {
         if (gameOverTimer > 0.f)
         {
+            std::cout << "Game Over Timer: " << gameOverTimer << std::endl;
             gameOverTimer -= elapsed;
         }
         return;
