@@ -632,6 +632,11 @@ void Create::drawTile()
     if (tileType == CLYDE && maxClyde <= 0)
         return;
 
+    if (map[cursorPos.y][cursorPos.x] != EMPTY_BLOCK)
+    {
+        deleteTile();
+    }
+
     map[cursorPos.y][cursorPos.x] = tileType;
 
     if (tileType == PACMAN)

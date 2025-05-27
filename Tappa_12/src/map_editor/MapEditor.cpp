@@ -29,6 +29,10 @@ void MapEditor::doGraphics()
     case MENU:
     {
         menu.draw(window);
+        arcadeText.drawString("1. select a tile to\nplace on the map with\nthe mouse", 4, 20, window, TextColor::SALMON);
+        arcadeText.drawString("2. click to place the\ntile on the map", 4, 24, window, TextColor::SALMON);
+        arcadeText.drawString("3. press 'ESC' to open\nthe options menu", 4, 27, window, TextColor::SALMON);
+        arcadeText.drawString("4. while on a tile\npress 'R' to rotate it", 4, 30, window, TextColor::SALMON);
         break;
     }
     case CREATE:

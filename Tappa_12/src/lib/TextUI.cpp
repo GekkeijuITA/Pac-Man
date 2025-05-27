@@ -31,7 +31,6 @@ void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow 
     float offset = 0.f;
     for (size_t i = 0; i < str.length(); i++)
     {
-        offset = i;
         std::string c(1, std::toupper(str[i]));
         if (c == "\n")
         {
@@ -79,7 +78,6 @@ void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow 
     float offset = 0.f;
     for (size_t i = 0; i < str.length(); i++)
     {
-        offset = i;
         std::string c(1, std::toupper(str[i]));
         if (c == "\n")
         {
@@ -103,7 +101,6 @@ void ArcadeText::drawString(std::string str, float x, float y, sf::RenderWindow 
     float offset = 0.f;
     for (size_t i = 0; i < str.length(); i++)
     {
-        offset = i;
         std::string c(1, std::toupper(str[i]));
         if (c == "\n")
         {
