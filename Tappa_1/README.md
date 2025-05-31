@@ -27,4 +27,5 @@ Questo approccio mi garantisce che la mappa venga sempre visualizzata in modo pr
 * [Wiki di Pac-Man](https://pacman.holenet.info/)
 * [Video di riferimento 1](https://www.youtube.com/watch?v=i_OjztdQ8iw)
 * [Video di riferimento 2](https://www.youtube.com/watch?v=AuoH0vz3Mqk)
+* [Discussione su come gestire diverse risoluzioni di schermo](https://en.sfml-dev.org/forums/index.php?topic=18783.0)
 ---
