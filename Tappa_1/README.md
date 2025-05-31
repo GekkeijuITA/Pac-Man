@@ -1,10 +1,8 @@
-## Tappa n.1: La Finestra Principale e la Questione delle Dimensioni
+# Tappa n.1: La Finestra Principale e la Questione delle Dimensioni
 
 Mentre iniziavo a lavorare sulla finestra principale dell'applicazione, mi sono reso conto subito di un problema critico: usare valori fissi per larghezza e altezza creava delle difficoltà significative su schermi di dimensioni diverse. Questa dipendenza da dimensioni "hardcodate" rendeva l'interfaccia tutt'altro che ottimale e decisamente poco flessibile.
 
----
-
-### La Soluzione: Una Finestra Responsiva
+## La Soluzione: Una Finestra Responsiva
 
 Per superare questa limitazione, la mia scelta è stata quella di rendere la finestra **responsiva**. Questo significa che ora le sue dimensioni e la visualizzazione della mappa si adattano dinamicamente allo spazio disponibile.
 
@@ -22,7 +20,11 @@ Questo approccio mi garantisce che la mappa venga sempre visualizzata in modo pr
 ![Visualizzazione su Windows](images/windows_screen.png)
 ![Visualizzazione su macOS](images/mac_screen.png)
 
+## Indagine e Riferimenti
+Prima di lavorare al gioco vero e proprio, ho dedicato del tempo a esplorare le regole e meccaniche di gioco. Per fare ciò, ho consultato diverse fonti online, tra cui wiki e video di gameplay su Youtube.
+
 ---
+
 **Fonti utilizzate in questa Tappa:**
 * [Wiki di Pac-Man](https://pacman.holenet.info/)
 * [Video di riferimento 1](https://www.youtube.com/watch?v=i_OjztdQ8iw)
