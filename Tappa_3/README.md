@@ -15,3 +15,8 @@ Per quanto riguarda il **cambio di direzione "al volo"**, ho introdotto una vari
 ---
 
 ![Demo del movimento di Pac-Man](images/demo.png)
+
+---
+**Fonti utilizzate in questa Tappa:**
+Nessuna fonte esterna è stata utilizzata in questa tappa, poiché ho applicato conoscenze già acquisite in precedenza.
+---

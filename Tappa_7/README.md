@@ -10,10 +10,9 @@ Una funzionalità che si è rivelata piuttosto difficile da implementare è stat
 
 Per risolvere questo problema, ho utilizzato un algoritmo **BFS (Breadth-First Search)**. Questo algoritmo mi permette di calcolare la tile `GHOST_DOOR` più vicina alla posizione attuale del fantasma in quel momento, fornendo un percorso efficiente per il suo ritorno.
 
----
+![Demo con i power pellet e i fantasmi spaventati](images/demo.png)
 
-**Fonti:**
+---
+**Fonti utilizzate in questa Tappa:**
 * [Algoritmo BFS](https://medium.com/@RobuRishabh/classic-graph-algorithms-c-9773f2841f2e)
 ---
-
-![Demo con i power pellet e i fantasmi spaventati](images/demo.png)

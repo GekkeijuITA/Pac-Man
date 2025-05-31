@@ -9,3 +9,9 @@ Inoltre, per migliorare l'organizzazione del codice, ho spostato tutta la logica
 ---
 
 ![Demo del gioco con gestione delle collisioni](images/demo.png)
+
+---
+**Fonti utilizzate in questa Tappa:**
+* [Discussione su come calcolare la distanza tra due punti](https://it.mathworks.com/matlabcentral/answers/16848-how-to-find-distance-between-two-points)
+* [Distanza Euclidea](https://it.wikipedia.org/wiki/Distanza_euclidea)
+---

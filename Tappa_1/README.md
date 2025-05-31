@@ -21,3 +21,10 @@ Questo approccio mi garantisce che la mappa venga sempre visualizzata in modo pr
 
 ![Visualizzazione su Windows](images/windows_screen.png)
 ![Visualizzazione su macOS](images/mac_screen.png)
+
+---
+**Fonti utilizzate in questa Tappa:**
+* [Wiki di Pac-Man](https://pacman.holenet.info/)
+* [Video di riferimento 1](https://www.youtube.com/watch?v=i_OjztdQ8iw)
+* [Video di riferimento 2](https://www.youtube.com/watch?v=AuoH0vz3Mqk)
+---

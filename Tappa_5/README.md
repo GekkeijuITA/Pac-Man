@@ -18,3 +18,8 @@ La soluzione che ho adottato è stata la seguente:
 ---
 
 ![Demo con i fantasmi in movimento](images/demo.png)
+
+---
+**Fonti utilizzate in questa Tappa:**
+Nessuna fonte esterna è stata utilizzata in questa tappa, poiche ho riutilizzato e adattato codice già scritto in precedenza.
+---

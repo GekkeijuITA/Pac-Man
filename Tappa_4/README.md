@@ -13,3 +13,8 @@ Durante i test, però, ho notato un **leak di memoria** che era causato dalla ma
 ---
 
 ![Demo del gioco con UI](images/demo.png)
+
+---
+**Fonti utilizzate in questa Tappa:**
+* [Caricare una texture](https://www.sfml-dev.org/tutorials/3.0/graphics/sprite/#loading-a-texture)
+---

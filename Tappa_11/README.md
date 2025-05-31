@@ -10,13 +10,10 @@ Queste anteprime vengono poi disposte in una griglia nel menu. Ho implementato u
 
 Infine, per rendere i nomi delle mappe più leggibili, ho creato una funzione `prettify` che pulisce i nomi dei file rimuovendo estensioni e caratteri non pertinenti, trasformandoli in un formato più user-friendly per la visualizzazione nel menu.
 
+![Demo del selettore di livelli](images/demo.png)
+
 ---
-
 **Fonti utilizzate in questa Tappa:**
-
 * [Come rimuovere l'estensione da un nome di file in C++](https://stackoverflow.com/questions/6417817/easy-way-to-remove-extension-from-a-filename)
 * [Sostituire o rimuovere caratteri non corrispondenti a regex in C++](https://stackoverflow.com/questions/28963810/replace-or-remove-characters-that-are-not-in-regex-with-c)
-
 ---
-
-![Demo del selettore di livelli](images/demo.png)

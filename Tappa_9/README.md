@@ -12,3 +12,8 @@ Come conseguenza di questa riorganizzazione, ho creato i file che rappresentano 
 ![Game Over](images/gameover.png)
 ![Menu di Pausa](images/pausemenu.png)
 ![Schermata di Vittoria](images/victorymenu.png)
+
+---
+**Fonti utilizzate in questa Tappa:**
+Nessuna fonte esterna è stata utilizzata per questa tappa, in quanto si tratta principalmente di riorganizzazione del codice e implementazione di funzionalità che usano competenze già acquisite nelle tappe precedenti.
+---
