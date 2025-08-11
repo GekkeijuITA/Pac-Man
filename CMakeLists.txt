@@ -240,6 +240,43 @@ add_executable(
     Tappa_12/src/MainMenuState.cpp
 )
 
+add_executable(
+    Tappa13
+
+    Tappa_13/src/core/Animation.cpp
+    Tappa_13/src/core/Debug.cpp
+    Tappa_13/src/core/StateManager.cpp
+
+    Tappa_13/src/lib/TextUI.cpp
+    Tappa_13/src/lib/textures.cpp
+    Tappa_13/src/lib/TileFactory.cpp
+
+    Tappa_13/src/game_elements/Fruit.cpp
+    Tappa_13/src/game_elements/GameState.cpp
+    Tappa_13/src/game_elements/Ghost.cpp
+    Tappa_13/src/game_elements/PacMan.cpp
+    Tappa_13/src/game_elements/fruits/Apple.cpp
+    Tappa_13/src/game_elements/fruits/Bell.cpp
+    Tappa_13/src/game_elements/fruits/Cherry.cpp
+    Tappa_13/src/game_elements/fruits/Galaxian.cpp
+    Tappa_13/src/game_elements/fruits/Grape.cpp
+    Tappa_13/src/game_elements/fruits/Key.cpp
+    Tappa_13/src/game_elements/fruits/Orange.cpp
+    Tappa_13/src/game_elements/fruits/Strawberry.cpp
+    Tappa_13/src/game_elements/ghosts/Blinky.cpp
+    Tappa_13/src/game_elements/ghosts/Clyde.cpp
+    Tappa_13/src/game_elements/ghosts/Inky.cpp
+    Tappa_13/src/game_elements/ghosts/Pinky.cpp
+
+    Tappa_13/src/map_editor/MapEditor.cpp
+    Tappa_13/src/map_editor/Create.cpp
+
+    Tappa_13/src/main.cpp
+    Tappa_13/src/GameMenu.cpp
+    Tappa_13/src/LevelSelectorState.cpp
+    Tappa_13/src/MainMenuState.cpp
+)
+
 target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa3 PRIVATE SFML::Graphics)
@@ -252,3 +289,4 @@ target_link_libraries(Tappa9 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa10 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa11 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa12 PRIVATE SFML::Graphics)
+target_link_libraries(Tappa13 PRIVATE SFML::Graphics)
