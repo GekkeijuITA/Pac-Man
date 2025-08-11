@@ -65,6 +65,12 @@ struct Ghost
 
 protected:
     sf::Vector2i getPacmanPosition();
+    Direction getPacmanDirection();
+    void findPathBFS(sf::Vector2i destination);
+    void setDirection(Direction dir);
+    void computeNextDirection(sf::Vector2i destination);
+    void eatenState(float elapsed);
+
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
     std::map<Direction, sf::Vector2i> GHOST_EYES_TEX_MAP = {
         {UP, GHOST_U},
@@ -81,19 +87,17 @@ protected:
         std::map<Direction, sf::Vector2i> GHOST_TEX_MAP);
 
 private:
-    void setDirection(Direction dir);
+    
     void chooseDirection();
     void getExitTile();
     void eat(int x, int y);
-    void findPathBFS(sf::Vector2i destination);
-    void computeNextDirection(sf::Vector2i destination);
     Direction getOppositeDirection(Direction dir);
 
 public:
     void draw(sf::RenderWindow &window);
     void setPosition(int x, int y);
     void setMap(std::vector<std::vector<char>> *map);
-    void move(float elapsed);
+    virtual void move(float elapsed);
     double distance(sf::Vector2i target);
     bool isWall(int x, int y);
     void setState(GhostState state);

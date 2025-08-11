@@ -77,4 +77,5 @@ struct PacMan
     void setPowerPelletDuration();
     void setSpeed();
     sf::Vector2i getPosition();
+    Direction getDirection();
 };

@@ -244,6 +244,11 @@ sf::Vector2i PacMan::getPosition()
     return position;
 }
 
+Direction PacMan::getDirection()
+{
+    return direction;
+}
+
 void PacMan::setDeathAnimation()
 {
     Animation::insertAnimation(DEATH_ANIMATION, deathFrames, *sprite, .2f, false);

@@ -265,7 +265,51 @@ void Ghost::findPathBFS(sf::Vector2i destination)
     }
 }
 
-void Ghost::move(float elapsed)
+void Ghost::eatenState(float elapsed)
+{
+    auto eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
+    if (eyeTexPos == GHOST_EYES_TEX_MAP.end())
+    {
+        setDirection(LEFT);
+        eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
+    }
+    sprite->setTextureRect(sf::IntRect({eyeTexPos->second.x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
+
+    if (position != nearestExitTile)
+    {
+        if (!path.empty())
+        {
+            sf::Vector2i nextTile = path.back();
+            computeNextDirection(nextTile);
+
+            if (position == nextTile)
+            {
+                path.pop_back();
+            }
+        }
+        else
+        {
+            computeNextDirection(nearestExitTile);
+        }
+        isTransitioning = true;
+    }
+    else
+    {
+        timeToEnterHouse += elapsed;
+        setDirection(lastDirection);
+        if (!enteredHouse)
+            enteredHouse = true;
+
+        if (timeToEnterHouse >= .5f)
+        {
+            setState(IN_HOUSE);
+            path.clear();
+            enteredHouse = true;
+        }
+    }
+}
+
+/*void Ghost::move(float elapsed)
 {
     if (!map || stoppedForScore || this == nullptr)
     {
@@ -521,6 +565,7 @@ void Ghost::move(float elapsed)
         eat(position.x, position.y);
     }
 }
+*/
 
 // Calcola la distanza tra il fantasma e il bersaglio
 double Ghost::distance(sf::Vector2i target)
@@ -670,6 +715,11 @@ void Ghost::drawScore()
 sf::Vector2i Ghost::getPacmanPosition()
 {
     return gameState.pacman.getPosition();
+}
+
+Direction Ghost::getPacmanDirection()
+{
+    return gameState.pacman.getDirection();
 }
 
 Direction Ghost::getOppositeDirection(Direction dir)
