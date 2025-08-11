@@ -309,6 +309,10 @@ void Ghost::eatenState(float elapsed)
     }
 }
 
+void Ghost::move(float elapsed) {
+    // Default movement behavior
+}
+
 /*void Ghost::move(float elapsed)
 {
     if (!map || stoppedForScore || this == nullptr)

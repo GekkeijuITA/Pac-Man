@@ -9,4 +9,5 @@ inline const sf::Vector2i PINKY_D = {6, 5};
 struct Pinky : public Ghost
 {
     Pinky(GameState &gameState);
+    void move(float elapsed) override;
 };

@@ -9,4 +9,5 @@ inline const sf::Vector2i CLYDE_D = {6, 7};
 struct Clyde : public Ghost
 {
     Clyde(GameState &gameState);
+    void move(float elapsed) override;
 };

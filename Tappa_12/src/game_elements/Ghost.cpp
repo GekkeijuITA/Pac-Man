@@ -86,29 +86,6 @@ void Ghost::draw(sf::RenderWindow &window)
     sprite->setPosition({x, y});
 
     window.draw(*sprite);
-
-    /*sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
-    rect.setFillColor(sf::Color::Transparent);
-    rect.setOutlineThickness(1);
-    // Disegna la BFS
-    for (const auto &p : path)
-    {
-        float y_l = static_cast<float>((p.x + 3) * TILE_SIZE);
-        float x_l = static_cast<float>(p.y * TILE_SIZE);
-        if (name == "Blinky")
-            rect.setOutlineColor(sf::Color::Red);
-        else if (name == "Pinky")
-            rect.setOutlineColor(sf::Color::Magenta);
-        else if (name == "Inky")
-            rect.setOutlineColor(sf::Color::Cyan);
-        else if (name == "Clyde")
-            rect.setOutlineColor(sf::Color(255, 165, 0)); // Orange
-        else
-            rect.setOutlineColor(sf::Color::White);
-
-        rect.setPosition({x_l, y_l});
-        window.draw(rect);
-    }*/
 }
 
 void Ghost::setPosition(int x, int y)
@@ -304,8 +281,6 @@ void Ghost::move(float elapsed)
         {
             timeToEnterHouse += elapsed;
             setDirection(lastDirection);
-            if (!enteredHouse)
-                enteredHouse = true;
 
             if (timeToEnterHouse >= .5f)
             {
@@ -317,17 +292,6 @@ void Ghost::move(float elapsed)
     }
     else
     {
-        sf::Vector2i pacmanPosition = getPacmanPosition();
-        if (distance(pacmanPosition) < 10.0f && state == NORMAL)
-        {
-            state = CHASE;
-            isChasing = true;
-        }
-        else if (state == CHASE && distance(pacmanPosition) >= 10.0f)
-        {
-            isChasing = false;
-        }
-
         if (state == IN_HOUSE)
         {
             if (gameState.pacman.getDotEaten() >= dotLimit)
@@ -370,9 +334,22 @@ void Ghost::move(float elapsed)
         {
             enteredHouse = false;
             isTransitioning = false;
+
+            sf::Vector2i pacmanPosition = getPacmanPosition();
+            if (distance(pacmanPosition) <= 10.0f)
+            {
+                state = CHASE;
+                isChasing = true;
+            }
         }
         else if (state == CHASE)
         {
+            sf::Vector2i pacmanPosition = getPacmanPosition();
+            if (distance(pacmanPosition) > 10.0f)
+            {
+                isChasing = false;
+            }
+
             isTransitioning = false;
             if (path.empty() && isChasing)
             {
@@ -392,7 +369,6 @@ void Ghost::move(float elapsed)
             else
             {
                 state = NORMAL;
-                isChasing = false;
             }
         }
         else

@@ -34,7 +34,7 @@ struct Create
     ArcadeText arcadeText;
     std::vector<std::vector<char>> map;
     std::string mapName, errorMessage, successMessage;
-    const std::string folderPath = "../Tappa_12/resources/maps/";
+    const std::string folderPath = "../Tappa_13/resources/maps/";
 
     GameMenu menu;
     std::vector<MenuOption> options;
