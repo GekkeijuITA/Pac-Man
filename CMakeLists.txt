@@ -14,6 +14,7 @@ FetchContent_MakeAvailable(SFML)
 
 message(STATUS "Include directory: ${CMAKE_SOURCE_DIR}/includes")
 
+#[[
 add_executable(
     Tappa1
      
@@ -238,7 +239,7 @@ add_executable(
     Tappa_12/src/GameMenu.cpp
     Tappa_12/src/LevelSelectorState.cpp
     Tappa_12/src/MainMenuState.cpp
-)
+)]]#
 
 add_executable(
     Tappa13
@@ -277,7 +278,7 @@ add_executable(
     Tappa_13/src/MainMenuState.cpp
 )
 
-target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
+#[[target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa2 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa3 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa4 PRIVATE SFML::Graphics)
@@ -288,5 +289,5 @@ target_link_libraries(Tappa8 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa9 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa10 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa11 PRIVATE SFML::Graphics)
-target_link_libraries(Tappa12 PRIVATE SFML::Graphics)
+target_link_libraries(Tappa12 PRIVATE SFML::Graphics)]]#
 target_link_libraries(Tappa13 PRIVATE SFML::Graphics)
