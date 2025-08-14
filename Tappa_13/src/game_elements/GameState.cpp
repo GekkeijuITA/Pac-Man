@@ -156,38 +156,7 @@ void GameState::update(float elapsed)
 
             for (Ghost *ghost : ghosts)
             {
-                ghost->move(elapsed);
-                if (ghost->state == Ghost::EATEN)
-                {
-                    if (ghost->scoreDisplayTimer > 0.f)
-                        ghost->scoreDisplayTimer -= elapsed;
-                }
-
-                if (ghost->state == Ghost::SCARED)
-                {
-                    if (pacman.powerPelletDurationTimer <= pacman.powerPelletDuration * .4f)
-                    {
-                        if (ghost->blinkingTime > 0.f)
-                        {
-                            ghost->blinkingTime -= elapsed;
-                            if (ghost->isWhite)
-                            {
-                                ghost->backScaredAnim->update(elapsed);
-                            }
-                            else
-                            {
-                                ghost->scaredAnim->update(elapsed);
-                            }
-                        }
-                        else
-                        {
-                            ghost->blinkingTime = 0.2f;
-                            ghost->isWhite = !ghost->isWhite;
-                        }
-                    }
-                    else
-                        ghost->scaredAnim->update(elapsed);
-                }
+                ghost->update(elapsed);
             }
 
             for (auto &fruitData : fruits)
@@ -373,7 +342,7 @@ bool GameState::getMap()
                 map.back()[i] = EMPTY_BLOCK;
                 ghosts.push_back(&blinky);
             }
-            else if (row[i] == PINKY)
+            /*else if (row[i] == PINKY)
             {
                 pinky.setPosition(map.size() - 1, i);
                 pinky.spawn = {static_cast<int>(map.size()) - 1, i};
@@ -393,7 +362,7 @@ bool GameState::getMap()
                 clyde.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
                 ghosts.push_back(&clyde);
-            }
+            }*/
             else if (row[i] == GHOST_DOOR_H || row[i] == GHOST_DOOR_V)
             {
                 blinky.addExitTile(map.size() - 1, i);
@@ -445,7 +414,6 @@ bool GameState::getMap()
     for (Ghost *ghost : ghosts)
     {
         ghost->setMap(&map);
-        ghost->setSpeed();
     }
 
     return true;
@@ -507,15 +475,6 @@ void GameState::doGraphics()
                 for (Ghost *ghost : ghosts)
                 {
                     ghost->draw(window);
-
-                    if (ghost->scoreDisplayTimer > 0.f)
-                    {
-                        ghost->drawScore();
-                    }
-                    else
-                    {
-                        ghost->stoppedForScore = false;
-                    }
                 }
 
                 for (const auto &fruitElement : fruits)
@@ -534,7 +493,7 @@ void GameState::doGraphics()
         }
     }
 
-    // Debug::drawGrid(window);
+    //Debug::drawGrid(window);
 }
 
 void GameState::doUI()
@@ -645,14 +604,7 @@ void GameState::resetRound()
     pacman.respawn();
     for (Ghost *ghost : ghosts)
     {
-        if (ghost == &blinky)
-        {
-            ghost->respawn(Ghost::NORMAL);
-        }
-        else
-        {
-            ghost->respawn(Ghost::IN_HOUSE);
-        }
+        ghost->respawn();
     }
 
     if (lives <= 0 && !gameOver && !pacman.isDead)
@@ -721,7 +673,7 @@ void GameState::nextLevel()
 void GameState::saveHighscore()
 {
     std::ofstream highscoreFile;
-    highscoreFile.open("../Tappa_13/resources/highscore.txt", std::ios::out);
+    highscoreFile.open("../../Tappa_13/resources/highscore.txt", std::ios::out);
     if (!highscoreFile.is_open())
     {
         std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
@@ -737,7 +689,7 @@ void GameState::saveHighscore()
 void GameState::getHighscore()
 {
     std::ifstream highscoreFile;
-    highscoreFile.open("../Tappa_13/resources/highscore.txt", std::ios::in);
+    highscoreFile.open("../../Tappa_13/resources/highscore.txt", std::ios::in);
     if (!highscoreFile.is_open())
     {
         std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;

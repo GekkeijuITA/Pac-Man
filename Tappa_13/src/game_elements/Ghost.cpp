@@ -35,15 +35,19 @@ namespace sf
 Ghost::Ghost(
     GhostState state,
     int dotLimit,
+    sf::IntRect preferredAngle,
     std::string name,
     GameState &gameState,
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP) : map(nullptr),
                                                        dotLimit(dotLimit),
                                                        name(name),
                                                        gameState(gameState),
-                                                       GHOST_TEX_MAP(GHOST_TEX_MAP)
+                                                       GHOST_TEX_MAP(GHOST_TEX_MAP),
+                                                       preferredAngle(preferredAngle)
 {
     setState(state);
+    setScatterChasePattern();
+    setSpeed();
 
     if (!tex.loadFromFile(ASSET))
     {
@@ -75,6 +79,18 @@ Ghost::Ghost(
 
 void Ghost::draw(sf::RenderWindow &window)
 {
+    if (!gameState.pacman.isDead && !gameState.isWallBlinking)
+    {
+        if (scoreDisplayTimer > 0.f)
+        {
+            Ghost::drawScore();
+        }
+        else
+        {
+            stoppedForScore = false;
+        }
+    }
+
     if (stoppedForScore)
     {
         return;
@@ -87,7 +103,7 @@ void Ghost::draw(sf::RenderWindow &window)
 
     window.draw(*sprite);
 
-    /*sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
+    sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
     rect.setFillColor(sf::Color::Transparent);
     rect.setOutlineThickness(1);
     // Disegna la BFS
@@ -108,7 +124,25 @@ void Ghost::draw(sf::RenderWindow &window)
 
         rect.setPosition({x_l, y_l});
         window.draw(rect);
-    }*/
+    }
+
+    // Disegna l'angolo preferito
+    sf::RectangleShape preferredAngleRect(sf::Vector2f({(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}));
+    preferredAngleRect.setFillColor(sf::Color::Transparent);
+    preferredAngleRect.setOutlineThickness(1);
+    if (name == "Blinky")
+        preferredAngleRect.setOutlineColor(sf::Color::Red);
+    else if (name == "Pinky")
+        preferredAngleRect.setOutlineColor(sf::Color::Magenta);
+    else if (name == "Inky")
+        preferredAngleRect.setOutlineColor(sf::Color::Cyan);
+    else if (name == "Clyde")
+        preferredAngleRect.setOutlineColor(sf::Color(255, 165, 0)); // Orange
+    else
+        preferredAngleRect.setOutlineColor(sf::Color::White);
+
+    preferredAngleRect.setPosition({preferredAngle.position.x * TILE_SIZE, (preferredAngle.position.y + 3) * TILE_SIZE});
+    window.draw(preferredAngleRect);
 }
 
 void Ghost::setPosition(int x, int y)
@@ -141,7 +175,7 @@ bool Ghost::isWall(int x, int y)
 
     if (((*map)[x][y] == GHOST_DOOR_H || (*map)[x][y] == GHOST_DOOR_V))
     {
-        if (state == NORMAL)
+        if (state == CHASE)
             return true;
         if (state == SCARED && lastState == IN_HOUSE)
             return true;
@@ -182,25 +216,23 @@ void Ghost::chooseDirection()
     }
     else
     {
-        if (getOppositeDirection(direction) != UP && !isWall(x - 1, y) && x - 1 >= 0 && x - 1 < map->size())
-            possibleDirections.push_back(UP);
-        if (getOppositeDirection(direction) != DOWN && !isWall(x + 1, y) && x + 1 >= 0 && x + 1 < map->size())
-            possibleDirections.push_back(DOWN);
-        if (getOppositeDirection(direction) != LEFT && !isWall(x, y - 1) && y - 1 >= 0 && y - 1 < (*map)[0].size())
-            possibleDirections.push_back(LEFT);
-        if (getOppositeDirection(direction) != RIGHT && !isWall(x, y + 1) && y + 1 >= 0 && y + 1 < (*map)[0].size())
-            possibleDirections.push_back(RIGHT);
-
-        if (possibleDirections.empty())
+        Direction randomDir = static_cast<Direction>(rand() % 4);
+        if (!isWall(x + (randomDir == DOWN ? 1 : (randomDir == UP ? -1 : 0)), y + (randomDir == RIGHT ? 1 : (randomDir == LEFT ? -1 : 0))))
         {
-            if (!isWall(x - 1, y) && x - 1 >= 0 && x - 1 < map->size())
-                possibleDirections.push_back(UP);
-            if (!isWall(x + 1, y) && x + 1 >= 0 && x + 1 < map->size())
-                possibleDirections.push_back(DOWN);
-            if (!isWall(x, y - 1) && y - 1 >= 0 && y - 1 < (*map)[0].size())
-                possibleDirections.push_back(LEFT);
-            if (!isWall(x, y + 1) && y + 1 >= 0 && y + 1 < (*map)[0].size())
-                possibleDirections.push_back(RIGHT);
+            setDirection(randomDir);
+            return;
+        }
+        else
+        {
+            for (Direction dir : {UP, RIGHT, DOWN, LEFT})
+            {
+                if (dir != randomDir && !isWall(x + (dir == DOWN ? 1 : (dir == UP ? -1 : 0)), y + (dir == RIGHT ? 1 : (dir == LEFT ? -1 : 0))))
+                {
+                    setDirection(dir);
+                    return;
+                }
+            }
+            setDirection(NONE);
         }
     }
 
@@ -210,6 +242,21 @@ void Ghost::chooseDirection()
     }
 }
 
+sf::Vector2i Ghost::findFirstValidTile(sf::Vector2i start, sf::Vector2f dimensions)
+{
+    for (int y = start.y; y < dimensions.y; y++)
+    {
+        for (int x = start.x; x < dimensions.x; x++)
+        {
+            if (!isWall(x, y))
+            {
+                return {x, y};
+            }
+        }
+    }
+    return {-1, -1};
+}
+
 // https://medium.com/@RobuRishabh/classic-graph-algorithms-c-9773f2841f2e
 void Ghost::findPathBFS(sf::Vector2i destination)
 {
@@ -217,6 +264,12 @@ void Ghost::findPathBFS(sf::Vector2i destination)
         return;
 
     path.clear();
+
+    targetTile = destination;
+    if (isWall(targetTile.x, targetTile.y) && state == SCATTER)
+    {
+        targetTile = findFirstValidTile(destination, sf::Vector2f(MAP_WIDTH, MAP_HEIGHT));
+    }
 
     std::unordered_map<sf::Vector2i, bool> visited;
     std::unordered_map<sf::Vector2i, sf::Vector2i> parent;
@@ -230,7 +283,7 @@ void Ghost::findPathBFS(sf::Vector2i destination)
         sf::Vector2i current = q.front();
         q.pop();
 
-        if (current == destination)
+        if (current == targetTile)
         {
             sf::Vector2i step = current;
             while (step != position)
@@ -267,14 +320,6 @@ void Ghost::findPathBFS(sf::Vector2i destination)
 
 void Ghost::eatenState(float elapsed)
 {
-    auto eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
-    if (eyeTexPos == GHOST_EYES_TEX_MAP.end())
-    {
-        setDirection(LEFT);
-        eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
-    }
-    sprite->setTextureRect(sf::IntRect({eyeTexPos->second.x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
-
     if (position != nearestExitTile)
     {
         if (!path.empty())
@@ -309,8 +354,355 @@ void Ghost::eatenState(float elapsed)
     }
 }
 
-void Ghost::move(float elapsed) {
-    // Default movement behavior
+void Ghost::scatterState()
+{
+    bool isInScatterArea = preferredAngle.contains({position.y, position.x});
+
+    if (!isInScatterArea)
+    {
+        if (path.empty())
+        {
+            findPathBFS({preferredAngle.position.y, preferredAngle.position.x});
+        }
+    }
+    else
+        path.clear();
+}
+
+void Ghost::behaviour()
+{
+    // Implement ghost behavior logic here
+}
+
+bool Ghost::isAlignedToCell()
+{
+    float tolerance = 0.075f;
+    return std::abs(fPosition.x) < tolerance && std::abs(fPosition.y) < tolerance;
+}
+
+void Ghost::exitHouse()
+{
+    if (position != nearestExitTile)
+    {
+        if (!path.empty())
+        {
+            sf::Vector2i nextTile = path.back();
+            computeNextDirection(nextTile);
+
+            if (position == nextTile)
+            {
+                path.pop_back();
+            }
+        }
+        else
+        {
+            computeNextDirection(nearestExitTile);
+        }
+
+        isTransitioning = true;
+        enteredHouse = false;
+    }
+    else
+    {
+        setState(CHASE);
+        isTransitioning = false;
+        enteredHouse = false;
+        path.clear();
+    }
+}
+
+void Ghost::setScatterChasePattern()
+{
+    if (gameState.level < 5)
+    {
+        chaseScatterPattern[0] = 7.f; // Scatter
+        chaseScatterPattern[2] = 7.f; // Scatter
+        chaseScatterPattern[4] = 5.f; // Scatter
+        if (gameState.level > 1)
+        {
+            chaseScatterPattern[5] = 1033.f;   // Chase
+            chaseScatterPattern[6] = 1 / 60.f; // Scatter
+        }
+        else
+        {
+            chaseScatterPattern[5] = 20.f; // Chase
+            chaseScatterPattern[6] = 5.f;  // Scatter
+        }
+    }
+    else
+    {
+        chaseScatterPattern[0] = 5.f;
+        chaseScatterPattern[2] = 5.f;
+        chaseScatterPattern[5] = 1037.f;   // Chase
+        chaseScatterPattern[6] = 1 / 60.f; // Scatter
+    }
+
+    chaseScatterPattern[1] = 20.f;   // Chase
+    chaseScatterPattern[3] = 20.f;   // Chase
+    chaseScatterPattern[7] = 9999.f; // Indefinite Chase
+}
+
+void Ghost::update(float elapsed)
+{
+    if (state == EATEN)
+    {
+        if (scoreDisplayTimer > 0.f)
+        {
+            scoreDisplayTimer -= elapsed;
+        }
+    }
+    else if (state != IN_HOUSE && state != SCARED)
+    {
+        if (chaseScatterIndex % 2 == 0)
+        {
+            // Scatter
+            if (chaseScatterPattern[chaseScatterIndex] < 0.f)
+            {
+                if (state != CHASE)
+                {
+                    setState(CHASE);
+                }
+                chaseScatterPattern[chaseScatterIndex] = 0.f;
+
+                chaseScatterIndex++;
+            }
+            else
+            {
+                chaseScatterPattern[chaseScatterIndex] -= elapsed;
+            }
+        }
+        else
+        {
+            // Chase
+            if (chaseScatterIndex == 7)
+                return;
+
+            if (chaseScatterPattern[chaseScatterIndex] < 0.f)
+            {
+                if (state != SCATTER)
+                {
+                    setState(SCATTER);
+                    findPathBFS({preferredAngle.position.y, preferredAngle.position.x});
+                }
+                chaseScatterPattern[chaseScatterIndex] = 0.f;
+
+                chaseScatterIndex++;
+            }
+            else
+            {
+                chaseScatterPattern[chaseScatterIndex] -= elapsed;
+            }
+        }
+    }
+
+    move(elapsed);
+    Ghost::animate(elapsed);
+}
+
+bool Ghost::isAtIntersection()
+{
+    int possibleDirections = 0;
+    int x = position.x;
+    int y = position.y;
+
+    if (getOppositeDirection(direction) != UP && !isWall(x - 1, y))
+    {
+        possibleDirections++;
+    }
+    if (getOppositeDirection(direction) != DOWN && !isWall(x + 1, y))
+    {
+        possibleDirections++;
+    }
+    if (getOppositeDirection(direction) != LEFT && !isWall(x, y - 1))
+    {
+        possibleDirections++;
+    }
+    if (getOppositeDirection(direction) != RIGHT && !isWall(x, y + 1))
+    {
+        possibleDirections++;
+    }
+
+    return possibleDirections > 1;
+}
+
+void Ghost::move(float elapsed)
+{
+    if (!map || stoppedForScore || this == nullptr)
+    {
+        return;
+    }
+
+    if (state == EATEN)
+    {
+        Ghost::eatenState(elapsed);
+    }
+    else if (state == SCATTER)
+    {
+        Ghost::scatterState();
+    }
+    else if (state != SCARED)
+    {
+        behaviour();
+    }
+
+    if (!path.empty())
+    {
+        sf::Vector2i nextTile = path.back();
+        computeNextDirection(nextTile);
+
+        if (position == nextTile)
+        {
+            path.pop_back();
+        }
+    }
+    else if (isAlignedToCell())
+    {
+        if (isAtIntersection())
+        {
+            chooseDirection();
+        }
+    }
+
+    sf::Vector2i nextTile = position;
+
+    switch (direction)
+    {
+    case UP:
+        nextTile.x--;
+        break;
+    case DOWN:
+        nextTile.x++;
+        break;
+    case LEFT:
+        nextTile.y--;
+        break;
+    case RIGHT:
+        nextTile.y++;
+        break;
+    default:
+        break;
+    }
+
+    if (!isWall(nextTile.x, nextTile.y))
+    {
+        sf::Vector2f movement(0, 0);
+        switch (direction)
+        {
+        case UP:
+            movement.x = -currentSpeed * elapsed;
+            break;
+        case DOWN:
+            movement.x = currentSpeed * elapsed;
+            break;
+        case LEFT:
+            movement.y = -currentSpeed * elapsed;
+            break;
+        case RIGHT:
+            movement.y = currentSpeed * elapsed;
+            break;
+        default:
+            break;
+        }
+        fPosition += movement;
+    }
+    else
+    {
+        if (isAlignedToCell())
+        {
+            chooseDirection();
+        }
+    }
+
+    if (std::abs(fPosition.x) >= 1.0f)
+    {
+        int moveTiles = static_cast<int>(std::round(fPosition.x));
+        position.x += moveTiles;
+        fPosition.x -= moveTiles;
+
+        if (isTransitioning && position != nearestExitTile)
+        {
+            isTransitioning = false;
+        }
+    }
+    if (std::abs(fPosition.y) >= 1.0f)
+    {
+        int moveTiles = static_cast<int>(std::round(fPosition.y));
+        position.y += moveTiles;
+        fPosition.y -= moveTiles;
+
+        if (isTransitioning && position != nearestExitTile)
+        {
+            isTransitioning = false;
+        }
+    }
+
+    if (std::abs(fPosition.x) < 0.01f)
+    {
+        fPosition.x = 0;
+    }
+
+    if (std::abs(fPosition.y) < 0.01f)
+    {
+        fPosition.y = 0;
+    }
+
+    if (state != EATEN)
+    {
+        eat(position.x, position.y);
+    }
+}
+
+void Ghost::animate(float elapsed)
+{
+    if (state == EATEN)
+    {
+        auto eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
+        if (eyeTexPos == GHOST_EYES_TEX_MAP.end())
+        {
+            setDirection(LEFT);
+            eyeTexPos = GHOST_EYES_TEX_MAP.find(direction);
+        }
+        sprite->setTextureRect(sf::IntRect({eyeTexPos->second.x * TILE_SIZE / 2, GHOST_EYES_TEX_MAP.at(direction).y * TILE_SIZE / 2}, {TILE_SIZE / 2, TILE_SIZE / 2}));
+    }
+    else if (state != SCARED)
+    {
+        if (GHOST_ANIM_MAP.find(direction) != GHOST_ANIM_MAP.end())
+        {
+            std::map<Direction, Animation>::iterator it = GHOST_ANIM_MAP.find(direction);
+            it->second.update(elapsed);
+        }
+        else
+        {
+            setDirection(LEFT);
+        }
+    }
+    else
+    {
+        if (gameState.pacman.powerPelletDurationTimer <= gameState.pacman.powerPelletDuration * .4f)
+        {
+            if (blinkingTime > 0.f)
+            {
+                blinkingTime -= elapsed;
+                if (isWhite)
+                {
+                    backScaredAnim->update(elapsed);
+                }
+                else
+                {
+                    scaredAnim->update(elapsed);
+                }
+            }
+            else
+            {
+                blinkingTime = 0.2f;
+                isWhite = !isWhite;
+            }
+        }
+        else
+        {
+            scaredAnim->update(elapsed);
+        }
+    }
 }
 
 /*void Ghost::move(float elapsed)
@@ -598,8 +990,18 @@ void Ghost::setState(GhostState newState)
         state = newState;
     }
 
+    if (state == SCATTER)
+    {
+        std::cout << name << ":" << "SCATTER" << std::endl;
+    }
+    else if (state == CHASE)
+    {
+        std::cout << name << ":" << "CHASE" << std::endl;
+    }
+
     if (state == SCARED)
     {
+        path.clear();
         setDirection(getOppositeDirection(direction));
 
         if (gameState.level == 1)
@@ -679,14 +1081,15 @@ void Ghost::eat(int x, int y)
     }
 }
 
-void Ghost::respawn(GhostState state)
+void Ghost::respawn()
 {
-    setState(state);
+    setState(IN_HOUSE);
     setPosition(spawn.x, spawn.y);
     setDirection(NONE);
     isTransitioning = false;
     getExitTile();
     findPathBFS(nearestExitTile);
+    chaseScatterIndex = 0;
 }
 
 void Ghost::drawScore()

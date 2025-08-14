@@ -28,32 +28,38 @@ struct Ghost
 {
     float speed, currentSpeed = 0.f, timeToEnterHouse = 0.f, blinkingTime = 0.2f;
     float scoreDisplayTimer = SCORE_DISPLAY_TIME;
-    int dotLimit, score = 0;
+    int dotLimit, score = 0, chaseScatterIndex = 0;
     const double frameDuration = 0.2;
     bool isTransitioning = false, enteredHouse = false, stoppedForScore = false, isWhite = true;
     bool isChasing = false;
+    float chaseScatterPattern[7];
 
     std::vector<std::vector<char>> *map;
     sf::Texture tex;
     sf::Vector2i position;
     sf::Vector2f fPosition;
     sf::Vector2i spawn;
+    sf::Vector2i lastDirectionChoicePosition = {-1, -1};
     std::vector<sf::Vector2i> exitTiles;
     sf::Vector2i nearestExitTile;
     std::string name;
     GameState &gameState;
     std::vector<sf::Vector2i> path;
+    sf::IntRect preferredAngle;
 
     Direction direction = NONE;
     Direction lastDirection = NONE;
 
+    // DEBUG
+    sf::Vector2i targetTile;
+
     enum GhostState
     {
         IN_HOUSE,
-        NORMAL,
         EATEN,
         SCARED,
-        CHASE
+        CHASE,
+        SCATTER
     };
 
     GhostState state = IN_HOUSE, lastState;
@@ -69,7 +75,9 @@ protected:
     void findPathBFS(sf::Vector2i destination);
     void setDirection(Direction dir);
     void computeNextDirection(sf::Vector2i destination);
-    void eatenState(float elapsed);
+    void exitHouse();
+    virtual void behaviour();
+    bool isAlignedToCell();
 
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
     std::map<Direction, sf::Vector2i> GHOST_EYES_TEX_MAP = {
@@ -82,27 +90,34 @@ protected:
     Ghost(
         GhostState state,
         int dotLimit,
+        sf::IntRect preferredAngle,
         std::string name,
         GameState &gameState,
         std::map<Direction, sf::Vector2i> GHOST_TEX_MAP);
 
 private:
-    
-    void chooseDirection();
     void getExitTile();
-    void eat(int x, int y);
     Direction getOppositeDirection(Direction dir);
+    void move(float elapsed);
+    void drawScore();
+    double distance(sf::Vector2i target);
+    void eat(int x, int y);
+    void eatenState(float elapsed);
+    void scatterState();
+    void chooseDirection();
+    void animate(float elapsed);
+    bool isWall(int x, int y);
+    void setSpeed();
+    void setScatterChasePattern();
+    sf::Vector2i findFirstValidTile(sf::Vector2i start, sf::Vector2f dimensions);
+    bool isAtIntersection();
 
 public:
     void draw(sf::RenderWindow &window);
     void setPosition(int x, int y);
     void setMap(std::vector<std::vector<char>> *map);
-    virtual void move(float elapsed);
-    double distance(sf::Vector2i target);
-    bool isWall(int x, int y);
+    void update(float elapsed);
     void setState(GhostState state);
     void addExitTile(int x, int y);
-    void respawn(GhostState state);
-    void drawScore();
-    void setSpeed();
+    virtual void respawn();
 };

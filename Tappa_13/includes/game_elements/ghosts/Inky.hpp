@@ -9,5 +9,6 @@ inline const sf::Vector2i INKY_D = {6, 6};
 struct Inky : public Ghost
 {
     Inky(GameState &gameState);
-    void move(float elapsed) override;
+    void behaviour() override;
+    void respawn() override;
 };
