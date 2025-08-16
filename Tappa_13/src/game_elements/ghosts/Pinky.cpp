@@ -1,13 +1,68 @@
 #include "../../../includes/game_elements/ghosts/Pinky.hpp"
 #include "../../../includes/game_elements/GameState.hpp"
 
-Pinky::Pinky(GameState &gameState) : Ghost(IN_HOUSE, 0, sf::IntRect({0, 3 * TILE_SIZE}, {(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}), "Pinky", gameState, {{RIGHT, PINKY_R}, {LEFT, PINKY_L}, {UP, PINKY_U}, {DOWN, PINKY_D}, {NONE, PINKY_R}})
+Pinky::Pinky(GameState &gameState)
+    : Ghost(IN_HOUSE,
+            0,
+            sf::IntRect({0, 0}, {MAP_WIDTH / 2, MAP_HEIGHT / 2}),
+            "Pinky",
+            gameState, {{RIGHT, PINKY_R}, {LEFT, PINKY_L}, {UP, PINKY_U}, {DOWN, PINKY_D}, {NONE, PINKY_R}})
 {
 }
 
 void Pinky::behaviour()
 {
-    // Implement ghost behavior logic here
+    if (state == IN_HOUSE)
+    {
+        exitHouse();
+    }
+    else if (state == CHASE)
+    {
+        enteredHouse = false;
+        isTransitioning = false;
+
+        Direction pacmanDir = getPacmanDirection();
+        sf::Vector2i pacmanPos = getPacmanPosition();
+
+        sf::Vector2i directionVector;
+
+        switch (pacmanDir)
+        {
+        case LEFT:
+            directionVector = {0, -1};
+            break;
+        case RIGHT:
+            directionVector = {0, 1};
+            break;
+        case UP:
+            directionVector = {-1, 0};
+            break;
+        case DOWN:
+            directionVector = {1, 0};
+            break;
+        default:
+            directionVector = {0, 0};
+            break;
+        }
+
+        sf::Vector2i newTarget = pacmanPos + directionVector * 4;
+        newTarget.x = std::clamp(newTarget.x, 0, static_cast<int>(map->size()) - 1);
+        newTarget.y = std::clamp(newTarget.y, 0, static_cast<int>((*map)[0].size()) - 1);
+
+        if (isAlignedToCell(0.09f))
+        {
+            if (targetTile != newTarget)
+            {
+                targetTile = newTarget;
+                findPathBFS(targetTile);
+            }
+        }
+    }
+    else
+    {
+        isTransitioning = false;
+        enteredHouse = false;
+    }
 }
 
 void Pinky::respawn()

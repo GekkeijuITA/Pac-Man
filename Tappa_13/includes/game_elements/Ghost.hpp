@@ -22,6 +22,8 @@ inline const sf::Vector2i GHOST_SCORE_400 = {1, 8};
 inline const sf::Vector2i GHOST_SCORE_800 = {2, 8};
 inline const sf::Vector2i GHOST_SCORE_1600 = {3, 8};
 
+inline const float ALIGNMENT_TOLERANCE = 0.6f;
+
 struct GameState;
 
 struct Ghost
@@ -77,7 +79,10 @@ protected:
     void computeNextDirection(sf::Vector2i destination);
     void exitHouse();
     virtual void behaviour();
-    bool isAlignedToCell();
+    bool isAlignedToCell(float tolerance = ALIGNMENT_TOLERANCE);
+    sf::Vector2i findFirstValidTile(sf::Vector2i start, int dimensions);
+    bool isWall(int x, int y);
+    void chooseDirection();
 
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
     std::map<Direction, sf::Vector2i> GHOST_EYES_TEX_MAP = {
@@ -104,12 +109,7 @@ private:
     void eat(int x, int y);
     void eatenState(float elapsed);
     void scatterState();
-    void chooseDirection();
     void animate(float elapsed);
-    bool isWall(int x, int y);
-    void setSpeed();
-    void setScatterChasePattern();
-    sf::Vector2i findFirstValidTile(sf::Vector2i start, sf::Vector2f dimensions);
     bool isAtIntersection();
 
 public:
@@ -120,4 +120,6 @@ public:
     void setState(GhostState state);
     void addExitTile(int x, int y);
     virtual void respawn();
+    void setSpeed();
+    void setScatterChasePattern();
 };

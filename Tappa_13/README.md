@@ -14,6 +14,12 @@ La scelta randomica della direzione dei fantasmi è stata sostituita con una pi�
 Blinky (il fantasma rosso) ha come comportamento quello di seguire direttamente il giocatore. Per fare ciò, quando è allineato alla cella e la posizione del giocatore è cambiata, calcola il percorso usando la ricerca BFS.
 
 ![Blinky Behaviour](images/blinky-behaviour.gif)
+
+## Pinky
+Pinky (il fantasma rosa) ha un comportamento simile a Blinky, ma invece di seguire direttamente il giocatore, cerca di anticiparne i movimenti. Quando è allineato alla cella e la posizione del giocatore è cambiata, calcola il percorso usando la ricerca BFS per raggiungere la posizione in cui il giocatore si sposterà ovvero 4 caselle in avanti rispetto alla direzione che sta seguendo Pac-Man.
+
+![Pinky Behaviour](images/pinky-behaviour.gif)
+
 ---
 **Fonti utilizzate in questa Tappa:**
 * [Wiki di Pac-Man](https://pacman.holenet.info/)

@@ -17,7 +17,8 @@ namespace std
     }
 }
 
-GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &sm) : pacman(*this),
+GameState::GameState(sf::RenderWindow &window, std::string mapPath, StateManager &sm) : level(1),
+                                                                                        pacman(*this),
                                                                                         blinky(*this),
                                                                                         pinky(*this),
                                                                                         inky(*this),
@@ -335,26 +336,32 @@ bool GameState::getMap()
                 pacman.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
             }
-            else if (row[i] == BLINKY)
+            /*else if (row[i] == BLINKY)
             {
                 blinky.setPosition(map.size() - 1, i);
                 blinky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
                 ghosts.push_back(&blinky);
-            }
-            /*else if (row[i] == PINKY)
+                blinky.setSpeed();
+                blinky.setScatterChasePattern();
+            }*/
+            else if (row[i] == PINKY)
             {
                 pinky.setPosition(map.size() - 1, i);
                 pinky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
                 ghosts.push_back(&pinky);
+                pinky.setSpeed();
+                pinky.setScatterChasePattern();
             }
-            else if (row[i] == INKY)
+            /*else if (row[i] == INKY)
             {
                 inky.setPosition(map.size() - 1, i);
                 inky.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
                 ghosts.push_back(&inky);
+                inky.setSpeed();
+                inky.setScatterChasePattern();
             }
             else if (row[i] == CLYDE)
             {
@@ -362,6 +369,8 @@ bool GameState::getMap()
                 clyde.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
                 ghosts.push_back(&clyde);
+                clyde.setSpeed();
+                clyde.setScatterChasePattern();
             }*/
             else if (row[i] == GHOST_DOOR_H || row[i] == GHOST_DOOR_V)
             {
@@ -493,7 +502,7 @@ void GameState::doGraphics()
         }
     }
 
-    //Debug::drawGrid(window);
+    // Debug::drawGrid(window);
 }
 
 void GameState::doUI()
@@ -791,4 +800,9 @@ void GameState::handle(const sf::Event::KeyPressed &key)
     }
 
     pacman.setNextDirection(newDirection);
+}
+
+int GameState::getLevel()
+{
+    return level;
 }

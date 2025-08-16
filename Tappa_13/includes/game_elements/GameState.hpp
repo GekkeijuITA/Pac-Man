@@ -52,6 +52,8 @@ struct FruitData
 struct GameState
 {
     sf::RenderWindow &window;
+    bool gameOver = false, pause = false, startGame = true, victory = false, isWallBlinking = false, isWallWhite = false;
+
     PacMan pacman;
     std::vector<std::vector<char>> map;
     std::string mapPath;
@@ -64,7 +66,6 @@ struct GameState
     Clyde clyde;
 
     int lives = LIVES, score = 0, highscore = 0, level = 1, eatableTiles = 0;
-    bool gameOver = false, pause = false, startGame = true, victory = false, isWallBlinking = false, isWallWhite = false;
 
     size_t maxFruits = 12 - LIVES;
     std::deque<char> eatenFruits;
@@ -99,4 +100,5 @@ struct GameState
     bool isWall(int x, int y);
     bool isCorner(int x, int y);
     bool isFruit(char tileType);
+    int getLevel();
 };
