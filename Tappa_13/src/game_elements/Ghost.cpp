@@ -101,7 +101,7 @@ void Ghost::draw(sf::RenderWindow &window)
 
     window.draw(*sprite);
 
-    sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
+    /*sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
     rect.setFillColor(sf::Color::Transparent);
     rect.setOutlineThickness(1);
     // Disegna la BFS
@@ -148,7 +148,7 @@ void Ghost::draw(sf::RenderWindow &window)
     targetRect.setOutlineThickness(1);
     targetRect.setOutlineColor(sf::Color::Yellow);
     targetRect.setPosition({targetTile.y * TILE_SIZE, (targetTile.x + 3) * TILE_SIZE});
-    window.draw(targetRect);
+    window.draw(targetRect);*/
 }
 
 void Ghost::setPosition(int x, int y)
@@ -307,13 +307,7 @@ void Ghost::findPathBFS(sf::Vector2i destination)
         return;
 
     path.clear();
-
     targetTile = destination;
-
-    if (isWall(targetTile.x, targetTile.y))
-    {
-        targetTile = findFirstValidTile(targetTile, 2);
-    }
 
     std::unordered_map<sf::Vector2i, bool> visited;
     std::unordered_map<sf::Vector2i, sf::Vector2i> parent;
@@ -322,6 +316,9 @@ void Ghost::findPathBFS(sf::Vector2i destination)
     parent[position] = position;
     q.push(position);
 
+    sf::Vector2i bestTile = position;
+    double bestDist = std::numeric_limits<double>::max();
+
     while (!q.empty())
     {
         sf::Vector2i current = q.front();
@@ -329,21 +326,23 @@ void Ghost::findPathBFS(sf::Vector2i destination)
 
         if (current == targetTile)
         {
-            sf::Vector2i step = current;
-            while (step != position)
-            {
-                path.push_back(step);
-                step = parent[step];
-            }
-            path.push_back(position);
+            bestTile = current;
             break;
         }
 
+        double dist = std::hypot(targetTile.x - current.x, targetTile.y - current.y);
+        if (dist < bestDist)
+        {
+            bestDist = dist;
+            bestTile = current;
+        }
+
         std::vector<sf::Vector2i> neighbours = {
-            {current.x - 1, current.y},  // UP
-            {current.x + 1, current.y},  // DOWN
-            {current.x, current.y - 1},  // LEFT
-            {current.x, current.y + 1}}; // RIGHT
+            {current.x - 1, current.y}, // UP
+            {current.x + 1, current.y}, // DOWN
+            {current.x, current.y - 1}, // LEFT
+            {current.x, current.y + 1}  // RIGHT
+        };
 
         for (sf::Vector2i neighbour : neighbours)
         {
@@ -360,6 +359,15 @@ void Ghost::findPathBFS(sf::Vector2i destination)
             }
         }
     }
+
+    sf::Vector2i step = bestTile;
+    while (step != position)
+    {
+        path.push_back(step);
+        step = parent[step];
+    }
+    path.push_back(position);
+    targetTile = bestTile;
 }
 
 void Ghost::eatenState(float elapsed)
@@ -662,7 +670,7 @@ void Ghost::move(float elapsed)
     }
     else
     {
-            chooseDirection();
+        chooseDirection();
     }
 
     if (std::abs(fPosition.x) >= 1.0f)

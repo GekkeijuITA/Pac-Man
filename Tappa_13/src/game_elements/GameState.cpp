@@ -346,7 +346,7 @@ bool GameState::getMap()
                 blinky.setScatterChasePattern();
                 blinky.spawned = true;
             }
-            /*else if (row[i] == PINKY)
+            else if (row[i] == PINKY)
             {
                 pinky.setPosition(map.size() - 1, i);
                 pinky.spawn = {static_cast<int>(map.size()) - 1, i};
@@ -355,7 +355,7 @@ bool GameState::getMap()
                 pinky.setSpeed();
                 pinky.setScatterChasePattern();
                 pinky.spawned = true;
-            }*/
+            }
             else if (row[i] == INKY)
             {
                 inky.setPosition(map.size() - 1, i);
@@ -366,7 +366,7 @@ bool GameState::getMap()
                 inky.setScatterChasePattern();
                 inky.spawned = true;
             }
-            /*else if (row[i] == CLYDE)
+            else if (row[i] == CLYDE)
             {
                 clyde.setPosition(map.size() - 1, i);
                 clyde.spawn = {static_cast<int>(map.size()) - 1, i};
@@ -375,7 +375,7 @@ bool GameState::getMap()
                 clyde.setSpeed();
                 clyde.setScatterChasePattern();
                 clyde.spawned = true;
-            }*/
+            }
             else if (row[i] == GHOST_DOOR_H || row[i] == GHOST_DOOR_V)
             {
                 blinky.addExitTile(map.size() - 1, i);

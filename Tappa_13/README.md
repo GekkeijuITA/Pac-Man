@@ -30,6 +30,11 @@ $$
 
 ![Inky Behaviour](images/inky-behaviour.gif)
 
+## Clyde
+Clyde (il fantasma arancione) ha un comportamento simile a Blinky, ma con una differenza chiave: quando si trova a una certa distanza da Pac-Man (meno di 8 tile di distanza euclidea), inizia a muoversi verso il suo angolo preferito invece di inseguirlo direttamente.
+
+![Clyde Behaviour](images/clyde-behaviour.gif)
+
 ---
 **Fonti utilizzate in questa Tappa:**
 * [Wiki di Pac-Man](https://pacman.holenet.info/)

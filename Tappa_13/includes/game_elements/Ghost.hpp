@@ -84,6 +84,7 @@ protected:
     bool isWall(int x, int y);
     void chooseDirection();
     sf::Vector2i fromDirectionToVector(Direction dir);
+    double distance(sf::Vector2i target);
 
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
     std::map<Direction, sf::Vector2i> GHOST_EYES_TEX_MAP = {
@@ -106,7 +107,6 @@ private:
     Direction getOppositeDirection(Direction dir);
     void move(float elapsed);
     void drawScore();
-    double distance(sf::Vector2i target);
     void eat(int x, int y);
     void eatenState(float elapsed);
     void scatterState();
