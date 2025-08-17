@@ -336,7 +336,7 @@ bool GameState::getMap()
                 pacman.spawn = {static_cast<int>(map.size()) - 1, i};
                 map.back()[i] = EMPTY_BLOCK;
             }
-            /*else if (row[i] == BLINKY)
+            else if (row[i] == BLINKY)
             {
                 blinky.setPosition(map.size() - 1, i);
                 blinky.spawn = {static_cast<int>(map.size()) - 1, i};
@@ -344,8 +344,9 @@ bool GameState::getMap()
                 ghosts.push_back(&blinky);
                 blinky.setSpeed();
                 blinky.setScatterChasePattern();
-            }*/
-            else if (row[i] == PINKY)
+                blinky.spawned = true;
+            }
+            /*else if (row[i] == PINKY)
             {
                 pinky.setPosition(map.size() - 1, i);
                 pinky.spawn = {static_cast<int>(map.size()) - 1, i};
@@ -353,8 +354,9 @@ bool GameState::getMap()
                 ghosts.push_back(&pinky);
                 pinky.setSpeed();
                 pinky.setScatterChasePattern();
-            }
-            /*else if (row[i] == INKY)
+                pinky.spawned = true;
+            }*/
+            else if (row[i] == INKY)
             {
                 inky.setPosition(map.size() - 1, i);
                 inky.spawn = {static_cast<int>(map.size()) - 1, i};
@@ -362,8 +364,9 @@ bool GameState::getMap()
                 ghosts.push_back(&inky);
                 inky.setSpeed();
                 inky.setScatterChasePattern();
+                inky.spawned = true;
             }
-            else if (row[i] == CLYDE)
+            /*else if (row[i] == CLYDE)
             {
                 clyde.setPosition(map.size() - 1, i);
                 clyde.spawn = {static_cast<int>(map.size()) - 1, i};
@@ -371,6 +374,7 @@ bool GameState::getMap()
                 ghosts.push_back(&clyde);
                 clyde.setSpeed();
                 clyde.setScatterChasePattern();
+                clyde.spawned = true;
             }*/
             else if (row[i] == GHOST_DOOR_H || row[i] == GHOST_DOOR_V)
             {

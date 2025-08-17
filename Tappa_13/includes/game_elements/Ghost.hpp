@@ -33,7 +33,7 @@ struct Ghost
     int dotLimit, score = 0, chaseScatterIndex = 0;
     const double frameDuration = 0.2;
     bool isTransitioning = false, enteredHouse = false, stoppedForScore = false, isWhite = true;
-    bool isChasing = false;
+    bool spawned = false;
     float chaseScatterPattern[7];
 
     std::vector<std::vector<char>> *map;
@@ -83,6 +83,7 @@ protected:
     sf::Vector2i findFirstValidTile(sf::Vector2i start, int dimensions);
     bool isWall(int x, int y);
     void chooseDirection();
+    sf::Vector2i fromDirectionToVector(Direction dir);
 
     std::map<Direction, sf::Vector2i> GHOST_TEX_MAP;
     std::map<Direction, sf::Vector2i> GHOST_EYES_TEX_MAP = {
@@ -122,4 +123,6 @@ public:
     virtual void respawn();
     void setSpeed();
     void setScatterChasePattern();
+    sf::Vector2i getPosition();
+    bool isSpawned();
 };

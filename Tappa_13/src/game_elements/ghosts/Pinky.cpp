@@ -24,26 +24,7 @@ void Pinky::behaviour()
         Direction pacmanDir = getPacmanDirection();
         sf::Vector2i pacmanPos = getPacmanPosition();
 
-        sf::Vector2i directionVector;
-
-        switch (pacmanDir)
-        {
-        case LEFT:
-            directionVector = {0, -1};
-            break;
-        case RIGHT:
-            directionVector = {0, 1};
-            break;
-        case UP:
-            directionVector = {-1, 0};
-            break;
-        case DOWN:
-            directionVector = {1, 0};
-            break;
-        default:
-            directionVector = {0, 0};
-            break;
-        }
+        sf::Vector2i directionVector = fromDirectionToVector(pacmanDir);
 
         sf::Vector2i newTarget = pacmanPos + directionVector * 4;
         newTarget.x = std::clamp(newTarget.x, 0, static_cast<int>(map->size()) - 1);

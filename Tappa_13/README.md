@@ -20,6 +20,16 @@ Pinky (il fantasma rosa) ha un comportamento simile a Blinky, ma invece di segui
 
 ![Pinky Behaviour](images/pinky-behaviour.gif)
 
+## Inky
+Inky (il fantasma ciano) ha un comportamento unico e più complicato rispetto agli altri fantasmi: per calcolare la tile di destinazione, Inky tiene conto della posizione di Blinky e della direzione in cui si sta muovendo Pac-Man e ne calcola un vettore e poi lo raddoppia. La formula che utilizza Inky per calcolare la destinazione è la seguente:
+$$
+\footnotesize
+\text{pacmanOffset} = \text{pacmanPosition} + \text{pacmanDirection} * 2 \\
+\text{destination} = \text{pacmanOffset} + 2 * (\text{pacmanOffset} - \text{blinkyPosition})
+$$
+
+![Inky Behaviour](images/inky-behaviour.gif)
+
 ---
 **Fonti utilizzate in questa Tappa:**
 * [Wiki di Pac-Man](https://pacman.holenet.info/)

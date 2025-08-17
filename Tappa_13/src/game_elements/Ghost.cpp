@@ -143,12 +143,12 @@ void Ghost::draw(sf::RenderWindow &window)
     window.draw(preferredAngleRect);
 
     // DRAW TARGET TILE
-    /*sf::RectangleShape targetRect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
+    sf::RectangleShape targetRect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
     targetRect.setFillColor(sf::Color::Transparent);
     targetRect.setOutlineThickness(1);
     targetRect.setOutlineColor(sf::Color::Yellow);
     targetRect.setPosition({targetTile.y * TILE_SIZE, (targetTile.x + 3) * TILE_SIZE});
-    window.draw(targetRect);*/
+    window.draw(targetRect);
 }
 
 void Ghost::setPosition(int x, int y)
@@ -662,10 +662,7 @@ void Ghost::move(float elapsed)
     }
     else
     {
-        if (isAlignedToCell(0.05f))
-        {
             chooseDirection();
-        }
     }
 
     if (std::abs(fPosition.x) >= 1.0f)
@@ -940,4 +937,31 @@ void Ghost::setSpeed()
     }
 
     currentSpeed = speed;
+}
+
+sf::Vector2i Ghost::fromDirectionToVector(Direction dir)
+{
+    switch (dir)
+    {
+    case LEFT:
+        return {0, -1};
+    case RIGHT:
+        return {0, 1};
+    case UP:
+        return {-1, 0};
+    case DOWN:
+        return {1, 0};
+    default:
+        return {0, 0};
+    }
+}
+
+sf::Vector2i Ghost::getPosition()
+{
+    return position;
+}
+
+bool Ghost::isSpawned()
+{
+    return spawned;
 }
