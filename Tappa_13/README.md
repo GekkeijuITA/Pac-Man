@@ -10,6 +10,8 @@ Per la modalità SCATTER il comportamento è lo stesso per ogni fantasma: prende
 
 La scelta randomica della direzione dei fantasmi è stata sostituita con una più simile all'originale: randomicamente sceglie una direzione, se quella direzione è un muro allora in senso orario trova la prima direzione libera e prende quella.
 
+Per rendere il passaggio di stato da `EATEN` a `IN_HOUSE` e da `IN_HOUSE` a `SCATTER/CHASE` più fluido, sono stati aggiunti due stati: `ENTERING_HOUSE` e `EXITING_HOUSE`. In questo modo si evitano cambiamenti bruschi di stato che portavano (seppur raramente) a comportamenti indesiderati quali il fantasma bloccato dentro la casa.
+
 ## Blinky
 Blinky (il fantasma rosso) ha come comportamento quello di seguire direttamente il giocatore. Per fare ciò, quando è allineato alla cella e la posizione del giocatore è cambiata, calcola il percorso usando la ricerca BFS.
 

@@ -12,37 +12,25 @@ Pinky::Pinky(GameState &gameState)
 
 void Pinky::behaviour()
 {
-    if (state == IN_HOUSE)
+    enteredHouse = false;
+    isTransitioning = false;
+
+    Direction pacmanDir = getPacmanDirection();
+    sf::Vector2i pacmanPos = getPacmanPosition();
+
+    sf::Vector2i directionVector = fromDirectionToVector(pacmanDir);
+
+    sf::Vector2i newTarget = pacmanPos + directionVector * 4;
+    newTarget.x = std::clamp(newTarget.x, 0, static_cast<int>(map->size()) - 1);
+    newTarget.y = std::clamp(newTarget.y, 0, static_cast<int>((*map)[0].size()) - 1);
+
+    if (isAlignedToCell(0.09f))
     {
-        exitHouse();
-    }
-    else if (state == CHASE)
-    {
-        enteredHouse = false;
-        isTransitioning = false;
-
-        Direction pacmanDir = getPacmanDirection();
-        sf::Vector2i pacmanPos = getPacmanPosition();
-
-        sf::Vector2i directionVector = fromDirectionToVector(pacmanDir);
-
-        sf::Vector2i newTarget = pacmanPos + directionVector * 4;
-        newTarget.x = std::clamp(newTarget.x, 0, static_cast<int>(map->size()) - 1);
-        newTarget.y = std::clamp(newTarget.y, 0, static_cast<int>((*map)[0].size()) - 1);
-
-        if (isAlignedToCell(0.09f))
+        if (targetTile != newTarget)
         {
-            if (targetTile != newTarget)
-            {
-                targetTile = newTarget;
-                findPathBFS(targetTile);
-            }
+            targetTile = newTarget;
+            findPathBFS(targetTile);
         }
-    }
-    else
-    {
-        isTransitioning = false;
-        enteredHouse = false;
     }
 }
 

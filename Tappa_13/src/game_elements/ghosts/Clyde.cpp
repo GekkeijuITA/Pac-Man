@@ -12,29 +12,22 @@ Clyde::Clyde(GameState &gameState) : Ghost(
 
 void Clyde::behaviour()
 {
-    if (state == IN_HOUSE)
+    sf::Vector2i newTarget;
+    double dist = distance(getPacmanPosition());
+
+    if (dist >= 8)
     {
-        exitHouse();
+        newTarget = getPacmanPosition();
     }
-    else if (state == CHASE)
+    else
     {
-        sf::Vector2i newTarget;
-        double dist = distance(getPacmanPosition());
+        newTarget = {preferredAngle.position.y, preferredAngle.position.x};
+    }
 
-        if (dist >= 8)
-        {
-            newTarget = getPacmanPosition();
-        }
-        else
-        {
-            newTarget = {preferredAngle.position.y, preferredAngle.position.x};
-        }
-
-        if (isAlignedToCell(0.09f) && (targetTile != newTarget || path.empty()))
-        {
-            targetTile = newTarget;
-            findPathBFS(targetTile);
-        }
+    if (isAlignedToCell(0.09f) && (targetTile != newTarget || path.empty()))
+    {
+        targetTile = newTarget;
+        findPathBFS(targetTile);
     }
 }
 

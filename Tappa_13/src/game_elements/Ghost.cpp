@@ -103,9 +103,9 @@ void Ghost::draw(sf::RenderWindow &window)
 
     /*sf::RectangleShape rect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
     rect.setFillColor(sf::Color::Transparent);
-    rect.setOutlineThickness(1);
+    rect.setOutlineThickness(1);*/
     // Disegna la BFS
-    for (const auto &p : path)
+    /*for (const auto &p : path)
     {
         float y_l = static_cast<float>((p.x + 3) * TILE_SIZE);
         float x_l = static_cast<float>(p.y * TILE_SIZE);
@@ -122,33 +122,35 @@ void Ghost::draw(sf::RenderWindow &window)
 
         rect.setPosition({x_l, y_l});
         window.draw(rect);
-    }
+    }*/
 
-    // Disegna l'angolo preferito
-    sf::RectangleShape preferredAngleRect(sf::Vector2f({(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}));
-    preferredAngleRect.setFillColor(sf::Color::Transparent);
-    preferredAngleRect.setOutlineThickness(1);
-    if (name == "Blinky")
-        preferredAngleRect.setOutlineColor(sf::Color::Red);
-    else if (name == "Pinky")
-        preferredAngleRect.setOutlineColor(sf::Color::Magenta);
-    else if (name == "Inky")
-        preferredAngleRect.setOutlineColor(sf::Color::Cyan);
-    else if (name == "Clyde")
-        preferredAngleRect.setOutlineColor(sf::Color(255, 165, 0)); // Orange
-    else
-        preferredAngleRect.setOutlineColor(sf::Color::White);
+    /*
+        // Disegna l'angolo preferito
+        sf::RectangleShape preferredAngleRect(sf::Vector2f({(MAP_WIDTH * TILE_SIZE) / 2, (MAP_HEIGHT * TILE_SIZE) / 2}));
+        preferredAngleRect.setFillColor(sf::Color::Transparent);
+        preferredAngleRect.setOutlineThickness(1);
+        if (name == "Blinky")
+            preferredAngleRect.setOutlineColor(sf::Color::Red);
+        else if (name == "Pinky")
+            preferredAngleRect.setOutlineColor(sf::Color::Magenta);
+        else if (name == "Inky")
+            preferredAngleRect.setOutlineColor(sf::Color::Cyan);
+        else if (name == "Clyde")
+            preferredAngleRect.setOutlineColor(sf::Color(255, 165, 0)); // Orange
+        else
+            preferredAngleRect.setOutlineColor(sf::Color::White);
 
-    preferredAngleRect.setPosition({preferredAngle.position.x * TILE_SIZE, (preferredAngle.position.y + 3) * TILE_SIZE});
-    window.draw(preferredAngleRect);
+        preferredAngleRect.setPosition({preferredAngle.position.x * TILE_SIZE, (preferredAngle.position.y + 3) * TILE_SIZE});
+        window.draw(preferredAngleRect);
 
-    // DRAW TARGET TILE
-    sf::RectangleShape targetRect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
-    targetRect.setFillColor(sf::Color::Transparent);
-    targetRect.setOutlineThickness(1);
-    targetRect.setOutlineColor(sf::Color::Yellow);
-    targetRect.setPosition({targetTile.y * TILE_SIZE, (targetTile.x + 3) * TILE_SIZE});
-    window.draw(targetRect);*/
+        // DRAW TARGET TILE
+        sf::RectangleShape targetRect(sf::Vector2f({TILE_SIZE, TILE_SIZE}));
+        targetRect.setFillColor(sf::Color::Transparent);
+        targetRect.setOutlineThickness(1);
+        targetRect.setOutlineColor(sf::Color::Yellow);
+        targetRect.setPosition({targetTile.y * TILE_SIZE, (targetTile.x + 3) * TILE_SIZE});
+        window.draw(targetRect);
+    */
 }
 
 void Ghost::setPosition(int x, int y)
@@ -392,16 +394,17 @@ void Ghost::eatenState(float elapsed)
     }
     else
     {
-        timeToEnterHouse += elapsed;
+        setState(ENTERING_HOUSE);
+        timeToEnterHouse = 0.f;
+        isTransitioning = false;
+
         setDirection(lastDirection);
-        if (!enteredHouse)
-            enteredHouse = true;
+        directionEnteringHouse = direction;
 
         if (timeToEnterHouse >= .5f)
         {
             setState(IN_HOUSE);
             path.clear();
-            enteredHouse = true;
         }
     }
 }
@@ -438,7 +441,13 @@ void Ghost::exitHouse()
 {
     if (gameState.pacman.getDotEaten() >= dotLimit)
     {
-        if (position != nearestExitTile)
+        if (position == nearestExitTile + fromDirectionToVector(getOppositeDirection(directionEnteringHouse)))
+        {
+            setState(EXITING_HOUSE);
+            isTransitioning = false;
+            path.clear();
+        }
+        else if (position != nearestExitTile)
         {
             if (!path.empty())
             {
@@ -456,20 +465,11 @@ void Ghost::exitHouse()
             }
 
             isTransitioning = true;
-            enteredHouse = false;
-        }
-        else
-        {
-            setState(SCATTER);
-            isTransitioning = false;
-            enteredHouse = false;
-            path.clear();
         }
     }
     else
     {
         isTransitioning = false;
-        enteredHouse = true;
     }
 }
 
@@ -511,6 +511,21 @@ void Ghost::update(float elapsed)
         if (scoreDisplayTimer > 0.f)
         {
             scoreDisplayTimer -= elapsed;
+        }
+    }
+    else if (state == ENTERING_HOUSE)
+    {
+        timeToEnterHouse += elapsed;
+        if (timeToEnterHouse >= 0.5f)
+        {
+            setState(IN_HOUSE);
+        }
+    }
+    else if (state == EXITING_HOUSE)
+    {
+        if (position != nearestExitTile)
+        {
+            chaseScatterIndex % 2 == 0 ? setState(SCATTER) : setState(CHASE);
         }
     }
     else if (state != IN_HOUSE && state != SCARED)
@@ -602,7 +617,11 @@ void Ghost::move(float elapsed)
     {
         Ghost::scatterState();
     }
-    else if (state != SCARED)
+    else if (state == IN_HOUSE)
+    {
+        Ghost::exitHouse();
+    }
+    else if (state == CHASE)
     {
         behaviour();
     }
@@ -780,6 +799,31 @@ void Ghost::setState(GhostState newState)
     {
         lastState = state;
         state = newState;
+
+        switch (state)
+        {
+        case IN_HOUSE:
+            std::cout << name << ": IN_HOUSE" << std::endl;
+            break;
+        case EXITING_HOUSE:
+            std::cout << name << ": EXITING_HOUSE" << std::endl;
+            break;
+        case ENTERING_HOUSE:
+            std::cout << name << ": ENTERING_HOUSE" << std::endl;
+            break;
+        case SCATTER:
+            std::cout << name << ": SCATTER" << std::endl;
+            break;
+        case CHASE:
+            std::cout << name << ": CHASE" << std::endl;
+            break;
+        case EATEN:
+            std::cout << name << ": EATEN" << std::endl;
+            break;
+        case SCARED:
+            std::cout << name << ": SCARED" << std::endl;
+            break;
+        }
     }
 
     if (state == SCARED)

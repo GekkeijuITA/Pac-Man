@@ -52,8 +52,8 @@ struct Ghost
     Direction direction = NONE;
     Direction lastDirection = NONE;
 
-    // DEBUG
     sf::Vector2i targetTile;
+    Direction directionEnteringHouse = NONE;
 
     enum GhostState
     {
@@ -61,7 +61,9 @@ struct Ghost
         EATEN,
         SCARED,
         CHASE,
-        SCATTER
+        SCATTER,
+        ENTERING_HOUSE,
+        EXITING_HOUSE
     };
 
     GhostState state = IN_HOUSE, lastState;
