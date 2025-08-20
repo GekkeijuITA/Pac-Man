@@ -35,6 +35,7 @@
 #define VICTORY_TIME 3.f
 
 struct StateManager;
+struct Fruit;
 
 struct TextureData
 {
@@ -46,8 +47,6 @@ struct FruitData
 {
     sf::Vector2i position;
     std::unique_ptr<Fruit> fruit;
-    bool isEaten = false;
-    bool isVisible = false;
 };
 
 struct GameState

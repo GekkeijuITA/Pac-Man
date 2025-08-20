@@ -310,3 +310,98 @@ void PacMan::setSpeed()
 
     currentSpeed = speed;
 }
+
+void PacMan::update(float elapsed)
+{
+    if (!isDead)
+    {
+        if (powerPellet)
+        {
+            if (powerPelletDurationTimer > 0.f)
+            {
+                powerPelletDurationTimer -= elapsed;
+            }
+            else
+            {
+                powerPellet = false;
+                powerPelletDurationTimer = powerPelletDuration;
+                currentSpeed = speed;
+
+                for (Ghost *ghost : gameState.ghosts)
+                {
+                    if (ghost->state == Ghost::SCARED)
+                    {
+                        ghost->setState(ghost->lastState);
+                        ghost->isTransitioning = (ghost->lastState == Ghost::IN_HOUSE);
+                    }
+                }
+            }
+        }
+
+        int next_x = position.x;
+        int next_y = position.y;
+
+        updateDirection();
+
+        switch (direction)
+        {
+        case UP:
+            next_x--;
+            break;
+        case DOWN:
+            next_x++;
+            break;
+        case LEFT:
+            next_y--;
+            break;
+        case RIGHT:
+            next_y++;
+            break;
+        default:
+            break;
+        }
+
+        if (!isWall(next_x, next_y))
+        {
+            move(elapsed);
+        }
+    }
+    else
+    {
+        if (DEATH_ANIMATION.front().currentFrame < 12)
+        {
+            if (!SoundManager::getInstance().isSoundPlaying("death"))
+                SoundManager::getInstance().playSound("death");
+
+            if (!DEATH_ANIMATION.empty())
+            {
+                if (DEATH_ANIMATION.front().currentFrame == 11)
+                {
+                    if (!SoundManager::getInstance().isSoundPlaying("death_pop"))
+                    {
+                        SoundManager::getInstance().playSound("death_pop");
+                    }
+                }
+
+                DEATH_ANIMATION.front().update(elapsed);
+                if (DEATH_ANIMATION.front().isFinished())
+                {
+                    DEATH_ANIMATION.clear();
+                }
+            }
+        }
+        else
+        {
+            static float postDeathTimer = 0.2f;
+            if (postDeathTimer > 0.f)
+            {
+                postDeathTimer -= elapsed;
+            }
+            else
+            {
+                isDead = false;
+                gameState.resetRound();
+            }
+        }
+    }
+}

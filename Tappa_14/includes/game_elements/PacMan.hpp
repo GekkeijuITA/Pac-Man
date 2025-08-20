@@ -76,6 +76,7 @@ struct PacMan
     void setDeathAnimation();
     void setPowerPelletDuration();
     void setSpeed();
+    void update(float elapsed);
     sf::Vector2i getPosition();
     Direction getDirection();
 };

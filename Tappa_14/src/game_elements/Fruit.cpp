@@ -1,10 +1,12 @@
 #include "../../includes/game_elements/Fruit.hpp"
 #include "../../includes/lib/TileFactory.hpp"
+#include "../../includes/game_elements/GameState.hpp"
 
 Fruit::Fruit(
     sf::Vector2i position,
     sf::Vector2i texPosition,
-    int score) : position(position), score(score)
+    int score,
+    GameState &gameState) : position(position), score(score), gameState(gameState), isVisible(false), isEaten(false)
 {
     if (!tex.loadFromFile(ASSET))
     {
@@ -23,18 +25,26 @@ int Fruit::getScore()
 
 void Fruit::draw(sf::RenderWindow &window, char tileType)
 {
-    auto tile = TileFactory::getIstance().getTile(tileType);
-    if (!tile)
+    if (fruitDisplayTimer > 0.f && !isEaten)
     {
-        std::cerr << "Error loading tile data" << std::endl;
-        return;
-    }
+        if (!isBlinking)
+        {
+            auto tile = TileFactory::getIstance().getTile(tileType);
+            if (!tile)
+            {
+                std::cerr << "Error loading tile data" << std::endl;
+                return;
+            }
 
-    float x = static_cast<float>((position.y + .5f) * TILE_SIZE);
-    float y = static_cast<float>((position.x + 3.5f) * TILE_SIZE);
-    tile->sprite.setPosition({x, y});
-    tile->sprite.setScale({3.f, 3.f});
-    window.draw(tile->sprite);
+            float x = static_cast<float>((position.y + .5f) * TILE_SIZE);
+            float y = static_cast<float>((position.x + 3.5f) * TILE_SIZE);
+            tile->sprite.setPosition({x, y});
+            tile->sprite.setScale({3.f, 3.f});
+            window.draw(tile->sprite);
+        }
+    } else if(scoreDisplayTimer > 0.f && isEaten) {
+        drawScore(window);
+    }
 }
 
 // Imposta il timer casualmente tra 9 e 10 secondi
@@ -93,4 +103,47 @@ void Fruit::drawScore(sf::RenderWindow &window)
     sf::Sprite sprite = createSprite(tex, scorePos, {2.f, 2.f}, 1.5f, TILE_SIZE / 2, true, offset, extraWidth);
     sprite.setPosition({(position.y + .5f) * TILE_SIZE, (position.x + 3.5f) * TILE_SIZE});
     window.draw(sprite);
+}
+
+void Fruit::update(float elapsed)
+{
+    if (fruitDisplayTimer > 0.f)
+    {
+        if (!isEaten)
+        {
+            if (!gameState.pacman.powerPellet)
+            {
+                fruitDisplayTimer -= elapsed;
+            }
+
+            if (fruitDisplayTimer <= 3.f)
+            {
+                if (blinkingTime > 0.f)
+                {
+                    blinkingTime -= elapsed;
+                }
+                else
+                {
+                    isBlinking = !isBlinking;
+                    blinkingTime = FRUIT_BLINKING_TIME;
+                }
+            }
+        }
+    }
+    else if (scoreDisplayTimer > 0.f && isEaten)
+    {
+        scoreDisplayTimer -= elapsed;
+
+        if (scoreDisplayTimer < 0.f)
+        {
+            isVisible = false;
+            isEaten = false;
+        }
+    }
+    else
+    {
+        isVisible = false;
+        isEaten = false;
+        isBlinking = false;
+    }
 }

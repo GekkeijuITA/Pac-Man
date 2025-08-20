@@ -29,16 +29,21 @@ struct Fruit
     int score;
     float fruitDisplayTimer, scoreDisplayTimer, blinkingTime = FRUIT_BLINKING_TIME;
     bool isBlinking = false;
+    bool isEaten = false;
+    bool isVisible = false;
+    GameState &gameState;
 
 protected:
     Fruit(
         sf::Vector2i position,
         sf::Vector2i texPosition,
-        int score);
+        int score,
+        GameState &gameState);
 
 public:
     void draw(sf::RenderWindow &window, char tileType);
     int getScore();
     void setTimer();
     void drawScore(sf::RenderWindow &window);
+    void update(float elapsed);
 };

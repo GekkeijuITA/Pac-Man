@@ -5,5 +5,5 @@ inline const sf::Vector2i APPLE_TEX = {5, 3};
 
 struct Apple : public Fruit
 {
-    Apple(sf::Vector2i position);
+    Apple(sf::Vector2i position, GameState &gameState);
 };

@@ -155,33 +155,11 @@ void GameState::update(float elapsed)
 
     if (!isWallBlinking)
     {
+        pacman.update(elapsed);
+
         if (!pacman.isDead)
         {
-            if (pacman.powerPellet)
-            {
-                if (pacman.powerPelletDurationTimer > 0.f)
-                {
-                    pacman.powerPelletDurationTimer -= elapsed;
-                }
-                else
-                {
-                    pacman.powerPellet = false;
-                    pacman.powerPelletDurationTimer = pacman.powerPelletDuration;
-                    pacman.currentSpeed = pacman.speed;
-
-                    for (Ghost *ghost : ghosts)
-                    {
-                        if (ghost->state == Ghost::SCARED)
-                        {
-                            ghost->setState(ghost->lastState);
-                            ghost->isTransitioning = (ghost->lastState == Ghost::IN_HOUSE);
-                        }
-                    }
-                }
-            }
-
             collisions(elapsed);
-
             for (Ghost *ghost : ghosts)
             {
                 ghost->update(elapsed);
@@ -189,48 +167,12 @@ void GameState::update(float elapsed)
 
             for (auto &fruitData : fruits)
             {
-                if (fruitData.second.fruit->fruitDisplayTimer > 0.f)
-                {
-                    if (!fruitData.second.isEaten)
-                    {
-                        if (!pacman.powerPellet)
-                            fruitData.second.fruit->fruitDisplayTimer -= elapsed;
+                fruitData.second.fruit->update(elapsed);
 
-                        if (fruitData.second.fruit->fruitDisplayTimer <= 3.f)
-                        {
-                            if (fruitData.second.fruit->blinkingTime > 0.f)
-                            {
-                                fruitData.second.fruit->blinkingTime -= elapsed;
-                            }
-                            else
-                            {
-                                fruitData.second.fruit->isBlinking = !fruitData.second.fruit->isBlinking;
-                                fruitData.second.fruit->blinkingTime = FRUIT_BLINKING_TIME;
-                            }
-                        }
-                    }
-                }
-                else if (fruitData.second.fruit->scoreDisplayTimer > 0.f && fruitData.second.isEaten)
-                {
-                    fruitData.second.fruit->scoreDisplayTimer -= elapsed;
-
-                    if (fruitData.second.fruit->scoreDisplayTimer < 0.f)
-                    {
-                        fruitData.second.isVisible = false;
-                        fruitData.second.isEaten = false;
-                    }
-                }
-                else
-                {
-                    fruitData.second.isVisible = false;
-                    fruitData.second.isEaten = false;
-                    fruitData.second.fruit->isBlinking = false;
-                }
-
-                if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !fruitData.second.isVisible)
+                if ((pacman.getDotEaten() == 70 || pacman.getDotEaten() == 170) && !fruitData.second.fruit->isVisible)
                 {
                     fruitData.second.fruit->setTimer();
-                    fruitData.second.isVisible = true;
+                    fruitData.second.fruit->isVisible = true;
                 }
             }
 
@@ -238,41 +180,7 @@ void GameState::update(float elapsed)
         }
         else
         {
-            if (pacman.DEATH_ANIMATION.front().currentFrame < 12)
-            {
-                if (!SoundManager::getInstance().isSoundPlaying("death"))
-                    SoundManager::getInstance().playSound("death");
 
-                if (!pacman.DEATH_ANIMATION.empty())
-                {
-                    if (pacman.DEATH_ANIMATION.front().currentFrame == 11)
-                    {
-                        if (!SoundManager::getInstance().isSoundPlaying("death_pop"))
-                        {
-                            SoundManager::getInstance().playSound("death_pop");
-                        }
-                    }
-
-                    pacman.DEATH_ANIMATION.front().update(elapsed);
-                    if (pacman.DEATH_ANIMATION.front().isFinished())
-                    {
-                        pacman.DEATH_ANIMATION.clear();
-                    }
-                }
-            }
-            else
-            {
-                static float postDeathTimer = 0.2f;
-                if (postDeathTimer > 0.f)
-                {
-                    postDeathTimer -= elapsed;
-                }
-                else
-                {
-                    pacman.isDead = false;
-                    resetRound();
-                }
-            }
         }
     }
     else
@@ -314,37 +222,9 @@ void GameState::bounds()
 
 void GameState::collisions(float elapsed)
 {
-    int next_x = pacman.position.x;
-    int next_y = pacman.position.y;
-
-    pacman.updateDirection();
-
-    switch (pacman.direction)
-    {
-    case UP:
-        next_x--;
-        break;
-    case DOWN:
-        next_x++;
-        break;
-    case LEFT:
-        next_y--;
-        break;
-    case RIGHT:
-        next_y++;
-        break;
-    default:
-        break;
-    }
-
-    if (!pacman.isWall(next_x, next_y))
-    {
-        pacman.move(elapsed);
-    }
-
     for (auto &fruitData : fruits)
     {
-        if (fruitData.second.fruit->position == pacman.position && !fruitData.second.isEaten && fruitData.second.fruit->fruitDisplayTimer > 0.f)
+        if (fruitData.second.fruit->position == pacman.position && !fruitData.second.fruit->isEaten && fruitData.second.fruit->fruitDisplayTimer > 0.f)
         {
             if (SoundManager::getInstance().isSoundPlaying("eat_fruit"))
             {
@@ -362,7 +242,7 @@ void GameState::collisions(float elapsed)
             score += fruitData.second.fruit->getScore();
             eatenFruits.push_back(fruitData.first);
             fruitData.second.fruit->fruitDisplayTimer = 0.f;
-            fruitData.second.isEaten = true;
+            fruitData.second.fruit->isEaten = true;
             fruitData.second.fruit->scoreDisplayTimer = SCORE_DISPLAY_TIME;
         }
     }
@@ -450,28 +330,28 @@ bool GameState::getMap()
                 switch (level)
                 {
                 case 1:
-                    fruits.insert(std::make_pair(CHERRY, FruitData{fruitPos, std::make_unique<Cherry>(fruitPos), false}));
+                    fruits.insert(std::make_pair(CHERRY, FruitData{fruitPos, std::make_unique<Cherry>(fruitPos, *this)}));
                     break;
                 case 2:
-                    fruits.insert(std::make_pair(STRAWBERRY, FruitData{fruitPos, std::make_unique<Strawberry>(fruitPos), false}));
+                    fruits.insert(std::make_pair(STRAWBERRY, FruitData{fruitPos, std::make_unique<Strawberry>(fruitPos, *this)}));
                     break;
                 case 3:
-                    fruits.insert(std::make_pair(ORANGE_FRUIT, FruitData{fruitPos, std::make_unique<Orange>(fruitPos), false}));
+                    fruits.insert(std::make_pair(ORANGE_FRUIT, FruitData{fruitPos, std::make_unique<Orange>(fruitPos, *this)}));
                     break;
                 case 4:
-                    fruits.insert(std::make_pair(APPLE, FruitData{fruitPos, std::make_unique<Apple>(fruitPos), false}));
+                    fruits.insert(std::make_pair(APPLE, FruitData{fruitPos, std::make_unique<Apple>(fruitPos, *this)}));
                     break;
                 case 5:
-                    fruits.insert(std::make_pair(GRAPE, FruitData{fruitPos, std::make_unique<Grape>(fruitPos), false}));
+                    fruits.insert(std::make_pair(GRAPE, FruitData{fruitPos, std::make_unique<Grape>(fruitPos, *this)}));
                     break;
                 case 6:
-                    fruits.insert(std::make_pair(GALAXIAN, FruitData{fruitPos, std::make_unique<Galaxian>(fruitPos), false}));
+                    fruits.insert(std::make_pair(GALAXIAN, FruitData{fruitPos, std::make_unique<Galaxian>(fruitPos, *this)}));
                     break;
                 case 7:
-                    fruits.insert(std::make_pair(BELL, FruitData{fruitPos, std::make_unique<Bell>(fruitPos), false}));
+                    fruits.insert(std::make_pair(BELL, FruitData{fruitPos, std::make_unique<Bell>(fruitPos, *this)}));
                     break;
                 default:
-                    fruits.insert(std::make_pair(KEY, FruitData{fruitPos, std::make_unique<Key>(fruitPos), false}));
+                    fruits.insert(std::make_pair(KEY, FruitData{fruitPos, std::make_unique<Key>(fruitPos, *this)}));
                     break;
                 }
             }
@@ -553,15 +433,7 @@ void GameState::doGraphics()
 
                 for (const auto &fruitElement : fruits)
                 {
-                    if (fruitElement.second.fruit->fruitDisplayTimer > 0.f && !fruitElement.second.isEaten)
-                    {
-                        if (!fruitElement.second.fruit->isBlinking)
-                            fruitElement.second.fruit->draw(window, fruitElement.first);
-                    }
-                    else if (fruitElement.second.fruit->scoreDisplayTimer > 0.f && fruitElement.second.isEaten)
-                    {
-                        fruitElement.second.fruit->drawScore(window);
-                    }
+                    fruitElement.second.fruit->draw(window, fruitElement.first);
                 }
             }
         }
