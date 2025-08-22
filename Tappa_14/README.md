@@ -2,14 +2,7 @@
 L'obbiettivo di questa tappa è quella di implementare i suoni nel gioco, l'idea è quella di utilizzare una classe `SoundManager` che si occupa di caricare i file audio e di renderli disponibili a tutte gli altri file.
 
 ## Sound Manager
-Il file `SoundManager` è stato costruito seguendo l'esempio di `TileFactory`. La parte più complicata è stata quella di rendere disponibile il suono a tutti gli altri file perchè `sf::Sound` non può essere copiato e non esiste all'infuori dello scope. Per ovviare a questo problema è stata utilizzata una mappa a cui associamo il nome del suono (che diamo noi) e una struct `Audio` che contiene il buffer e il suono:
-```
-struct Audio {
-    std::shared_ptr<sf::SoundBuffer> buffer;
-    std::unique_ptr<sf::Sound> sound;
-};
-```
-Per rendere il buffer riutilizzabile in tutti i file l'ho dovuto mettere come puntatore condiviso mentre il suono come puntatore unico perchè appunto non è possibile copiare `sf::Sound`. La funzione che ha permesso di avere il suono nella mappa è stata `std::move`.
+Il `SoundManager` è stato implementato seguendo la struttura di `TileFactory`. Visto che `sf::Sound` non può essere copiato e per funzionare deve avere un buffer sempre "vivo", ho dovuto fare una struct che contenesse sia il suono sia il buffer su cui si basa. Per rendere l'incapsulamento più efficace in questa struct ho messo alcune funzioni utili per gestire il suono. Per questa parte di tappa ho usato una soluzione proposta su Stack Overflow, ma visto che usava una versione più datata di `SFML` ho dovuto adattare per `SFML 3.0.0` come ad esempio il fatto che il costruttore `sf::Sound()` non esiste più e bisogna passargli il buffer da subito.
 
 Ho implementato le funzioni per riprodurre i suoni (anche in loop) in modo semplice passando il nome del suono e alcune funzioni di supporto come `isSoundPlaying` e `getSoundStatus`.
 
@@ -37,4 +30,5 @@ La logica di disegno dei frutti è stata spostata in `Fruit::draw()` che gestisc
 * [Tutorial audio SFML](https://www.sfml-dev.org/tutorials/3.0/audio/sounds/)
 * [Suoni](https://www.sounds-resource.com/arcade/pacman/sound/10603/)
 * [Vita Extra](https://www.youtube.com/watch?v=nkV6BedgwRY)
+* [Organizzazione audio SFML](https://stackoverflow.com/questions/27235897/how-do-i-properly-organize-and-implement-sfml-audio-in-c)
 ---

@@ -4,13 +4,22 @@
 #include <memory>
 
 struct Audio {
-    std::shared_ptr<sf::SoundBuffer> buffer;
-    std::unique_ptr<sf::Sound> sound;
+    private:
+        sf::SoundBuffer buffer;
+        sf::Sound sound;
+    
+    public:
+        Audio(sf::SoundBuffer buf) : buffer(buf), sound(buffer) {}
+        void play();
+        void stop();
+        void pause();
+        void setLoop(bool loop);
+        sf::SoundSource::Status getStatus();
 };
 
 struct SoundManager
 {
-    std::map<std::string, Audio> soundEffects;
+    std::map<std::string, Audio*> soundEffects;
     SoundManager();
 
     int wakaSound = 0;

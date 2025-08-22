@@ -32,20 +32,14 @@ void SoundManager::loadAll()
 
 void SoundManager::loadSound(const std::string &name, const std::string &filePath)
 {
-    auto audioBuffer = std::make_shared<sf::SoundBuffer>();
-    if (!audioBuffer->loadFromFile(filePath))
+    sf::SoundBuffer audioBuffer;
+    if (!audioBuffer.loadFromFile(filePath))
     {
         std::cerr << "Error loading sound: " << filePath << std::endl;
         return;
     }
 
-    auto sound = std::make_unique<sf::Sound>(*audioBuffer);
-
-    Audio audio;
-    audio.buffer = audioBuffer;
-    audio.sound = std::make_unique<sf::Sound>(*audioBuffer);
-
-    soundEffects.insert({name, std::move(audio)});
+    soundEffects[name] = new Audio(audioBuffer);
 }
 
 void SoundManager::playSound(const std::string &name)
@@ -54,10 +48,8 @@ void SoundManager::playSound(const std::string &name)
     if (it != soundEffects.end())
     {
         auto &audio = it->second;
-        auto &sound = audio.sound;
-
-        sound->stop();
-        sound->play();
+        audio->stop();
+        audio->play();
     }
     else
     {
@@ -70,7 +62,7 @@ void SoundManager::stopSound(const std::string &name)
     auto it = soundEffects.find(name);
     if (it != soundEffects.end())
     {
-        it->second.sound->stop();
+        it->second->stop();
     }
     else
     {
@@ -84,8 +76,8 @@ void SoundManager::startLoop(const std::string &name)
     if (it != soundEffects.end())
     {
         auto &audio = it->second;
-        audio.sound->setLooping(true);
-        audio.sound->play();
+        audio->setLoop(true);
+        audio->play();
     }
     else
     {
@@ -99,8 +91,8 @@ void SoundManager::stopLoop(const std::string &name)
     if (it != soundEffects.end())
     {
         auto &audio = it->second;
-        audio.sound->setLooping(false);
-        audio.sound->stop();
+        audio->setLoop(false);
+        audio->stop();
     }
     else
     {
@@ -118,7 +110,7 @@ void SoundManager::stopAll()
 {
     for (auto &pair : soundEffects)
     {
-        pair.second.sound->stop();
+        pair.second->stop();
     }
 }
 
@@ -126,7 +118,7 @@ void SoundManager::pauseAll()
 {
     for (auto &pair : soundEffects)
     {
-        pair.second.sound->pause();
+        pair.second->pause();
     }
 }
 
@@ -135,7 +127,7 @@ sf::SoundSource::Status SoundManager::getSoundStatus(const std::string &name)
     auto it = soundEffects.find(name);
     if (it != soundEffects.end())
     {
-        return it->second.sound->getStatus();
+        return it->second->getStatus();
     }
     return sf::SoundSource::Status::Stopped;
 }
@@ -144,7 +136,29 @@ bool SoundManager::isSoundPlaying(const std::string &name) {
     auto it = soundEffects.find(name);
     if (it != soundEffects.end())
     {
-        return it->second.sound->getStatus() == sf::SoundSource::Status::Playing;
+        return it->second->getStatus() == sf::SoundSource::Status::Playing;
     }
     return false;
+}
+
+/* AUDIO */
+
+void Audio::play() {
+    sound.play();
+}
+
+void Audio::stop() {
+    sound.stop();
+}
+
+void Audio::pause() {
+    sound.pause();
+}
+
+void Audio::setLoop(bool loop) {
+    sound.setLooping(loop);
+}
+
+sf::SoundSource::Status Audio::getStatus() {
+    return sound.getStatus();
 }
