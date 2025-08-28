@@ -1,0 +1,2 @@
+0
+../../Tappa_15/resources/maps/classic.txt,../../Tappa_15/resources/maps/MAPPA_1.txt,../../Tappa_15/resources/maps/Mappa_2.txt,

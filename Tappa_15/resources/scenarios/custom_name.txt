@@ -1,0 +1,2 @@
+0
+../../Tappa_15/resources/maps/prova.txt,../../Tappa_15/resources/maps/mit.txt,../../Tappa_15/resources/maps/classic.txt,

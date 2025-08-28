@@ -276,7 +276,7 @@ add_executable(
     Tappa_13/src/GameMenu.cpp
     Tappa_13/src/LevelSelectorState.cpp
     Tappa_13/src/MainMenuState.cpp
-)]]#
+)
 
 add_executable(
     Tappa14
@@ -314,6 +314,45 @@ add_executable(
     Tappa_14/src/GameMenu.cpp
     Tappa_14/src/LevelSelectorState.cpp
     Tappa_14/src/MainMenuState.cpp
+)]]#
+add_executable(
+    Tappa15 
+
+    Tappa_15/src/core/Animation.cpp
+    Tappa_15/src/core/Debug.cpp
+    Tappa_15/src/core/StateManager.cpp
+
+    Tappa_15/src/lib/TextUI.cpp
+    Tappa_15/src/lib/textures.cpp
+    Tappa_15/src/lib/TileFactory.cpp
+    Tappa_15/src/lib/SoundManager.cpp
+
+    Tappa_15/src/game_elements/Fruit.cpp
+    Tappa_15/src/game_elements/GameState.cpp
+    Tappa_15/src/game_elements/Ghost.cpp
+    Tappa_15/src/game_elements/PacMan.cpp
+    Tappa_15/src/game_elements/fruits/Apple.cpp
+    Tappa_15/src/game_elements/fruits/Bell.cpp
+    Tappa_15/src/game_elements/fruits/Cherry.cpp
+    Tappa_15/src/game_elements/fruits/Galaxian.cpp
+    Tappa_15/src/game_elements/fruits/Grape.cpp
+    Tappa_15/src/game_elements/fruits/Key.cpp
+    Tappa_15/src/game_elements/fruits/Orange.cpp
+    Tappa_15/src/game_elements/fruits/Strawberry.cpp
+    Tappa_15/src/game_elements/ghosts/Blinky.cpp
+    Tappa_15/src/game_elements/ghosts/Clyde.cpp
+    Tappa_15/src/game_elements/ghosts/Inky.cpp
+    Tappa_15/src/game_elements/ghosts/Pinky.cpp
+
+    Tappa_15/src/map_editor/MapEditor.cpp
+    Tappa_15/src/map_editor/Create.cpp
+
+    Tappa_15/src/scenario_editor/ScenarioEditor.cpp
+
+    Tappa_15/src/main.cpp
+    Tappa_15/src/GameMenu.cpp
+    Tappa_15/src/LevelSelectorState.cpp
+    Tappa_15/src/MainMenuState.cpp
 )
 
 #[[target_link_libraries(Tappa1 PRIVATE SFML::Graphics)
@@ -328,6 +367,6 @@ target_link_libraries(Tappa9 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa10 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa11 PRIVATE SFML::Graphics)
 target_link_libraries(Tappa12 PRIVATE SFML::Graphics)
-target_link_libraries(Tappa13 PRIVATE SFML::Graphics)]]#
-
-target_link_libraries(Tappa14 PRIVATE SFML::Graphics SFML::Audio)
+target_link_libraries(Tappa13 PRIVATE SFML::Graphics)
+target_link_libraries(Tappa14 PRIVATE SFML::Graphics SFML::Audio)]]#
+target_link_libraries(Tappa15 PRIVATE SFML::Graphics SFML::Audio)
