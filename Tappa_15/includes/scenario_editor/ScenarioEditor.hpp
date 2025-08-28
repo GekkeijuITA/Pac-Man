@@ -52,7 +52,7 @@ struct ScenarioEditor
         void drawSavePrompt();
         void saveScenario(const std::string &scenarioName);
         std::string defaultScenarioName();
-        int getScenarioSize(std::string& scenarioName);
+        static int getScenarioSize(std::string& scenarioName);
 
         void handle(const sf::Event::KeyPressed &key);
         void handle(const sf::Event::TextEntered &textEntered);

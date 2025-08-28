@@ -36,6 +36,9 @@ void ScenarioEditor::initScenarioList()
         if (entry.is_regular_file())
         {
             std::string fileName = entry.path().stem().string();
+            if(fileName == "classic")
+                continue;
+
             scenarios.push_back({fileName, [this, fileName]()
                                  {
                                      scenario_name = fileName;

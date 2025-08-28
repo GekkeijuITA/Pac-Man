@@ -446,6 +446,10 @@ void GameState::initScenarioList()
         if (entry.is_regular_file())
         {
             std::string fileName = entry.path().stem().string();
+
+            if (ScenarioEditor::getScenarioSize(fileName) <= 0)
+                continue;
+                
             scenarios.push_back({fileName, [this, fileName]()
                                  {
                                      loadScenario("../../Tappa_15/resources/scenarios/" + fileName + ".txt");
