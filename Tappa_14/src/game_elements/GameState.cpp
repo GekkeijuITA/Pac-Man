@@ -180,7 +180,6 @@ void GameState::update(float elapsed)
         }
         else
         {
-
         }
     }
     else
@@ -619,7 +618,7 @@ void GameState::nextLevel()
 void GameState::saveHighscore()
 {
     std::ofstream highscoreFile;
-    highscoreFile.open("../../Tappa_13/resources/highscore.txt", std::ios::out);
+    highscoreFile.open("../../Tappa_14/resources/highscore.txt", std::ios::out);
     if (!highscoreFile.is_open())
     {
         std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
@@ -635,7 +634,7 @@ void GameState::saveHighscore()
 void GameState::getHighscore()
 {
     std::ifstream highscoreFile;
-    highscoreFile.open("../../Tappa_13/resources/highscore.txt", std::ios::in);
+    highscoreFile.open("../../Tappa_14/resources/highscore.txt", std::ios::in);
     if (!highscoreFile.is_open())
     {
         std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;

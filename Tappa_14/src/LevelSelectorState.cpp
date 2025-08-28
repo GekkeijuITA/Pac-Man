@@ -28,7 +28,7 @@ LevelSelectorState::LevelSelectorState(sf::RenderWindow &window, StateManager &s
 
 void LevelSelectorState::loadMaps()
 {
-    std::string path = "../../Tappa_13/resources/maps";
+    std::string path = "../../Tappa_14/resources/maps";
 
     sf::View view = window.getView();
     maps.clear();

@@ -42,7 +42,7 @@ void MainMenuState::drawScore(int x, int y, int score)
 void MainMenuState::getHighscore()
 {
     std::ifstream highscoreFile;
-    highscoreFile.open("../../Tappa_13/resources/highscore.txt", std::ios::in);
+    highscoreFile.open("../../Tappa_14/resources/highscore.txt", std::ios::in);
     if (!highscoreFile.is_open())
     {
         std::cerr << "Errore nell'apertura del file contenente l'highscore" << std::endl;
