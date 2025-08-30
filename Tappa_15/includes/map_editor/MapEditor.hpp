@@ -24,10 +24,11 @@ struct MapEditor
     Mode currentMode = MENU;
 
     sf::RenderWindow &window;
+    
+    std::vector<MenuOption> options = {};
     GameMenu menu;
-    StateManager &stateManager;
 
-    std::vector<MenuOption> options;
+    StateManager &stateManager;
     ArcadeText arcadeText;
     int cursorIndex = 0;
 
@@ -39,4 +40,6 @@ struct MapEditor
 public:
     void doGraphics();
     void initEditor(std::string mapName);
+    void handle(const sf::Event::MouseButtonPressed &mouse);
+    void handle(const sf::Event::MouseMoved &mouse);
 };

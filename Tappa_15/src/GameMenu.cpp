@@ -3,15 +3,15 @@
 
 #include <iostream>
 
-GameMenu::GameMenu() {}
-
-GameMenu::GameMenu(sf::View v, std::string title, sf::Vector2i titlePos, TextColor textColor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos) : view(v),
-                                                                                                                                                               title(title),
-                                                                                                                                                               options(options),
-                                                                                                                                                               titlePos(titlePos),
-                                                                                                                                                               startOptionsPos(startOptionsPos),
-                                                                                                                                                               textColor(textColor)
+GameMenu::GameMenu(std::string title, sf::Vector2i titlePos, TextColor textColor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos, sf::RenderWindow &window) : title(title),
+                                                                                                                                                                             options(options),
+                                                                                                                                                                             titlePos(titlePos),
+                                                                                                                                                                             startOptionsPos(startOptionsPos),
+                                                                                                                                                                             textColor(textColor),
+                                                                                                                                                                             window(window)
 {
+    view = window.getView();
+
     if (!tex.loadFromFile(TEXT))
     {
         std::cerr << "Error loading texture" << std::endl;
@@ -20,16 +20,35 @@ GameMenu::GameMenu(sf::View v, std::string title, sf::Vector2i titlePos, TextCol
 
     ArcadeText arcadeText;
     setCursorPosition(startOptionsPos.x - 1, startOptionsPos.y);
+
+    optionsBoxHeight = (options.size() * TILE_SIZE) * 2;
+
+    int s = 0;
+    for (auto opt : options)
+    {
+        size_t opt_size = opt.name.size();
+        if (opt_size > s)
+        {
+            s = opt_size;
+        }
+    }
+
+    optionsBoxWidth = s * TILE_SIZE;
+
+    optionsBox = sf::FloatRect({startOptionsPos.x * TILE_SIZE, startOptionsPos.y * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
 }
 
-GameMenu::GameMenu(sf::View v, std::string title, sf::Vector2i titlePos, TextColor textColor, float scaleFactor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos) : view(v),
-                                                                                                                                                                                  title(title),
-                                                                                                                                                                                  options(options),
-                                                                                                                                                                                  titlePos(titlePos),
-                                                                                                                                                                                  startOptionsPos(startOptionsPos),
-                                                                                                                                                                                  textColor(textColor),
-                                                                                                                                                                                  scaleFactor(scaleFactor)
+GameMenu::GameMenu(std::string title, sf::Vector2i titlePos, TextColor textColor, float scaleFactor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos, sf::RenderWindow &window) : title(title),
+                                                                                                                                                                                                options(options),
+                                                                                                                                                                                                titlePos(titlePos),
+                                                                                                                                                                                                startOptionsPos(startOptionsPos),
+                                                                                                                                                                                                textColor(textColor),
+                                                                                                                                                                                                scaleFactor(scaleFactor),
+                                                                                                                                                                                                window(window)
 {
+
+    view = window.getView();
+
     if (!tex.loadFromFile(TEXT))
     {
         std::cerr << "Error loading texture" << std::endl;
@@ -38,9 +57,25 @@ GameMenu::GameMenu(sf::View v, std::string title, sf::Vector2i titlePos, TextCol
 
     ArcadeText arcadeText;
     setCursorPosition(startOptionsPos.x - 1, startOptionsPos.y);
+
+    optionsBoxHeight = (options.size() * TILE_SIZE) * 2;
+
+    int s = 0;
+    for (auto opt : options)
+    {
+        size_t opt_size = opt.name.size();
+        if (opt_size > s)
+        {
+            s = opt_size;
+        }
+    }
+
+    optionsBoxWidth = s * TILE_SIZE;
+
+    optionsBox = sf::FloatRect({startOptionsPos.x * TILE_SIZE, startOptionsPos.y * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
 }
 
-void GameMenu::draw(sf::RenderWindow &window)
+void GameMenu::draw()
 {
     sf::RectangleShape background(view.getSize());
     background.setFillColor(sf::Color(0, 0, 0, 200));
@@ -62,6 +97,15 @@ void GameMenu::draw(sf::RenderWindow &window)
 
 void GameMenu::setCursorPosition(int x, int y)
 {
+    if (cursorPosition.y < y)
+    {
+        // UP
+    }
+    else if (cursorPosition.y > y)
+    {
+        // DOWN
+    }
+
     cursorPosition = {x, y};
 }
 
@@ -117,6 +161,30 @@ void GameMenu::resetCursor()
     setCursorPosition(cursorPosition.x, startOptionsPos.y);
 }
 
+void GameMenu::setOptions(const std::vector<MenuOption> &options)
+{
+    this->options = options;
+
+    optionsBoxHeight = (options.size() * TILE_SIZE) * 2;
+
+    int s = 0;
+    for (auto opt : options)
+    {
+        size_t opt_size = opt.name.size();
+        if (opt_size > s)
+        {
+            s = opt_size;
+        }
+    }
+
+    optionsBoxWidth = s * TILE_SIZE;
+    optionsBox = sf::FloatRect({startOptionsPos.x * TILE_SIZE, startOptionsPos.y * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
+
+
+    std::cout << "Menu options updated" << std::endl;
+    std::cout << "New options box size: " << optionsBoxWidth << "x" << optionsBoxHeight << std::endl;
+}
+
 void GameMenu::handle(const sf::Event::KeyPressed &key)
 {
     switch (key.scancode)
@@ -133,5 +201,34 @@ void GameMenu::handle(const sf::Event::KeyPressed &key)
         break;
     default:
         break;
+    }
+}
+
+void GameMenu::handle(const sf::Event::MouseMoved &mouse)
+{
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+
+    if (optionsBox.contains(worldPos))
+    {
+        cursorIndex = (worldPos.y - optionsBox.position.y) / (2 * TILE_SIZE);
+        setCursorPosition(cursorPosition.x, startOptionsPos.y + 2 * cursorIndex);
+    }
+}
+
+void GameMenu::handle(const sf::Event::MouseButtonPressed &mouse)
+{
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+
+    sf::FloatRect optionsBox({startOptionsPos.x * TILE_SIZE, startOptionsPos.y * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
+
+    if (optionsBox.contains(worldPos))
+    {
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+        {
+            SoundManager::getInstance().playSound("credit");
+            executeOption();
+        }
     }
 }

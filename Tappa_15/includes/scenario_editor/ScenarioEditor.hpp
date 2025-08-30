@@ -23,10 +23,12 @@ struct ScenarioEditor
 
     Mode currentMode = MENU;
     sf::RenderWindow &window;
+
+    std::vector<MenuOption> options = {}, scenarios = {};
     GameMenu menu, scenariosList;
+    
     StateManager &stateManager;
 
-    std::vector<MenuOption> options, scenarios;
     ArcadeText arcadeText;
     int cursorIndex = 0;
 
@@ -63,4 +65,5 @@ public:
     void handle(const sf::Event::KeyPressed &key);
     void handle(const sf::Event::TextEntered &textEntered);
     void handle(const sf::Event::MouseButtonPressed &mousePressed);
+    void handle(const sf::Event::MouseMoved &mouseMoved);
 };

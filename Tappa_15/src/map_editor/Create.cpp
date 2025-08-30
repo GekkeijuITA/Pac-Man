@@ -7,7 +7,25 @@
 #include <iostream>
 #include <fstream>
 
-Create::Create(sf::RenderWindow &window, MapEditor &me) : window(window), mapEditor(me)
+Create::Create(sf::RenderWindow &window, MapEditor &me) : window(window), mapEditor(me), options({{"Save", [this]()
+                                                                                                   {
+                                                                                                       saveMap();
+                                                                                                   }},
+                                                                                                  {"Save and Exit", [this]()
+                                                                                                   {
+                                                                                                       saveMap();
+                                                                                                       if (errorMessage.empty())
+                                                                                                       {
+                                                                                                           reset();
+                                                                                                           mapEditor.currentMode = MapEditor::MENU;
+                                                                                                       }
+                                                                                                   }},
+                                                                                                  {"Exit without saving", [this]()
+                                                                                                   {
+                                                                                                       reset();
+                                                                                                       mapEditor.currentMode = MapEditor::MENU;
+                                                                                                   }}}),
+                                                          menu("OPTIONS", sf::Vector2i(1, 1), TextColor::WHITE, options, sf::Vector2i(2, 4), window)
 {
     if (!gameAsset.loadFromFile(ASSET))
     {
@@ -127,27 +145,6 @@ Create::Create(sf::RenderWindow &window, MapEditor &me) : window(window), mapEdi
             map[i][j] = EMPTY_BLOCK;
         }
     }
-
-    options = {
-        {"Save", [this]()
-         {
-             saveMap();
-         }},
-        {"Save and Exit", [this]()
-         {
-             saveMap();
-             if (errorMessage.empty())
-             {
-                 reset();
-                 mapEditor.currentMode = MapEditor::MENU;
-             }
-         }},
-        {"Exit without saving", [this]()
-         {
-             reset();
-             mapEditor.currentMode = MapEditor::MENU;
-         }}};
-    menu = GameMenu(window.getView(), "OPTIONS", sf::Vector2i(1, 1), TextColor::WHITE, options, sf::Vector2i(2, 4));
 }
 
 Create::Create(sf::RenderWindow &window, MapEditor &mapEditor, std::string mapName) : Create(window, mapEditor)
@@ -165,7 +162,7 @@ void Create::doGraphics()
 
     if (optionsMenu)
     {
-        menu.draw(window);
+        menu.draw();
         if (!errorMessage.empty())
         {
             arcadeText.drawString(errorMessage, 1, 12, window, TextColor::RED);
@@ -596,22 +593,25 @@ void Create::handle(const sf::Event::TextEntered &textEntered)
 // https://en.sfml-dev.org/forums/index.php?topic=13412.0
 void Create::handle(const sf::Event::MouseMoved &mouseMoved)
 {
-    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
-    setCursorPos(static_cast<int>(worldPos.x / TILE_SIZE), static_cast<int>(worldPos.y / TILE_SIZE));
+    if (!optionsMenu)
+    {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+        setCursorPos(static_cast<int>(worldPos.x / TILE_SIZE), static_cast<int>(worldPos.y / TILE_SIZE));
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
-    {
-        if (isCursorOnMap() && selectedTileIndex != -1 && !writingNameMap)
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
         {
-            drawTile();
+            if (isCursorOnMap() && selectedTileIndex != -1 && !writingNameMap)
+            {
+                drawTile();
+            }
         }
-    }
-    else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
-    {
-        if (isCursorOnMap())
+        else if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
         {
-            deleteTile();
+            if (isCursorOnMap())
+            {
+                deleteTile();
+            }
         }
     }
 }

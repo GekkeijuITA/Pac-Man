@@ -21,17 +21,20 @@ struct GameMenu
     ArcadeText arcadeText;
     std::string title;
     std::vector<MenuOption> options;
+    sf::RenderWindow &window;
+
     sf::Vector2i titlePos, startOptionsPos, cursorPosition;
     int cursorIndex = 0;
     TextColor textColor;
     float scaleFactor = 2.f;
+    float optionsBoxHeight, optionsBoxWidth;
+    sf::FloatRect optionsBox;
 
-    GameMenu();
-    GameMenu(sf::View v, std::string title, sf::Vector2i titlePos, TextColor textColor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos);
-    GameMenu(sf::View v, std::string title, sf::Vector2i titlePos, TextColor textColor, float scaleFactor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos);
+    GameMenu(std::string title, sf::Vector2i titlePos, TextColor textColor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos, sf::RenderWindow &window);
+    GameMenu(std::string title, sf::Vector2i titlePos, TextColor textColor, float scaleFactor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos, sf::RenderWindow &window);
 
 public:
-    void draw(sf::RenderWindow &window);
+    void draw();
     void setCursorPosition(int x, int y);
     sf::Vector2i getCursorPosition();
     int getOptionsSize();
@@ -39,5 +42,8 @@ public:
     void moveCursorDown();
     void executeOption();
     void resetCursor();
+    void setOptions(const std::vector<MenuOption> &options);
     void handle(const sf::Event::KeyPressed &key);
+    void handle(const sf::Event::MouseButtonPressed &mouse);
+    void handle(const sf::Event::MouseMoved &mouse);
 };

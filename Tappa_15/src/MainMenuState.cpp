@@ -3,23 +3,22 @@
 #include <fstream>
 
 MainMenuState::MainMenuState(sf::RenderWindow &window, StateManager &sm)
-    : window(window), stateManager(sm)
+    : window(window), stateManager(sm), options({{"PLAY", [this]()
+                                                  { stateManager.currentMode = StateManager::NORMAL_GAME; stateManager.gameState->initScenarioList(); }},
+                                                 {"MAP EDITOR", [this]()
+                                                  { stateManager.currentMode = StateManager::MAP_EDITOR; }},
+                                                 {"SCENARIO EDITOR", [this]()
+                                                  { stateManager.currentMode = StateManager::SCENARIO_EDITOR; }},
+                                                 {"QUIT", [this]()
+                                                  { stateManager.window.close(); }}}),
+      menu("PAC-MAN", sf::Vector2i(3, 4), TextColor::YELLOW, 3.f, options, sf::Vector2i(11, 9), window)
 {
     getHighscore();
-    options = {{"PLAY", [this]()
-                { stateManager.currentMode = StateManager::NORMAL_GAME; stateManager.gameState->initScenarioList(); }},
-               {"MAP EDITOR", [this]()
-                { stateManager.currentMode = StateManager::MAP_EDITOR; }},
-               {"SCENARIO EDITOR", [this]()
-                { stateManager.currentMode = StateManager::SCENARIO_EDITOR; }},
-               {"QUIT", [this]()
-                { stateManager.window.close(); }}};
-    menu = GameMenu(window.getView(), "PAC-MAN", sf::Vector2i(3, 4), TextColor::YELLOW, 3.f, options, sf::Vector2i(11, 9));
 }
 
 void MainMenuState::draw()
 {
-    menu.draw(window);
+    menu.draw();
 
     arcadeText.drawString("1UP", 3, 1, window, TextColor::RED);
     arcadeText.drawString("00", 6, 2, window, TextColor::WHITE);
@@ -53,4 +52,14 @@ void MainMenuState::getHighscore()
     std::getline(highscoreFile, highscoreString);
     highscore = highscoreString.empty() ? 0 : std::stoi(highscoreString);
     highscoreFile.close();
+}
+
+void MainMenuState::handle(const sf::Event::MouseButtonPressed &mouse)
+{
+    menu.handle(mouse);
+}
+
+void MainMenuState::handle(const sf::Event::MouseMoved &mouse)
+{
+    menu.handle(mouse);
 }

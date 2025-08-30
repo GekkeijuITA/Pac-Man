@@ -86,9 +86,12 @@ struct GameState
 
     float gameOverTimer, startGameTimer = START_GAME_TIME, wallBlinkTimer = WALL_BLINK_TIME, victoryTimer = VICTORY_TIME;
     ArcadeText arcadeText;
-    std::vector<MenuOption> pauseOptions, victoryOptions, mainMenuOptions, scenarios;
+    std::vector<MenuOption> pauseOptions = {},
+                            victoryOptions = {},
+                            mainMenuOptions = {},
+                            scenarios = {};
     GameMenu pauseMenu, victoryMenu, mainMenu, scenariosList;
-    
+
     std::unique_ptr<LevelSelectorState> levelSelectorState;
 
     StateManager &stateManager;
@@ -112,6 +115,8 @@ struct GameState
     void saveHighscore();
     void getHighscore();
     void handle(const sf::Event::KeyPressed &key);
+    void handle(const sf::Event::MouseMoved &mouse);
+    void handle(const sf::Event::MouseButtonPressed &mouse);
     bool isWall(int x, int y);
     bool isCorner(int x, int y);
     bool isFruit(char tileType);

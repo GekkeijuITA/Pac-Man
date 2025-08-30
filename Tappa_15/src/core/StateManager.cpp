@@ -70,28 +70,41 @@ void handle(const sf::Event::KeyPressed &key, StateManager &sm, GameState &gs)
     }
 }
 
-// https://www.sfml-dev.org/tutorials/3.0/graphics/view/#coordinates-conversions
-void handle(const sf::Event::MouseMoved &mouseMoved, MapEditor &me)
+void handle(const sf::Event::MouseMoved &mouseMoved, StateManager &sm)
 {
-    if (me.currentMode == me.CREATE && !me.create->optionsMenu)
+    switch (sm.currentMode)
     {
-        me.create->handle(mouseMoved);
+    case StateManager::MAIN_MENU:
+        sm.mainMenuState->handle(mouseMoved);
+        break;
+    case StateManager::NORMAL_GAME:
+        sm.gameState->handle(mouseMoved);
+        break;
+    case StateManager::MAP_EDITOR:
+        sm.mapEditor->handle(mouseMoved);
+        break;
+    case StateManager::SCENARIO_EDITOR:
+        sm.scenarioEditorState->handle(mouseMoved);
+        break;
     }
 }
 
-void handle(const sf::Event::MouseButtonPressed &mouseButton, MapEditor &me)
+void handle(const sf::Event::MouseButtonPressed &mouseButton, StateManager &sm)
 {
-    if (me.currentMode == me.CREATE)
+    switch (sm.currentMode)
     {
-        me.create->handle(mouseButton);
-    }
-}
-
-void handle(const sf::Event::MouseButtonPressed &mousePressed, ScenarioEditor &se)
-{
-    if (se.currentMode == se.SAVE_PROMPT)
-    {
-        se.handle(mousePressed);
+    case StateManager::MAIN_MENU:
+        sm.mainMenuState->handle(mouseButton);
+        break;
+    case StateManager::NORMAL_GAME:
+        sm.gameState->handle(mouseButton);
+        break;
+    case StateManager::MAP_EDITOR:
+        sm.mapEditor->handle(mouseButton);
+        break;
+    case StateManager::SCENARIO_EDITOR:
+        sm.scenarioEditorState->handle(mouseButton);
+        break;
     }
 }
 
@@ -118,6 +131,12 @@ void handle(const sf::Event::TextEntered &textEntered, ScenarioEditor &se)
 
 template <typename T>
 void handle(const T &, StateManager &sm, GameState &gs)
+{
+    // eventi non gestiti
+}
+
+template <typename T>
+void handle(const T &, StateManager &sm)
 {
     // eventi non gestiti
 }
@@ -204,6 +223,5 @@ void StateManager::doGraphics()
 void StateManager::handleInputs()
 {
     window.handleEvents([&](const auto &event)
-                        { handle(event, *this, *gameState); handle(event, *mapEditor); 
-                          handle(event, *scenarioEditorState); });
+                        { handle(event, *this, *gameState); handle(event, *this); });
 }

@@ -36,8 +36,8 @@ struct Create
     std::string mapName, errorMessage, successMessage;
     const std::string folderPath = "../../Tappa_15/resources/maps/";
 
+    std::vector<MenuOption> options = {};
     GameMenu menu;
-    std::vector<MenuOption> options;
 
     Create(sf::RenderWindow &window, MapEditor &me);
     Create(sf::RenderWindow &window, MapEditor &mapEditor, std::string mapName);

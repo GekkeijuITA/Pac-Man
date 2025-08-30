@@ -18,13 +18,6 @@ namespace std
     }
 }
 
-/*
-Cambiare mapPath in un vettore di mappe che va in base al livello oppure una lista di mappe
-(forse meglio questo)
-(se loop non ci interessa più di tanto e ripetiamo ogni volta, probabilmente da usare il modulo),
-se non loop l'ultimo livello corrisponde all'ultima mappa in mapPath
- */
-
 GameState::GameState(sf::RenderWindow &window, StateManager &sm) : level(1),
                                                                    pacman(*this),
                                                                    blinky(*this),
@@ -32,7 +25,36 @@ GameState::GameState(sf::RenderWindow &window, StateManager &sm) : level(1),
                                                                    inky(*this),
                                                                    clyde(*this),
                                                                    window(window),
-                                                                   stateManager(sm)
+                                                                   stateManager(sm),
+                                                                   pauseOptions({{"CONTINUE",
+                                                                                  [this]()
+                                                                                  { pause = false; }},
+                                                                                 {"RESTART LEVEL", [this]()
+                                                                                  { resetRound(); }},
+                                                                                 {"MAIN MENU",
+                                                                                  [this]()
+                                                                                  {
+                                                                                      saveHighscore();
+                                                                                      stateManager.currentMode = StateManager::MAIN_MENU;
+                                                                                      stateManager.mainMenuState->getHighscore();
+                                                                                      currentMode = MENU;
+                                                                                  }}}),
+                                                                   pauseMenu("PAUSE", sf::Vector2i(10, 3), TextColor::WHITE, pauseOptions, sf::Vector2i(10, 6), window),
+                                                                   victoryOptions({{"RESTART GAME", [this]()
+                                                                                    { resetGame(); }},
+                                                                                   {"MAIN MENU", [this]()
+                                                                                    {
+                                                                                        stateManager.currentMode = StateManager::MAIN_MENU;
+                                                                                        stateManager.mainMenuState->getHighscore();
+                                                                                        currentMode = MENU;
+                                                                                    }}}),
+                                                                   victoryMenu("VICTORY", sf::Vector2i(8, 3), TextColor::WHITE, victoryOptions, sf::Vector2i(8, 6), window), mainMenuOptions({{"PLAY MAP", [this]()
+                                                                                                                                                                                               { currentMode = PLAY_MAP; levelSelectorState->loadMaps(); }},
+                                                                                                                                                                                              {"PLAY SCENARIO", [this]()
+                                                                                                                                                                                               { currentMode = PLAY_SCENARIO; }},
+                                                                                                                                                                                              {"BACK", [this]()
+                                                                                                                                                                                               {stateManager.currentMode = StateManager::MAIN_MENU;stateManager.mainMenuState->getHighscore(); }}}),
+                                                                   mainMenu("GAME MENU", sf::Vector2i(6, 3), TextColor::WHITE, mainMenuOptions, sf::Vector2i(6, 6), window), scenariosList("PLAY\n\nSCENARIO", {4, 1}, TextColor::WHITE, {}, {9, 9}, window)
 {
 
     if (!wallBlinkTexture.loadFromFile(STRAIGHT_LINE_H_BLINK))
@@ -48,41 +70,6 @@ GameState::GameState(sf::RenderWindow &window, StateManager &sm) : level(1),
     }
 
     eatenFruits.clear();
-
-    pauseOptions = {
-        {"CONTINUE",
-         [this]()
-         { pause = false; }},
-        {"RESTART LEVEL", [this]()
-         { resetRound(); }},
-        {"MAIN MENU",
-         [this]()
-         {
-             saveHighscore();
-             stateManager.currentMode = StateManager::MAIN_MENU;
-             stateManager.mainMenuState->getHighscore();
-             currentMode = MENU;
-         }}};
-
-    victoryOptions = {{"RESTART GAME", [this]()
-                       { resetGame(); }},
-                      {"MAIN MENU", [this]()
-                       {
-                           stateManager.currentMode = StateManager::MAIN_MENU;
-                           stateManager.mainMenuState->getHighscore();
-                           currentMode = MENU;
-                       }}};
-    pauseMenu = GameMenu(window.getView(), "PAUSE", sf::Vector2i(10, 3), TextColor::WHITE, pauseOptions, sf::Vector2i(10, 6));
-    victoryMenu = GameMenu(window.getView(), "VICTORY", sf::Vector2i(8, 3), TextColor::WHITE, victoryOptions, sf::Vector2i(8, 6));
-
-    mainMenuOptions = {{"PLAY MAP", [this]()
-                        { currentMode = PLAY_MAP; levelSelectorState->loadMaps(); }},
-                       {"PLAY SCENARIO", [this]()
-                        { currentMode = PLAY_SCENARIO; }},
-                       {"BACK", [this]()
-                        {stateManager.currentMode = StateManager::MAIN_MENU;stateManager.mainMenuState->getHighscore(); }}};
-
-    mainMenu = GameMenu(window.getView(), "GAME MENU", sf::Vector2i(6, 3), TextColor::WHITE, mainMenuOptions, sf::Vector2i(6, 6));
     levelSelectorState = std::make_unique<LevelSelectorState>(window, stateManager, *this, "Select to Play");
 
     getHighscore();
@@ -449,7 +436,7 @@ void GameState::initScenarioList()
 
             if (ScenarioEditor::getScenarioSize(fileName) <= 0)
                 continue;
-                
+
             scenarios.push_back({fileName, [this, fileName]()
                                  {
                                      loadScenario("../../Tappa_15/resources/scenarios/" + fileName + ".txt");
@@ -461,14 +448,14 @@ void GameState::initScenarioList()
     scenarios.push_back({"BACK", [this]()
                          { currentMode = MENU; }});
 
-    scenariosList = GameMenu(window.getView(), "PLAY\n\nSCENARIO", {4, 1}, TextColor::WHITE, scenarios, {9, 9});
+    scenariosList.setOptions(scenarios);
 }
 
 void GameState::doGraphics()
 {
     if (currentMode == MENU)
     {
-        mainMenu.draw(window);
+        mainMenu.draw();
     }
     else if (currentMode == PLAY_MAP)
     {
@@ -476,7 +463,7 @@ void GameState::doGraphics()
     }
     else if (currentMode == PLAY_SCENARIO)
     {
-        scenariosList.draw(window);
+        scenariosList.draw();
     }
     else
     {
@@ -576,7 +563,7 @@ void GameState::doUI()
 
     if (pause)
     {
-        pauseMenu.draw(window);
+        pauseMenu.draw();
     }
 
     if (gameOver)
@@ -586,7 +573,7 @@ void GameState::doUI()
 
     if (victory)
     {
-        victoryMenu.draw(window);
+        victoryMenu.draw();
     }
 }
 
@@ -777,6 +764,47 @@ bool GameState::isFruit(char tileType)
 {
     return tileType == FRUIT || tileType == CHERRY || tileType == STRAWBERRY || tileType == ORANGE_FRUIT ||
            tileType == APPLE || tileType == GRAPE || tileType == GALAXIAN || tileType == BELL || tileType == KEY;
+}
+
+void GameState::handle(const sf::Event::MouseMoved &mouse)
+{
+    if (pause)
+    {
+        pauseMenu.handle(mouse);
+    }
+    else if (victory)
+    {
+        victoryMenu.handle(mouse);
+        return;
+    }
+    else if (currentMode == MENU)
+    {
+        mainMenu.handle(mouse);
+    } else if (currentMode == PLAY_SCENARIO)
+    {
+        scenariosList.handle(mouse);
+    }
+}
+
+void GameState::handle(const sf::Event::MouseButtonPressed &mouse)
+{
+    if (pause)
+    {
+        pauseMenu.handle(mouse);
+    }
+    else if (victory)
+    {
+        victoryMenu.handle(mouse);
+        return;
+    }
+    else if (currentMode == MENU)
+    {
+        mainMenu.handle(mouse);
+    }
+    else if (currentMode == PLAY_SCENARIO)
+    {
+        scenariosList.handle(mouse);
+    }
 }
 
 void GameState::handle(const sf::Event::KeyPressed &key)

@@ -421,6 +421,10 @@ void LevelSelectorState::handle(const sf::Event::KeyPressed &key)
         {
             scenarioEditor.currentMode = ScenarioEditor::SAVE_PROMPT;
         }
+        else if (stateManager.currentMode == StateManager::NORMAL_GAME)
+        {
+            gameState.currentMode = GameState::MENU;
+        }
         else
         {
             stateManager.currentMode = StateManager::MAIN_MENU;

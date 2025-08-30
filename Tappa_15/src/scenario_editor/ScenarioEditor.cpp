@@ -1,23 +1,20 @@
 #include "../../includes/scenario_editor/ScenarioEditor.hpp"
 
-ScenarioEditor::ScenarioEditor(sf::RenderWindow &window, StateManager &sm) : window(window), stateManager(sm)
+ScenarioEditor::ScenarioEditor(sf::RenderWindow &window, StateManager &sm) : window(window), stateManager(sm), options({{"CREATE", [this]()
+                                                                                                                         {
+                                                                                                                             currentMode = CREATE;
+                                                                                                                             levelSelectorState->loadMaps();
+                                                                                                                         }},
+                                                                                                                        {"EDIT", [this]()
+                                                                                                                         { currentMode = EDIT; }},
+                                                                                                                        {"BACK", [this]()
+                                                                                                                         {
+                                                                                                                             stateManager.currentMode = StateManager::MAIN_MENU;
+                                                                                                                             stateManager.mainMenuState->getHighscore();
+                                                                                                                             currentMode = MENU;
+                                                                                                                         }}}),
+                                                                             menu("SCENARIO\n\nEDITOR", {4, 1}, TextColor::WHITE, options, {9, 9}, window), scenariosList("EDIT\n\nSCENARIO", {4, 1}, TextColor::WHITE, scenarios, {9, 9}, window)
 {
-    options = {
-        {"CREATE", [this]()
-         {
-             currentMode = CREATE;
-             levelSelectorState->loadMaps();
-         }},
-        {"EDIT", [this]()
-         { currentMode = EDIT; }},
-        {"BACK", [this]()
-         {
-             stateManager.currentMode = StateManager::MAIN_MENU;
-             stateManager.mainMenuState->getHighscore();
-             currentMode = MENU;
-         }}};
-
-    menu = GameMenu(window.getView(), "SCENARIO\n\nEDITOR", {4, 1}, TextColor::WHITE, options, {9, 9});
     levelSelectorState = std::make_unique<LevelSelectorState>(window, stateManager, *this, "Select Map to Add to Scenario");
 
     scenario_name = defaultScenarioName();
@@ -36,7 +33,7 @@ void ScenarioEditor::initScenarioList()
         if (entry.is_regular_file())
         {
             std::string fileName = entry.path().stem().string();
-            if(fileName == "classic")
+            if (fileName == "classic")
                 continue;
 
             scenarios.push_back({fileName, [this, fileName]()
@@ -52,7 +49,7 @@ void ScenarioEditor::initScenarioList()
     scenarios.push_back({"BACK", [this]()
                          { currentMode = MENU; }});
 
-    scenariosList = GameMenu(window.getView(), "EDIT\n\nSCENARIO", {4, 1}, TextColor::WHITE, scenarios, {9, 9});
+    scenariosList.setOptions(scenarios);
 }
 
 void ScenarioEditor::doGraphics()
@@ -60,13 +57,13 @@ void ScenarioEditor::doGraphics()
     switch (currentMode)
     {
     case MENU:
-        menu.draw(window);
+        menu.draw();
         break;
     case CREATE:
         levelSelectorState->draw();
         break;
     case EDIT:
-        scenariosList.draw(window);
+        scenariosList.draw();
         break;
     case SAVE_PROMPT:
         levelSelectorState->draw();
@@ -216,7 +213,6 @@ void ScenarioEditor::loadScenario(const std::string &scenarioName)
         loopScenario = (line == "1");
     }
 
-
     while (getline(scenarioFile, line, ','))
     {
         scenario_list.push_back(line);
@@ -256,7 +252,8 @@ std::string ScenarioEditor::defaultScenarioName()
     return baseName + std::to_string(scenarioCount + 1);
 }
 
-int ScenarioEditor::getScenarioSize(std::string& scenarioName) {
+int ScenarioEditor::getScenarioSize(std::string &scenarioName)
+{
     std::string directoryPath = "../../Tappa_15/resources/scenarios/";
     std::ifstream scenarioFile(directoryPath + scenarioName + ".txt");
 
@@ -267,7 +264,9 @@ int ScenarioEditor::getScenarioSize(std::string& scenarioName) {
     }
 
     std::string line;
-    if (getline(scenarioFile, line)) {} // Loop
+    if (getline(scenarioFile, line))
+    {
+    } // Loop
 
     int count = 0;
     while (getline(scenarioFile, line, ','))
@@ -334,6 +333,18 @@ void ScenarioEditor::handle(const sf::Event::TextEntered &textEntered)
     }
 }
 
+void ScenarioEditor::handle(const sf::Event::MouseMoved &mouseMoved)
+{
+    if (currentMode == MENU)
+    {
+        menu.handle(mouseMoved);
+    }
+    else if (currentMode == EDIT)
+    {
+        scenariosList.handle(mouseMoved);
+    }
+}
+
 void ScenarioEditor::handle(const sf::Event::MouseButtonPressed &mousePressed)
 {
     if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
@@ -383,6 +394,14 @@ void ScenarioEditor::handle(const sf::Event::MouseButtonPressed &mousePressed)
                     }
                 }
             }
+        }
+        else if (currentMode == MENU)
+        {
+            menu.handle(mousePressed);
+        }
+        else if (currentMode == EDIT)
+        {
+            scenariosList.handle(mousePressed);
         }
     }
 }
