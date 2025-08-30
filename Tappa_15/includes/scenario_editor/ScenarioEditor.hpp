@@ -40,21 +40,27 @@ struct ScenarioEditor
     bool writingScenarioName = false;
     int textCursorPos = 0;
 
-    private:
-        void initScenarioList();
-        void loadScenario(const std::string &scenarioName);
+    float promptWidth = 600.f;
+    float promptHeight = 200.f;
+    float saveTextX, saveTextY;
+    float optionY, yesTextX, noTextX;
 
-    public:
-        void doGraphics();
-        void addToScenario(std::string mapName);
-        void removeFromScenario(std::string mapName);
-        bool isInScenario(const std::string &mapName);
-        void drawSavePrompt();
-        void saveScenario(const std::string &scenarioName);
-        std::string defaultScenarioName();
-        static int getScenarioSize(std::string& scenarioName);
+private:
+    void
+    initScenarioList();
+    void loadScenario(const std::string &scenarioName);
 
-        void handle(const sf::Event::KeyPressed &key);
-        void handle(const sf::Event::TextEntered &textEntered);
-        void handle(const sf::Event::MouseButtonPressed &mousePressed);
+public:
+    void doGraphics();
+    void addToScenario(std::string mapName);
+    void removeFromScenario(std::string mapName);
+    bool isInScenario(const std::string &mapName);
+    void drawSavePrompt();
+    void saveScenario(const std::string &scenarioName);
+    std::string defaultScenarioName();
+    static int getScenarioSize(std::string &scenarioName);
+
+    void handle(const sf::Event::KeyPressed &key);
+    void handle(const sf::Event::TextEntered &textEntered);
+    void handle(const sf::Event::MouseButtonPressed &mousePressed);
 };

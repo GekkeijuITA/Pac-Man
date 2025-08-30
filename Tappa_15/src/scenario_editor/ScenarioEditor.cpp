@@ -80,8 +80,6 @@ void ScenarioEditor::doGraphics()
 
 void ScenarioEditor::drawSavePrompt()
 {
-    float promptWidth = 600.f;
-    float promptHeight = 200.f;
     sf::RectangleShape promptBox(sf::Vector2f(promptWidth, promptHeight));
     promptBox.setFillColor(sf::Color(0, 0, 0, 200));
     promptBox.setOutlineColor(sf::Color::White);
@@ -97,8 +95,8 @@ void ScenarioEditor::drawSavePrompt()
     sf::Vector2f viewCenter = window.getView().getCenter();
     sf::Vector2f viewSize = window.getView().getSize();
 
-    float saveTextX = viewCenter.x - ((saveText.length() / 2.f) * TILE_SIZE);
-    float saveTextY = viewCenter.y - 90.f;
+    saveTextX = viewCenter.x - ((saveText.length() / 2.f) * TILE_SIZE);
+    saveTextY = viewCenter.y - 90.f;
     arcadeText.drawString(saveText, saveTextX / TILE_SIZE, saveTextY / TILE_SIZE, window, TextColor::WHITE);
 
     if (writingScenarioName)
@@ -131,9 +129,9 @@ void ScenarioEditor::drawSavePrompt()
 
     arcadeText.drawString("Loop Scenario", (viewCenter.x - 170.f) / TILE_SIZE, (viewCenter.y - 17.f) / TILE_SIZE, window, TextColor::WHITE);
 
-    float optionY = viewCenter.y + 50.f;
-    float yesTextX = viewCenter.x - 60.f;
-    float noTextX = viewCenter.x + 40.f;
+    optionY = viewCenter.y + 50.f;
+    yesTextX = viewCenter.x - 60.f;
+    noTextX = viewCenter.x + 40.f;
 
     arcadeText.drawString("Y", yesTextX / TILE_SIZE, optionY / TILE_SIZE, window, TextColor::WHITE);
     arcadeText.drawString("N", noTextX / TILE_SIZE, optionY / TILE_SIZE, window, TextColor::WHITE);
@@ -348,12 +346,11 @@ void ScenarioEditor::handle(const sf::Event::MouseButtonPressed &mousePressed)
             std::string saveText = "Save " + scenario_name;
             sf::Vector2f viewCenter = window.getView().getCenter();
             float nameBoxX = viewCenter.x - ((saveText.length() / 2.f) * TILE_SIZE);
-            float nameBoxY = viewCenter.y - 90.f;
             float nameBoxWidth = (saveText.length() - 5) * TILE_SIZE;
             float nameBoxHeight = TILE_SIZE + 5.f;
 
             sf::FloatRect nameBox(
-                {nameBoxX + (5 * TILE_SIZE), nameBoxY},
+                {nameBoxX + (5 * TILE_SIZE), saveTextY},
                 {nameBoxWidth, nameBoxHeight});
 
             if (nameBox.contains(worldPos))
@@ -372,11 +369,8 @@ void ScenarioEditor::handle(const sf::Event::MouseButtonPressed &mousePressed)
                 }
                 else
                 {
-                    float yesTextX = viewCenter.x - 60.f;
-                    float noTextX = viewCenter.x + 40.f;
-
-                    sf::FloatRect yesBox({yesTextX, viewCenter.y + 50.f}, {TILE_SIZE, TILE_SIZE});
-                    sf::FloatRect noBox({noTextX, viewCenter.y + 50.f}, {TILE_SIZE, TILE_SIZE});
+                    sf::FloatRect yesBox({yesTextX, optionY}, {TILE_SIZE, TILE_SIZE});
+                    sf::FloatRect noBox({noTextX, optionY}, {TILE_SIZE, TILE_SIZE});
 
                     if (yesBox.contains(worldPos))
                     {
