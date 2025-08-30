@@ -66,4 +66,5 @@ public:
     void handle(const sf::Event::TextEntered &textEntered);
     void handle(const sf::Event::MouseButtonPressed &mousePressed);
     void handle(const sf::Event::MouseMoved &mouseMoved);
+    void handle(const sf::Event::MouseWheelScrolled &wheel);
 };

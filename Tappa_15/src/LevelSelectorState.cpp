@@ -3,6 +3,7 @@
 #include "../includes/core/Debug.hpp"
 #include "../includes/lib/TileFactory.hpp"
 #include "../includes/lib/SoundManager.hpp"
+#include <cmath>
 
 LevelSelectorState::LevelSelectorState(sf::RenderWindow &window, StateManager &sm, MapEditor &me, std::string title) : window(window), stateManager(sm), mapEditor(me), scenarioEditor(*static_cast<ScenarioEditor *>(nullptr)), gameState(*static_cast<GameState *>(nullptr)), title(title)
 {
@@ -463,5 +464,75 @@ void LevelSelectorState::handle(const sf::Event::KeyPressed &key)
             else
                 scenarioEditor.addToScenario(mapPath);
         }
+    }
+}
+
+void LevelSelectorState::handle(const sf::Event::MouseButtonPressed &button)
+{
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+    {
+        if (maps.empty())
+        {
+            return;
+        }
+
+        SoundManager::getInstance().playSound("credit");
+        if (stateManager.currentMode != StateManager::SCENARIO_EDITOR)
+            while (SoundManager::getInstance().isSoundPlaying("credit"))
+                ;
+
+        std::string mapPath = maps[cursorPosition.y][cursorPosition.x].path;
+        if (stateManager.currentMode == StateManager::NORMAL_GAME)
+        {
+            if (stateManager.gameState->currentMode == GameState::PLAY_MAP)
+            {
+                stateManager.gameState->loadMap(mapPath);
+                stateManager.gameState->currentMode = GameState::IN_GAME;
+            }
+        }
+        else if (stateManager.currentMode == StateManager::MAP_EDITOR)
+        {
+            mapEditor.initEditor(getMapName(mapPath));
+        }
+        else if (stateManager.currentMode == StateManager::SCENARIO_EDITOR)
+        {
+            if (scenarioEditor.isInScenario(mapPath))
+                scenarioEditor.removeFromScenario(mapPath);
+            else
+                scenarioEditor.addToScenario(mapPath);
+        }
+    }
+}
+void LevelSelectorState::handle(const sf::Event::MouseMoved &mouse)
+{
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
+
+    for (size_t r = page * maxRows; r < std::min(static_cast<int>(maps.size()), (page + 1) * maxRows); ++r)
+    {
+        for (size_t c = 0; c < maps[r].size(); ++c)
+        {
+            MapPreview &map = maps[r][c];
+            sf::FloatRect mapRect(map.position, sf::Vector2f(TILE_SIZE_PREVIEW * MAP_WIDTH, TILE_SIZE_PREVIEW * MAP_HEIGHT + TILE_SIZE / 2.f));
+
+            if (mapRect.contains(worldPos))
+            {
+                cursorPosition.x = c;
+                cursorPosition.y = r - page * maxRows;
+                return;
+            }
+        }
+    }
+}
+
+void LevelSelectorState::handle(const sf::Event::MouseWheelScrolled &wheel)
+{
+    if (wheel.delta > 0)
+    {
+        previousPage();
+    }
+    else if (wheel.delta < 0)
+    {
+        nextPage();
     }
 }

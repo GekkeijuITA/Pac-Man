@@ -66,6 +66,10 @@ void MapEditor::handle(const sf::Event::MouseButtonPressed &mouse)
     {
         menu.handle(mouse);
     }
+    else if (currentMode == EDIT)
+    {
+        levelSelectorState->handle(mouse);
+    }
 }
 
 void MapEditor::handle(const sf::Event::MouseMoved &mouse)
@@ -77,5 +81,17 @@ void MapEditor::handle(const sf::Event::MouseMoved &mouse)
     else if (currentMode == MENU)
     {
         menu.handle(mouse);
+    }
+    else if (currentMode == EDIT)
+    {
+        levelSelectorState->handle(mouse);
+    }
+}
+
+void MapEditor::handle(const sf::Event::MouseWheelScrolled &wheel)
+{
+    if (currentMode == EDIT)
+    {
+        levelSelectorState->handle(wheel);
     }
 }

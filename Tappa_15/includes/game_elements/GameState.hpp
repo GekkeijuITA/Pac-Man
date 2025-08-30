@@ -117,6 +117,7 @@ struct GameState
     void handle(const sf::Event::KeyPressed &key);
     void handle(const sf::Event::MouseMoved &mouse);
     void handle(const sf::Event::MouseButtonPressed &mouse);
+    void handle(const sf::Event::MouseWheelScrolled &wheel);
     bool isWall(int x, int y);
     bool isCorner(int x, int y);
     bool isFruit(char tileType);

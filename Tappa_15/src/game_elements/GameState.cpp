@@ -780,9 +780,14 @@ void GameState::handle(const sf::Event::MouseMoved &mouse)
     else if (currentMode == MENU)
     {
         mainMenu.handle(mouse);
-    } else if (currentMode == PLAY_SCENARIO)
+    }
+    else if (currentMode == PLAY_SCENARIO)
     {
         scenariosList.handle(mouse);
+    }
+    else if (currentMode == PLAY_MAP)
+    {
+        levelSelectorState->handle(mouse);
     }
 }
 
@@ -804,6 +809,10 @@ void GameState::handle(const sf::Event::MouseButtonPressed &mouse)
     else if (currentMode == PLAY_SCENARIO)
     {
         scenariosList.handle(mouse);
+    }
+    else if (currentMode == PLAY_MAP)
+    {
+        levelSelectorState->handle(mouse);
     }
 }
 
@@ -874,6 +883,14 @@ void GameState::handle(const sf::Event::KeyPressed &key)
     }
 
     pacman.setNextDirection(newDirection);
+}
+
+void GameState::handle(const sf::Event::MouseWheelScrolled &wheel)
+{
+    if (currentMode == PLAY_MAP)
+    {
+        levelSelectorState->handle(wheel);
+    }
 }
 
 int GameState::getLevel()

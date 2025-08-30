@@ -42,4 +42,5 @@ public:
     void initEditor(std::string mapName);
     void handle(const sf::Event::MouseButtonPressed &mouse);
     void handle(const sf::Event::MouseMoved &mouse);
+    void handle(const sf::Event::MouseWheelScrolled &wheel);
 };

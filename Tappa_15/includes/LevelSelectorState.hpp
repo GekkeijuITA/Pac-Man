@@ -54,6 +54,9 @@ public:
     void moveCursorUp();
     void moveCursorDown();
     void handle(const sf::Event::KeyPressed &key);
+    void handle(const sf::Event::MouseButtonPressed &button);
+    void handle(const sf::Event::MouseMoved &mouse);
+    void handle(const sf::Event::MouseWheelScrolled &wheel);
 
 private:
     sf::Texture generateMapPreview(const std::string path);

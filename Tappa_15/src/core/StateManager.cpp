@@ -108,6 +108,22 @@ void handle(const sf::Event::MouseButtonPressed &mouseButton, StateManager &sm)
     }
 }
 
+void handle(const sf::Event::MouseWheelScrolled &mouseWheel, StateManager &sm)
+{
+    switch (sm.currentMode)
+    {
+    case StateManager::NORMAL_GAME:
+        sm.gameState->handle(mouseWheel);
+        break;
+    case StateManager::MAP_EDITOR:
+        sm.mapEditor->handle(mouseWheel);
+        break;
+    case StateManager::SCENARIO_EDITOR:
+        sm.scenarioEditorState->handle(mouseWheel);
+        break;
+    }
+}
+
 void handle(const sf::Event::Closed &close, StateManager &sm, GameState &gs)
 {
     sm.window.close();

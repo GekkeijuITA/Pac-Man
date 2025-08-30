@@ -343,6 +343,10 @@ void ScenarioEditor::handle(const sf::Event::MouseMoved &mouseMoved)
     {
         scenariosList.handle(mouseMoved);
     }
+    else if (currentMode == CREATE)
+    {
+        levelSelectorState->handle(mouseMoved);
+    }
 }
 
 void ScenarioEditor::handle(const sf::Event::MouseButtonPressed &mousePressed)
@@ -403,5 +407,17 @@ void ScenarioEditor::handle(const sf::Event::MouseButtonPressed &mousePressed)
         {
             scenariosList.handle(mousePressed);
         }
+        else if (currentMode == CREATE)
+        {
+            levelSelectorState->handle(mousePressed);
+        }
+    }
+}
+
+void ScenarioEditor::handle(const sf::Event::MouseWheelScrolled &wheel)
+{
+    if (currentMode == CREATE)
+    {
+        levelSelectorState->handle(wheel);
     }
 }
