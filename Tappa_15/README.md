@@ -14,6 +14,7 @@ L'obbiettivo di questa tappa è quella di implementare un editor di scenari: ovv
   Gli utenti possono ora navigare le opzioni passando il cursore sopra le voci e selezionarle tramite click sinistro.  
   La gestione degli eventi è stata centralizzata nello `StateManager`, che smista i movimenti e i click del mouse allo stato corretto.  
   Inoltre, la classe `GameMenu` è stata rifattorizzata per calcolare automaticamente le aree di selezione delle opzioni, migliorando l’esperienza utente.
+- **Gestione della rotellina del mouse**: implementato il supporto a `sf::Event::MouseWheelScrolled` negli editor e nei selettori (Map Editor, Scenario Editor, Level Selector, GameState). In questo modo l’utente può scorrere le pagine di mappe/scenari usando la rotellina del mouse, rendendo più veloce la navigazione.
 
 
 L'editor di scenari è stato implementato usando come base l'editor di mappe sviluppato nelle tappe precedenti, con alcune modifiche per adattarlo alla gestione delle playlist.
@@ -22,6 +23,6 @@ Inoltre sono state apportate modifiche al selezionatore di mappe per poter disti
 ---
 
 # Fonti utilizzate in questa Tappa
-Nessuna fonte esterna è stata utilizzata per questa tappa.
+- [Documentazione di SFML](https://www.sfml-dev.org/documentation/3.0.0/structsf_1_1Event_1_1MouseWheelScrolled.html#a02d581d6baf283dcbf6ea38a6e1f8d04)
 
 ---
