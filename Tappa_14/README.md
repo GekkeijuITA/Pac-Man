@@ -20,6 +20,8 @@ In più è stato messo un suono per quando si preme il tasto "invio" nei menu.
 ## Vita Extra
 La logica per l'implementazione della vita extra si attiva al raggiungimento di un punteggio specifico. Quando il punteggio di Pac-Man raggiunge i 10000 punti, viene riprodotto un suono di "estensione" e il numero di vite del giocatore viene incrementato di uno.
 
+![Vita Extra](images/extra-life.gif)
+
 ## Piccole migliorie
 Per migliorare la leggibilità e la manutenibilità del codice, sono state apportate le seguenti modifiche:
 - **Centralizzazione della logica**: la gestione dei timer e la funzione `update()` sono state centralizzate all'interno delle rispettive classi `Pacman` e `Fruit`
