@@ -6,7 +6,10 @@ ScenarioEditor::ScenarioEditor(sf::RenderWindow &window, StateManager &sm) : win
                                                                                                                              levelSelectorState->loadMaps();
                                                                                                                          }},
                                                                                                                         {"EDIT", [this]()
-                                                                                                                         { currentMode = EDIT; }},
+                                                                                                                         {
+                                                                                                                             currentMode = EDIT;
+                                                                                                                             initScenarioList();
+                                                                                                                         }},
                                                                                                                         {"BACK", [this]()
                                                                                                                          {
                                                                                                                              stateManager.currentMode = StateManager::MAIN_MENU;
@@ -20,8 +23,6 @@ ScenarioEditor::ScenarioEditor(sf::RenderWindow &window, StateManager &sm) : win
     scenario_name = defaultScenarioName();
     writingScenarioName = false;
     textCursorPos = scenario_name.size();
-
-    initScenarioList();
 }
 
 void ScenarioEditor::initScenarioList()
@@ -305,6 +306,7 @@ void ScenarioEditor::handle(const sf::Event::KeyPressed &key)
         }
         else if (key.scancode == sf::Keyboard::Scancode::N)
         {
+            scenario_list.clear();
             currentMode = ScenarioEditor::MENU;
         }
     }

@@ -282,13 +282,15 @@ void LevelSelectorState::drawCursor()
 
 void LevelSelectorState::drawSelectedCursor()
 {
-    for (auto &row : maps)
+    size_t startRow = page * maxRows;
+    size_t endRow = std::min(startRow + maxRows, maps.size());
+
+    for (size_t r = startRow; r < endRow; ++r)
     {
-        for (auto &map : row)
+        for (auto &map : maps[r])
         {
             if (scenarioEditor.isInScenario(map.path))
             {
-                sf::Vector2f offset(margin / 2, margin / 2);
                 sf::RectangleShape cursor(sf::Vector2f(TILE_SIZE_PREVIEW * MAP_WIDTH, (TILE_SIZE_PREVIEW * MAP_HEIGHT) + (TILE_SIZE / 2)));
                 cursor.setFillColor(sf::Color::Transparent);
                 cursor.setOutlineColor(sf::Color::Yellow);

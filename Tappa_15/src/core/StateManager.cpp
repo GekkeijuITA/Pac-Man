@@ -129,20 +129,18 @@ void handle(const sf::Event::Closed &close, StateManager &sm, GameState &gs)
     sm.window.close();
 }
 
-void handle(const sf::Event::TextEntered &textEntered, MapEditor &me)
+void handle(const sf::Event::TextEntered &textEntered, StateManager &sm)
 {
-    if (me.currentMode == me.CREATE && me.create->writingNameMap)
-    {
-        me.create->handle(textEntered);
+    if(sm.currentMode == StateManager::MAP_EDITOR) {
+        if(sm.mapEditor->currentMode == sm.mapEditor->CREATE && sm.mapEditor->create->writingNameMap) {
+            sm.mapEditor->create->handle(textEntered);
+        }
     }
-}
-
-void handle(const sf::Event::TextEntered &textEntered, ScenarioEditor &se)
-{
-    if (se.currentMode == se.SAVE_PROMPT)
-    {
-        se.handle(textEntered);
-    }
+    else if(sm.currentMode == StateManager::SCENARIO_EDITOR) {
+        if(sm.scenarioEditorState->currentMode == sm.scenarioEditorState->SAVE_PROMPT) {
+            sm.scenarioEditorState->handle(textEntered);
+        }
+    }   
 }
 
 template <typename T>
