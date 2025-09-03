@@ -35,7 +35,7 @@ GameMenu::GameMenu(std::string title, sf::Vector2i titlePos, TextColor textColor
 
     optionsBoxWidth = s * TILE_SIZE;
 
-    optionsBox = sf::FloatRect({startOptionsPos.x * TILE_SIZE, startOptionsPos.y * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
+    optionsBox = sf::FloatRect({static_cast<float>(startOptionsPos.x) * TILE_SIZE, static_cast<float>(startOptionsPos.y) * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
 }
 
 GameMenu::GameMenu(std::string title, sf::Vector2i titlePos, TextColor textColor, float scaleFactor, std::vector<MenuOption> options, sf::Vector2i startOptionsPos, sf::RenderWindow &window) : title(title),
@@ -72,7 +72,7 @@ GameMenu::GameMenu(std::string title, sf::Vector2i titlePos, TextColor textColor
 
     optionsBoxWidth = s * TILE_SIZE;
 
-    optionsBox = sf::FloatRect({startOptionsPos.x * TILE_SIZE, startOptionsPos.y * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
+    optionsBox = sf::FloatRect({static_cast<float>(startOptionsPos.x) * TILE_SIZE, static_cast<float>(startOptionsPos.y) * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
 }
 
 void GameMenu::draw()
@@ -97,15 +97,6 @@ void GameMenu::draw()
 
 void GameMenu::setCursorPosition(int x, int y)
 {
-    if (cursorPosition.y < y)
-    {
-        // UP
-    }
-    else if (cursorPosition.y > y)
-    {
-        // DOWN
-    }
-
     cursorPosition = {x, y};
 }
 
@@ -178,7 +169,7 @@ void GameMenu::setOptions(const std::vector<MenuOption> &options)
     }
 
     optionsBoxWidth = s * TILE_SIZE;
-    optionsBox = sf::FloatRect({startOptionsPos.x * TILE_SIZE, startOptionsPos.y * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
+    optionsBox = sf::FloatRect({static_cast<float>(startOptionsPos.x) * TILE_SIZE, static_cast<float>(startOptionsPos.y) * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
 
 
     std::cout << "Menu options updated" << std::endl;
@@ -221,7 +212,7 @@ void GameMenu::handle(const sf::Event::MouseButtonPressed &mouse)
     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
     sf::Vector2f worldPos = window.mapPixelToCoords(mousePos);
 
-    sf::FloatRect optionsBox({startOptionsPos.x * TILE_SIZE, startOptionsPos.y * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
+    sf::FloatRect optionsBox({static_cast<float>(startOptionsPos.x) * TILE_SIZE, static_cast<float>(startOptionsPos.y) * TILE_SIZE}, {optionsBoxWidth, optionsBoxHeight});
 
     if (optionsBox.contains(worldPos))
     {
