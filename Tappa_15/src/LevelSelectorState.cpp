@@ -91,7 +91,7 @@ void LevelSelectorState::loadMaps()
 
     for (const auto &entry : std::filesystem::directory_iterator(path))
     {
-        std::string path = entry.path();
+        std::string path = entry.path().string();
 
         if (stateManager.currentMode == StateManager::MAP_EDITOR && getMapName(path) == "classic")
         {
@@ -468,7 +468,6 @@ void LevelSelectorState::handle(const sf::Event::KeyPressed &key)
         }
     }
 }
-
 void LevelSelectorState::handle(const sf::Event::MouseButtonPressed &button)
 {
     if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
@@ -526,7 +525,6 @@ void LevelSelectorState::handle(const sf::Event::MouseMoved &mouse)
         }
     }
 }
-
 void LevelSelectorState::handle(const sf::Event::MouseWheelScrolled &wheel)
 {
     if (wheel.delta > 0)
