@@ -3,8 +3,8 @@
 #include <map>
 #include <optional>
 
-#include "global_values.hpp"
-#include "textures.hpp"
+#include "../lib/global_values.hpp"
+#include "../lib/textures.hpp"
 #include "../game_elements/fruits/Cherry.hpp"
 #include "../game_elements/fruits/Strawberry.hpp"
 #include "../game_elements/fruits/Orange.hpp"

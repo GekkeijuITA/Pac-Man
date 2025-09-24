@@ -1,5 +1,4 @@
 #include "../../includes/map_editor/MapEditor.hpp"
-#include "../../includes/core/Debug.hpp"
 
 MapEditor::MapEditor(sf::RenderWindow &window, StateManager &sm) : window(window), stateManager(sm), options({{"CREATE", [this]()
                                                                                                                {

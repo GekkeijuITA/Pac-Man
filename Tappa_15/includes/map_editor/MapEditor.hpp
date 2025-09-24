@@ -3,7 +3,7 @@
 #include <iostream>
 #include <memory>
 
-#include "../GameMenu.hpp"
+#include "../ui/GameMenu.hpp"
 #include "../core/StateManager.hpp"
 #include "Create.hpp"
 #include "../LevelSelectorState.hpp"

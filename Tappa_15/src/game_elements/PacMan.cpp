@@ -1,8 +1,8 @@
 #include "../../includes/game_elements/PacMan.hpp"
 #include "../../includes/game_elements/GameState.hpp"
 #include "../../includes/lib/textures.hpp"
-#include "../../includes/lib/TileFactory.hpp"
-#include "../../includes/lib/SoundManager.hpp"
+#include "../../includes/core/TileFactory.hpp"
+#include "../../includes/core/SoundManager.hpp"
 #include <iostream>
 
 PacMan::PacMan(GameState &gameState) : map(nullptr), gameState(gameState)

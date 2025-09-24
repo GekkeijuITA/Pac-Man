@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "../../includes/lib/text_ui.hpp"
-#include "../../includes/GameMenu.hpp"
+#include "../ui/text_ui.hpp"
+#include "../ui/GameMenu.hpp"
 #include "MapEditor.hpp"
 
 struct MapEditor;

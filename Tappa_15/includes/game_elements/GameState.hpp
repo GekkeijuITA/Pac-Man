@@ -23,7 +23,7 @@
 #include "fruits/Key.hpp"
 #include "fruits/Galaxian.hpp"
 
-#include "../GameMenu.hpp"
+#include "../ui/GameMenu.hpp"
 #include "../core/StateManager.hpp"
 #include "../LevelSelectorState.hpp"
 

@@ -1,4 +1,4 @@
-#include "../../includes/lib/TileFactory.hpp"
+#include "../../includes/core/TileFactory.hpp"
 #include <iostream>
 
 TileFactory::TileFactory()

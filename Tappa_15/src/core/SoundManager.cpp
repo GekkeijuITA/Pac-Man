@@ -1,4 +1,4 @@
-#include "../../includes/lib/SoundManager.hpp"
+#include "../../includes/core/SoundManager.hpp"
 #include <iostream>
 #include <cmath>
 #include <chrono>

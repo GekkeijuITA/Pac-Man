@@ -1,8 +1,8 @@
 #include "../../includes/map_editor/Create.hpp"
-#include "../../includes/core/Debug.hpp"
+#include "../../includes/lib/Debug.hpp"
 #include "../../includes/lib/global_values.hpp"
 #include "../../includes/lib/textures.hpp"
-#include "../../includes/lib/TileFactory.hpp"
+#include "../../includes/core/TileFactory.hpp"
 
 #include <iostream>
 #include <fstream>

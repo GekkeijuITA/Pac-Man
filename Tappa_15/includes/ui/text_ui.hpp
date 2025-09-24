@@ -4,8 +4,8 @@
 #include <map>
 #include <string>
 
-#include "textures.hpp"
-#include "global_values.hpp"
+#include "../lib/textures.hpp"
+#include "../lib/global_values.hpp"
 
 inline const sf::Vector2i CHAR_A = {0, 0};
 inline const sf::Vector2i CHAR_B = {1, 0};

@@ -1,4 +1,4 @@
-#include "../../includes/core/Debug.hpp"
+#include "../../includes/lib/Debug.hpp"
 
 void Debug::drawGrid(sf::RenderWindow &window)
 {

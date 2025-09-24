@@ -4,9 +4,9 @@
 #include <vector>
 #include <functional>
 
-#include "lib/text_ui.hpp"
-#include "lib/textures.hpp"
-#include "lib/global_values.hpp"
+#include "text_ui.hpp"
+#include "../lib/textures.hpp"
+#include "../lib/global_values.hpp"
 
 struct MenuOption
 {

@@ -1,7 +1,7 @@
 #include "../../includes/game_elements/Ghost.hpp"
 #include "../../includes/game_elements/GameState.hpp"
 #include "../../includes/lib/textures.hpp"
-#include "../../includes/lib/SoundManager.hpp"
+#include "../../includes/core/SoundManager.hpp"
 #include <iostream>
 #include <climits>
 #include <algorithm>

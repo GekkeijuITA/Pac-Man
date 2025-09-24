@@ -1,6 +1,6 @@
 #include "../includes/core/StateManager.hpp"
-#include "../includes/lib/TileFactory.hpp"
-#include "../includes/lib/SoundManager.hpp"
+#include "../includes/core/TileFactory.hpp"
+#include "../includes/core/SoundManager.hpp"
 
 int main()
 {

@@ -1,4 +1,4 @@
-#include "../../includes/lib/text_ui.hpp"
+#include "../../includes/ui/text_ui.hpp"
 #include <iostream>
 
 ArcadeText::ArcadeText()

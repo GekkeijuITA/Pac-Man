@@ -14,8 +14,7 @@ FetchContent_MakeAvailable(SFML)
 
 message(STATUS "Include directory: ${CMAKE_SOURCE_DIR}/includes")
 
-#[[
-add_executable(
+#[[add_executable(
     Tappa1
      
     Tappa_1/src/main.cpp
@@ -315,17 +314,20 @@ add_executable(
     Tappa_14/src/LevelSelectorState.cpp
     Tappa_14/src/MainMenuState.cpp
 )]]#
+
 add_executable(
     Tappa15 
 
     Tappa_15/src/core/Animation.cpp
-    Tappa_15/src/core/Debug.cpp
+    Tappa_15/src/core/TileFactory.cpp
+    Tappa_15/src/core/SoundManager.cpp
     Tappa_15/src/core/StateManager.cpp
 
-    Tappa_15/src/lib/TextUI.cpp
     Tappa_15/src/lib/textures.cpp
-    Tappa_15/src/lib/TileFactory.cpp
-    Tappa_15/src/lib/SoundManager.cpp
+    Tappa_15/src/lib/Debug.cpp
+
+    Tappa_15/src/ui/TextUI.cpp
+    Tappa_15/src/ui/GameMenu.cpp
 
     Tappa_15/src/game_elements/Fruit.cpp
     Tappa_15/src/game_elements/GameState.cpp
@@ -350,7 +352,6 @@ add_executable(
     Tappa_15/src/scenario_editor/ScenarioEditor.cpp
 
     Tappa_15/src/main.cpp
-    Tappa_15/src/GameMenu.cpp
     Tappa_15/src/LevelSelectorState.cpp
     Tappa_15/src/MainMenuState.cpp
 )

@@ -1,5 +1,5 @@
-#include "../includes/GameMenu.hpp"
-#include "../includes/lib/SoundManager.hpp"
+#include "../../includes/ui/GameMenu.hpp"
+#include "../../includes/core/SoundManager.hpp"
 
 #include <iostream>
 

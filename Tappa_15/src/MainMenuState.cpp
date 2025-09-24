@@ -1,5 +1,5 @@
 #include "../includes/MainMenuState.hpp"
-#include "../includes/core/Debug.hpp"
+#include "../includes/lib/Debug.hpp"
 #include <fstream>
 
 MainMenuState::MainMenuState(sf::RenderWindow &window, StateManager &sm)

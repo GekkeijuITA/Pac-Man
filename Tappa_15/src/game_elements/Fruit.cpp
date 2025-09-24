@@ -1,5 +1,5 @@
 #include "../../includes/game_elements/Fruit.hpp"
-#include "../../includes/lib/TileFactory.hpp"
+#include "../../includes/core/TileFactory.hpp"
 #include "../../includes/game_elements/GameState.hpp"
 
 Fruit::Fruit(

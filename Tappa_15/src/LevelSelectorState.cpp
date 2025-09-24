@@ -1,8 +1,8 @@
 #include "../includes/LevelSelectorState.hpp"
 #include "../includes/lib/textures.hpp"
-#include "../includes/core/Debug.hpp"
-#include "../includes/lib/TileFactory.hpp"
-#include "../includes/lib/SoundManager.hpp"
+#include "../includes/lib/Debug.hpp"
+#include "../includes/core/TileFactory.hpp"
+#include "../includes/core/SoundManager.hpp"
 #include <cmath>
 
 LevelSelectorState::LevelSelectorState(sf::RenderWindow &window, StateManager &sm, MapEditor &me, std::string title) : window(window), stateManager(sm), mapEditor(me), scenarioEditor(*static_cast<ScenarioEditor *>(nullptr)), gameState(*static_cast<GameState *>(nullptr)), title(title)

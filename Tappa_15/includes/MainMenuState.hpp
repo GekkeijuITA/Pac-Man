@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "GameMenu.hpp"
+#include "ui/GameMenu.hpp"
 #include "core/StateManager.hpp"
 #include "map_editor/MapEditor.hpp"
 
